@@ -20,4 +20,11 @@ export const lightTheme = createTheme({
 });
 
 // TODO: chose dark mode and assign proper collors
-export const darkTheme = createTheme({}); 
+export const darkTheme = createTheme({
+    palette: {
+        mode: "dark",
+        text: {
+            primary: "#F0EAD6", // eggshell hex color
+        },
+    },
+}); 
