@@ -1,10 +1,10 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
+import './css/index.css';
+import App from './pages/App';
 import reportWebVitals from './reportWebVitals';
 import { CustomThemeProvider } from './Components/ThemeProvider';
-import { lightTheme } from './themes/theme';
+import { lightTheme } from './utils/theme';
 import { light } from '@mui/material/styles/createPalette';
 
 const root = ReactDOM.createRoot(
