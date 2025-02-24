@@ -1,8 +1,8 @@
 import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import logo from '../assets/logo.svg';
+import '../css/App.css';
 import { useTheme } from '@mui/material/styles';
-import ThemeToggleButton from './Components/ThemeToggleButton';
+import ThemeToggleButton from '../Components/ThemeToggleButton';
 
 function App() {
 
