@@ -1,3 +1,11 @@
+import { hashSync } from "bcrypt-ts";
+
+export const encrypt = (username: string, password: string): string => {
+    const message: string = `${username}${password}`;
+    const myFixedSalt = "$2b$10$abcdefghijklmnopqrstuv";
+    return hashSync(message, myFixedSalt);
+}
+
 /**
  * use fetch to send data to the URL and wait for the response code which is a JSON
  * 200 - OK
