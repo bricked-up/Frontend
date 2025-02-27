@@ -1,45 +1,45 @@
-import { hashSync } from "bcrypt-ts";
-
-export const encrypt = (username: string, password: string): string => {
-    const message: string = `${username}${password}`;
-    const myFixedSalt = "$2b$10$abcdefghijklmnopqrstuv";
-    return hashSync(message, myFixedSalt);
-}
-
 /**
- * use fetch to send data to the URL and wait for the response code which is a JSON
+ * used to register, login or reset password. This function sends a fetch requestion by HTTP
+ * and waits for the responde code.
+ * 
  * 200 - OK
  * 400 - or invallid request
- * 500 - backend issues (exact error in the body of the response)
  * 401 - unauthorised
+ * 405 - method not allowed
+ * 500 - backend issues (exact error in the body of the response)
  * 
- * @param   {string} username 
+ * the function will return the status code and -1 if the connection could not have been made
+ * 
+ * @param   {string} email 
  * @param   {string} password 
- * @returns {Promise<any>}
+ * @param   {string} endPoint should be signup | verify | login
+ * @returns {Promise<number>}
  * @throws  {any} 
  */
-export const loginUser = async (username: string, password: string): Promise<any> => {
-    const url = "URL_PLEASE";
+export const authUser = async (email: string, password: string, endPoint: string): Promise<number> => {
+    const url: string = `URL_PLEASE/${endPoint}`;
 
     try {
+        const requestBody = endPoint == "verify"
+            ? { email }
+            : { email, password };
+
         const response = await fetch(url, {
             method: "POST",
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, password }),
+            body: JSON.stringify(requestBody),
         });
 
         if (!response.ok) {
             throw new Error("Could not even connect to the server");
         }
+      
+        return response.status as number;
 
-        const data = await response.json();
-
-        return data.results[0];
-
-    } catch (error: any) {
+    } catch (error: any) { // could not even make the fetch response
         console.log(error.message);
+        return Promise.resolve(-1);
     }
 }
 
-// TODO:
-export const register: number = 2;
+export default authUser;
