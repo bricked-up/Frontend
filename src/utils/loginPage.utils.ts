@@ -33,7 +33,7 @@ export const authUser = async (email: string, password: string, endPoint: string
         if (!response.ok) {
             throw new Error("Could not even connect to the server");
         }
-
+      
         return response.status as number;
 
     } catch (error: any) { // could not even make the fetch response
