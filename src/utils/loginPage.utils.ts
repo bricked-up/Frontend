@@ -1,11 +1,3 @@
-import { hashSync } from "bcrypt-ts";
-
-export const encrypt = (username: string, password: string): string => {
-    const message: string = `${username}${password}`;
-    const myFixedSalt = "$2b$10$abcdefghijklmnopqrstuv";
-    return hashSync(message, myFixedSalt);
-}
-
 /**
  * used to register, login or reset password. This function sends a fetch requestion by HTTP
  * and waits for the responde code.
@@ -18,19 +10,19 @@ export const encrypt = (username: string, password: string): string => {
  * 
  * the function will return the status code and -1 if the connection could not have been made
  * 
- * @param   {string} username 
+ * @param   {string} email 
  * @param   {string} password 
  * @param   {string} endPoint should be signup | verify | login
  * @returns {Promise<number>}
  * @throws  {any} 
  */
-export const authUser = async (username: string, password: string, endPoint: string): Promise<number> => {
+export const authUser = async (email: string, password: string, endPoint: string): Promise<number> => {
     const url: string = `URL_PLEASE/${endPoint}`;
 
     try {
         const requestBody = endPoint == "verify"
-            ? { username }
-            : { username, encryptedPassword: encrypt(username, password) };
+            ? { email }
+            : { email, password };
 
         const response = await fetch(url, {
             method: "POST",
