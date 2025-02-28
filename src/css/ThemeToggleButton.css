@@ -1,0 +1,14 @@
+.toggle-color {
+    background-color: #ff9800;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+  }
+  
+  .toggle-color:hover {
+    background-color: #e68900;
+  }
+  
