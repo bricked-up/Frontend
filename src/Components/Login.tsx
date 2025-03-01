@@ -1,11 +1,47 @@
+import { specialChars } from "@testing-library/user-event";
 import React, { useState } from "react";
+//using a custom react hook for validating password confirmation
+import usePasswordValidation from "../hooks/usePasswordValidation";
+import { red } from "@mui/material/colors";
 
+// typescript file for Log In & Sign Up page
 const Login = () => {
+  const [password, setPassword] = useState("");
+  const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
+
   //to toggle over login and sign up forms i'm using usestate
   const [isLoginActive, setisLoginActive] = useState(true);
+  const [registerAttempt, setRegisterAttempt] = useState(false);
+
+  const [account, setAccount] = useState(""); //for checking if user has input an email for verification
+  const [error, setError] = useState("");
 
   const toggle = () => {
     setisLoginActive(!isLoginActive);
+  };
+
+  const { isValid, errors } = usePasswordValidation({
+    password: password,
+    confirmpwd: confirmpwd,
+    minLength: 8,
+    uppercase: true,
+    lowercase: true,
+    number: true,
+    specialChar: true,
+  });
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setRegisterAttempt(true);
+  };
+
+  const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!account) {
+      e.preventDefault(); //stopping navigation if there's no account (email) written
+      setError("No account registered!");
+    } else {
+      setError("");
+    }
   };
 
   return (
@@ -29,13 +65,47 @@ const Login = () => {
                 <legend></legend>
                 <div className="input-block">
                   <label htmlFor="login-email">E-mail</label>
-                  <input id="login-email" type="email" required />
+                  <input
+                    id="login-email"
+                    type="email"
+                    value={account}
+                    onChange={(e) => setAccount(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="input-block">
                   <label htmlFor="login-password">Password</label>
                   <input id="login-password" type="password" required />
                 </div>
+
+                <div className="forgotpwd">
+                  <a
+                    href="/forgot_pwd"
+                    className="forgot-pwd-link"
+                    onClick={handleForgotPwd}
+                    style={{
+                      display: "block",
+                      marginTop: "10px",
+                      textAlign: "center",
+                    }}
+                  >
+                    {" "}
+                    Forgot password?{" "}
+                  </a>
+                  {error && (
+                    <p
+                      style={{
+                        color: "red",
+                        textAlign: "center",
+                        marginTop: "10px",
+                      }}
+                    >
+                      {error}
+                    </p>
+                  )}
+                </div>
               </fieldset>
+
               <button type="submit" className="btn-login">
                 Login
               </button>
@@ -52,7 +122,13 @@ const Login = () => {
               <span className="underline"></span>
             </button>
 
-            <form className="form form-signup">
+            <form
+              className="form form-signup"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setRegisterAttempt(true);
+              }}
+            >
               <fieldset>
                 <legend>
                   Please, enter your email, password and password confirmation
@@ -64,7 +140,13 @@ const Login = () => {
                 </div>
                 <div className="input-block">
                   <label htmlFor="signup-password">Password</label>
-                  <input id="signup-password" type="password" required />
+                  <input
+                    id="signup-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="input-block">
                   <label htmlFor="signup-password-confirm">
@@ -73,9 +155,21 @@ const Login = () => {
                   <input
                     id="signup-password-confirm"
                     type="password"
+                    value={confirmpwd}
+                    onChange={(e) => setConfirmpwd(e.target.value)}
                     required
                   />
                 </div>
+
+                {registerAttempt && !isValid && (
+                  <ul>
+                    {errors.map((err, index) => (
+                      <li key={index} style={{ color: "red" }}>
+                        {err}
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </fieldset>
               <button type="submit" className="btn-signup">
                 Register
