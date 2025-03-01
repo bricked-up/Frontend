@@ -1,14 +1,14 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './css/index.css';
-import App from './pages/App';
-import reportWebVitals from './reportWebVitals';
-import { CustomThemeProvider } from './Components/ThemeProvider';
-import { lightTheme } from './utils/theme';
-import { light } from '@mui/material/styles/createPalette';
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./css/index.css";
+import App from "./Components/App";
+import reportWebVitals from "./reportWebVitals";
+import { CustomThemeProvider } from "./Components/ThemeProvider";
+import { lightTheme } from "./utils/theme";
+import { light } from "@mui/material/styles/createPalette";
 
 const root = ReactDOM.createRoot(
-  document.getElementById('root') as HTMLElement
+  document.getElementById("root") as HTMLElement
 );
 root.render(
   <React.StrictMode>
