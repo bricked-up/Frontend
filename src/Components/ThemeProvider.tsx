@@ -1,8 +1,8 @@
 // src/CustomThemeProvider.tsx
-import React, { createContext, useState, ReactNode } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import CssBaseline from "@mui/material/CssBaseline";
-import { lightTheme, darkTheme } from "../utils/theme";
+import React, { createContext, useState, ReactNode } from 'react';
+import { ThemeProvider } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import { lightTheme, darkTheme } from '../utils/theme';
 
 interface ThemeContextProps {
   mode: "light" | "dark";
@@ -11,7 +11,7 @@ interface ThemeContextProps {
 
 export const ThemeContext = createContext<ThemeContextProps>({
   mode: "light",
-  toggleTheme: () => {},
+  toggleTheme: () => { },
 });
 
 export const CustomThemeProvider: React.FC<{ children: ReactNode }> = ({
