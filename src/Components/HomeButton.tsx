@@ -1,11 +1,27 @@
 import React from "react";
+import { Button } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import "../css/HomeButton.css";
 
 const HomeButton: React.FC = () => {
+  const theme = useTheme();
+
   return (
-    <a href="/" className="home-button">
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: theme.palette.primary.main,
+        "&:hover": {
+          backgroundColor: theme.palette.primary.dark,
+        },
+      }}
+      onClick={() => {
+        // Using native navigation for simplicity; adjust if using a router.
+        window.location.href = "/";
+      }}
+    >
       Home
-    </a>
+    </Button>
   );
 };
 

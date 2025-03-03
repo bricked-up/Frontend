@@ -1,20 +1,29 @@
-import React, { useContext } from 'react';
-import { ThemeContext } from './ThemeProvider';
-import { Button } from '@mui/material';
+import React from "react";
+import { Button } from "@mui/material";
+import { useTheme } from "@mui/material/styles";
 import "../css/ThemeToggleButton.css";
 
-const ThemeToggleButton: React.FC = () => {
-    const { toggleTheme } = useContext(ThemeContext);
+interface ThemeToggleButtonProps {
+  toggleTheme: () => void;
+}
 
-    return (
-        <Button
-            variant="contained"
-            onClick={toggleTheme}
-            className="theme-toggle-button"
-        >
-            Change Theme
-        </Button>
-    );
+const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ toggleTheme }) => {
+  const theme = useTheme();
+
+  return (
+    <Button
+      variant="contained"
+      onClick={toggleTheme}
+      sx={{
+        backgroundColor: theme.palette.primary.main,
+        "&:hover": {
+          backgroundColor: theme.palette.primary.dark,
+        },
+      }}
+    >
+      Change Theme
+    </Button>
+  );
 };
 
 export default ThemeToggleButton;

@@ -1,31 +1,33 @@
-import React, { useState } from "react";
+import React, { useContext } from "react";
 import "../css/NavBar.css";
 import HomeButton from "./HomeButton";
+import ThemeToggleButton from "./ThemeToggleButton";
 import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
-import ToggleColorButton from "./ThemeToggleButton";
-import { useTheme } from '@mui/material/styles';
+import { ThemeContext } from "./ThemeProvider"; 
+import { useTheme } from "@mui/material/styles";
+import logo from '../assets/BrickedUpLogo.png';
 
 const NavBar: React.FC = () => {
   const theme = useTheme();
-
-  const [bgColor, setBgColor] = useState("#ffffff");
-
-  const toggleColor = () => {
-    setBgColor(bgColor === "#ffffff" ? "#e0e0e0" : "#ffffff");
-  };
+  const { toggleTheme } = useContext(ThemeContext);
 
   return (
-    <nav className="navbar" style={{ backgroundColor: theme.palette.background.default }}>
+    <nav
+      className="navbar"
+      style={{
+        backgroundColor: theme.palette.background.default,
+      }}
+    >
       <div className="logo-container">
-        <img src="../assets/logo.png" alt="Logo" className="logo" />
+        <img src={logo} alt="Logo" className="logo" />
         <span className="company-name">Bricked Up</span>
       </div>
       <div className="actions">
-        <HomeButton />
-        <ToggleColorButton />
-        <LoginButton />
         <ProfileButton />
+        <LoginButton />
+        <ThemeToggleButton toggleTheme={toggleTheme} />
+        <HomeButton />
       </div>
     </nav>
   );
