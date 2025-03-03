@@ -6,7 +6,6 @@ import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
 import { ThemeContext } from "./ThemeProvider"; 
 import { useTheme } from "@mui/material/styles";
-import logo from '../assets/BrickedUpLogo.png';
 
 const NavBar: React.FC = () => {
   const theme = useTheme();
@@ -20,7 +19,7 @@ const NavBar: React.FC = () => {
       }}
     >
       <div className="logo-container">
-        <img src={logo} alt="Logo" className="logo" />
+        <img src="path-to-your-logo.png" alt="Logo" className="logo" />
         <span className="company-name">Bricked Up</span>
       </div>
       <div className="actions">
