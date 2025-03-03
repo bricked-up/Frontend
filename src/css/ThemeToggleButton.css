@@ -1,14 +1,11 @@
-.toggle-color {
-    background-color: #ff9800;
-    color: white;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: background 0.3s ease-in-out;
-  }
-  
-  .toggle-color:hover {
-    background-color: #e68900;
-  }
-  
+.theme-toggle-button {
+  background-color: #6b4eff;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 10px;
+  transition: background 0.3s ease-in-out;
+}
+
+.theme-toggle-button:hover {
+  background-color: #5a3edd;
+}

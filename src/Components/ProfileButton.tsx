@@ -1,5 +1,5 @@
 import React from "react";
-import "./ProfileButton.css";
+import "../css/ProfileButton.css";
 
 const ProfileButton: React.FC = () => {
   return <button className="profile-button">👤</button>;
