@@ -1,11 +1,9 @@
 type User = {
-    username?: string | null,
     email: string,
+    displayName?: string | null,
     pfp?: string | null,
     org?: string[] | null,
     teams?: string[] | null,
-    teamMembers?: string[] | null,
-    orgMemmbers?: string[] | null,
 };
 
 type UserContext = {
