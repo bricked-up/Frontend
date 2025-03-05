@@ -1,5 +1,5 @@
 import React from "react";
-import "../css/ThemeToggleButton.css"; // Ensure the path is correct
+import "../css/ThemeToggleButton.css"; 
 
 interface ThemeToggleButtonProps {
   toggleTheme: () => void;

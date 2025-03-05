@@ -1,8 +1,8 @@
 :root {
   --light: #d8dbe0;
   --dark: #28292c;
-  --sun: #FFD700;  /* gold for sun icon */
-  --moon: #ffffff; /* white for moon icon */
+  --sun: #FFD700;  
+  --moon: #ffffff; 
   --link: rgb(27, 129, 112);
   --link-hover: rgb(24, 94, 82);
 }
@@ -17,7 +17,7 @@
   display: none;
 }
 
-/* Use the label as the slider */
+
 .toggle-switch label {
   display: block;
   width: 100%;
@@ -33,9 +33,9 @@
   background-color: var(--dark);
 }
 
-/* The toggle thumb with icon */
+
 .toggle-switch label::before {
-  content: "\2600"; /* sun icon (☀) */
+  content: "\2600"; 
   position: absolute;
   top: 5px;
   left: 5px;
@@ -51,7 +51,7 @@
 }
 
 .toggle-switch input:checked ~ label::before {
-  content: "\1F319"; /* crescent moon emoji (🌙) */
+  content: "\1F319"; 
   transform: translateX(40px);
   color: var(--moon);
 }

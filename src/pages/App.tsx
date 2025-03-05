@@ -4,7 +4,7 @@ import '../css/App.css';
 import { useTheme } from '@mui/material/styles';
 import ThemeToggleButton from '../Components/ThemeToggleButton';
 import NavBar from '../Components/NavBar';
-import { ThemeContext } from '../Components/ThemeProvider'; // Adjust the path as needed
+import { ThemeContext } from '../Components/ThemeProvider'; 
 
 function App() {
   const theme = useTheme();
