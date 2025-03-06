@@ -1,3 +1,9 @@
+// src/ThemeToggleButton.tsx
+import React, { useContext } from 'react';
+import { ThemeContext } from './ThemeProvider';
+import { useTheme } from '@mui/material/styles';
+import { Button } from '@mui/material';
+        
 import React from "react";
 import "../css/ThemeToggleButton.css"; 
 
@@ -16,6 +22,7 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ toggleTheme }) =>
       <label htmlFor="toggle-switch"></label>
     </div>
   );
+
 };
 
 export default ThemeToggleButton;
