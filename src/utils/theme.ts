@@ -23,6 +23,9 @@ export const lightTheme = createTheme({
 export const darkTheme = createTheme({
     palette: {
         mode: "dark",
+        background: {
+            default: "#A9A9A9"
+        },
         text: {
             primary: "#F0EAD6", // eggshell hex color
         },
