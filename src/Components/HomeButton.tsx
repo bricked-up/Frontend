@@ -16,7 +16,6 @@ const HomeButton: React.FC = () => {
         },
       }}
       onClick={() => {
-        // Using native navigation for simplicity; adjust if using a router.
         window.location.href = "/";
       }}
     >

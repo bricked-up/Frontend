@@ -4,7 +4,6 @@ import { ThemeContext } from './ThemeProvider';
 import { useTheme } from '@mui/material/styles';
 import { Button } from '@mui/material';
         
-import React from "react";
 import "../css/ThemeToggleButton.css"; 
 
 interface ThemeToggleButtonProps {

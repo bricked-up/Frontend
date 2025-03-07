@@ -17,7 +17,7 @@ const NavBar: React.FC = () => {
     <nav
       className="navbar"
       style={{
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.paper,
       }}>
       <div className="logo-container">
       <img src={logo} alt="Company Logo" className="logo" />
