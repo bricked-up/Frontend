@@ -1,3 +1,24 @@
+/**
+ * provides the UI for logging into an existing account or signing up for a new account.
+ *
+ * It toggles between the login and sign-up forms based on the state (`isLoginActive`).
+ *
+ * For the signup form, it checks for password requirements (minimum nr of chars,
+ *  uppercase/lowercase symbols, special chars etc) as well as validates the
+ *  confirm password choice.
+ *
+ * The component uses a custom React hook (`usePasswordValidation`) for validating
+ *  the password against required criteria.
+ *
+ * In case user forgets password, it first checks if they input an account, then
+ *  they can go to forget password link.
+ *
+ * @component
+ * @example
+ * return(
+ *  <Login />
+ * );
+ */
 import { specialChars } from "@testing-library/user-event";
 import React, { useState } from "react";
 //using a custom react hook for validating password confirmation
@@ -160,14 +181,17 @@ const Login = () => {
                     required
                   />
                 </div>
-
                 {registerAttempt && !isValid && (
                   <ul>
-                    {errors.map((err, index) => (
-                      <li key={index} style={{ color: "red" }}>
-                        {err}
-                      </li>
-                    ))}
+                    {errors.length > 0 ? (
+                      errors.map((err, index) => (
+                        <li key={index} style={{ color: "red" }}>
+                          {err}
+                        </li>
+                      ))
+                    ) : (
+                      <li style={{ color: "green" }}>All good!</li>
+                    )}
                   </ul>
                 )}
               </fieldset>

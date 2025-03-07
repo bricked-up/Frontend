@@ -36,7 +36,7 @@ const usePasswordValidation = ({
       errorList.push('Password must contain at least one lowercase letter');
     }
     if (number && !/[0-9]/.test(password)) {
-      errorList.push('Password must contain at least one number');
+      errorList.push('Password must contain at least one  number');
     }
     if (specialChar && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
       errorList.push('Password must contain at least one special character');
