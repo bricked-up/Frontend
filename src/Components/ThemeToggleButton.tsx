@@ -21,7 +21,6 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ toggleTheme }) =>
       <label htmlFor="toggle-switch"></label>
     </div>
   );
-
 };
 
 export default ThemeToggleButton;

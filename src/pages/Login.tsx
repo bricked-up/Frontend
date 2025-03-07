@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import NavBar from "../Components/NavBar";
 import usePasswordValidation from "../hooks/usePasswordValidation";
@@ -16,8 +17,8 @@ const Login = () => {
   };
 
   const { isValid, errors } = usePasswordValidation({
-    password,
-    confirmpwd,
+    password: password,
+    confirmpwd: confirmpwd,
     minLength: 8,
     uppercase: true,
     lowercase: true,
@@ -32,7 +33,7 @@ const Login = () => {
 
   const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!account) {
-      e.preventDefault();
+      e.preventDefault(); //stopping navigation if there's no account (email) written
       setError("No account registered!");
     } else {
       setError("");
