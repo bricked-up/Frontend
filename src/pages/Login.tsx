@@ -1,19 +1,15 @@
-import { specialChars } from "@testing-library/user-event";
-import React, { useState } from "react";
-//using a custom react hook for validating password confirmation
-import usePasswordValidation from "../hooks/usePasswordValidation";
-import { red } from "@mui/material/colors";
 
-// typescript file for Log In & Sign Up page
+import React, { useState } from "react";
+import NavBar from "../Components/NavBar";
+import usePasswordValidation from "../hooks/usePasswordValidation";
+import { useTheme } from "@mui/material/styles";
+
 const Login = () => {
   const [password, setPassword] = useState("");
-  const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
-
-  //to toggle over login and sign up forms i'm using usestate
+  const [confirmpwd, setConfirmpwd] = useState("");
   const [isLoginActive, setisLoginActive] = useState(true);
   const [registerAttempt, setRegisterAttempt] = useState(false);
-
-  const [account, setAccount] = useState(""); //for checking if user has input an email for verification
+  const [account, setAccount] = useState("");
   const [error, setError] = useState("");
 
   const toggle = () => {
@@ -44,12 +40,20 @@ const Login = () => {
     }
   };
 
+  const theme = useTheme();
+
   return (
-    <>
+    <div
+      style={{
+        backgroundColor: theme.palette.background.default,
+        minHeight: "100vh",
+        width: "100vw",
+      }}
+    >
+      <NavBar />
       <section className="forms-section">
         <h1 className="section-title">Welcome to Bricked Up!</h1>
         <div className="forms">
-          {/*dynamically switching between the css classes*/}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -59,7 +63,6 @@ const Login = () => {
               Login
               <span className="underline"></span>
             </button>
-
             <form className="form form-login">
               <fieldset>
                 <legend></legend>
@@ -77,7 +80,6 @@ const Login = () => {
                   <label htmlFor="login-password">Password</label>
                   <input id="login-password" type="password" required />
                 </div>
-
                 <div className="forgotpwd">
                   <a
                     href="/forgot_pwd"
@@ -89,8 +91,7 @@ const Login = () => {
                       textAlign: "center",
                     }}
                   >
-                    {" "}
-                    Forgot password?{" "}
+                    Forgot password?
                   </a>
                   {error && (
                     <p
@@ -105,13 +106,11 @@ const Login = () => {
                   )}
                 </div>
               </fieldset>
-
               <button type="submit" className="btn-login">
                 Login
               </button>
             </form>
           </div>
-
           <div className={`form-wrapper ${!isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -121,7 +120,6 @@ const Login = () => {
               Sign Up
               <span className="underline"></span>
             </button>
-
             <form
               className="form form-signup"
               onSubmit={(e) => {
@@ -160,7 +158,6 @@ const Login = () => {
                     required
                   />
                 </div>
-
                 {registerAttempt && !isValid && (
                   <ul>
                     {errors.map((err, index) => (
@@ -178,7 +175,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 
