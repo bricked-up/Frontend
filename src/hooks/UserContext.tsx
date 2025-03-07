@@ -69,4 +69,3 @@ export const useUser = () => {
   return context;
 };
 
-//TODO: get and send user data to the server
