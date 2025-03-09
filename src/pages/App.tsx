@@ -1,24 +1,21 @@
 import React from "react";
-import logo from "../assets/logo.svg";
-import "../css/App.css";
-import { useTheme } from "@mui/material/styles";
-import ThemeToggleButton from "../Components/ThemeToggleButton";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import "../css/App.css";
+import ThemeToggleButton from "../Components/ThemeToggleButton";
 import Login from "./Login";
-import forgotpwd from "../pages/forgot_pwd";
-import ForgotPwd from "../pages/forgot_pwd";
+import ForgotPwd from "../pages/forgot_pwd"; // Ensure correct case
+import HomePage from "./HomePage/HomePage";
 
 function App() {
-  const theme = useTheme();
-
   return (
     <Router>
       <div className="App">
-        {/*set up Routes */}
+        <ThemeToggleButton />
+        {/* Set up Routes */}
         <Routes>
-          {/*route for login and signup */}
           <Route path="/login" element={<Login />} />
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
+          <Route path="/dashboard" element={<HomePage />} />
         </Routes>
       </div>
     </Router>
