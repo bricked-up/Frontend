@@ -19,6 +19,7 @@ body {
 	flex-direction: column;
 	justify-content: first baseline; /* Pushes button to the bottom */
   }
+
 /*	overflow: hidden; /* Make sure nothing breaks out */
   ul {
 	height: 100px; /* Fixed space for errors */
@@ -54,14 +55,22 @@ body {
 }
 
 code {
-	font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-		monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
 }
 
 *,
 *::before,
 *::after {
 	box-sizing: border-box;
+}
+
+/* body */
+
+body {
+	margin: 0;
+	font-family: Roboto, -apple-system, 'Helvetica Neue', 'Segoe UI', Arial, sans-serif;
+	background: #6AA0A0;
 }
 
 .forms-section {
@@ -339,8 +348,6 @@ code {
 	box-shadow: inset 0 0 0 2px #8752A3;
 	transform: translateX(30%);
 }
-
-
 
 li {
 	font-size: 14px;
