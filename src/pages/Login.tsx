@@ -1,15 +1,40 @@
-
+/**
+ * provides the UI for logging into an existing account or signing up for a new account.
+ *
+ * It toggles between the login and sign-up forms based on the state (`isLoginActive`).
+ *
+ * For the signup form, it checks for password requirements (minimum nr of chars,
+ *  uppercase/lowercase symbols, special chars etc) as well as validates the
+ *  confirm password choice.
+ *
+ * The component uses a custom React hook (`usePasswordValidation`) for validating
+ *  the password against required criteria.
+ *
+ * In case user forgets password, it first checks if they input an account, then
+ *  they can go to forget password link.
+ *
+ * @component
+ * @example
+ * return(
+ *  <Login />
+ * );
+ */
+import { specialChars } from "@testing-library/user-event";
 import React, { useState } from "react";
-import NavBar from "../Components/NavBar";
+//using a custom react hook for validating password confirmation
 import usePasswordValidation from "../hooks/usePasswordValidation";
-import { useTheme } from "@mui/material/styles";
+import { red } from "@mui/material/colors";
 
+// typescript file for Log In & Sign Up page
 const Login = () => {
   const [password, setPassword] = useState("");
-  const [confirmpwd, setConfirmpwd] = useState("");
+  const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
+
+  //to toggle over login and sign up forms i'm using usestate
   const [isLoginActive, setisLoginActive] = useState(true);
   const [registerAttempt, setRegisterAttempt] = useState(false);
-  const [account, setAccount] = useState("");
+
+  const [account, setAccount] = useState(""); //for checking if user has input an email for verification
   const [error, setError] = useState("");
 
   const toggle = () => {
@@ -40,20 +65,12 @@ const Login = () => {
     }
   };
 
-  const theme = useTheme();
-
   return (
-    <div
-      style={{
-        backgroundColor: theme.palette.background.default,
-        minHeight: "100vh",
-        width: "100vw",
-      }}
-    >
-      <NavBar />
+    <>
       <section className="forms-section">
         <h1 className="section-title">Welcome to Bricked Up!</h1>
         <div className="forms">
+          {/*dynamically switching between the css classes*/}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -63,6 +80,7 @@ const Login = () => {
               Login
               <span className="underline"></span>
             </button>
+
             <form className="form form-login">
               <fieldset>
                 <legend></legend>
@@ -80,6 +98,7 @@ const Login = () => {
                   <label htmlFor="login-password">Password</label>
                   <input id="login-password" type="password" required />
                 </div>
+
                 <div className="forgotpwd">
                   <a
                     href="/forgot_pwd"
@@ -91,7 +110,8 @@ const Login = () => {
                       textAlign: "center",
                     }}
                   >
-                    Forgot password?
+                    {" "}
+                    Forgot password?{" "}
                   </a>
                   {error && (
                     <p
@@ -106,11 +126,13 @@ const Login = () => {
                   )}
                 </div>
               </fieldset>
+
               <button type="submit" className="btn-login">
                 Login
               </button>
             </form>
           </div>
+
           <div className={`form-wrapper ${!isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -120,6 +142,7 @@ const Login = () => {
               Sign Up
               <span className="underline"></span>
             </button>
+
             <form
               className="form form-signup"
               onSubmit={(e) => {
@@ -160,11 +183,15 @@ const Login = () => {
                 </div>
                 {registerAttempt && !isValid && (
                   <ul>
-                    {errors.map((err, index) => (
-                      <li key={index} style={{ color: "red" }}>
-                        {err}
-                      </li>
-                    ))}
+                    {errors.length > 0 ? (
+                      errors.map((err, index) => (
+                        <li key={index} style={{ color: "red" }}>
+                          {err}
+                        </li>
+                      ))
+                    ) : (
+                      <li style={{ color: "green" }}>All good!</li>
+                    )}
                   </ul>
                 )}
               </fieldset>
@@ -175,7 +202,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </div>
+    </>
   );
 };
 

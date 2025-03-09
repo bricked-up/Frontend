@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './css/index.css';
-import App from './pages/App';
-import reportWebVitals from './reportWebVitals';
-import { CustomThemeProvider } from './Components/ThemeProvider';
-import { lightTheme } from './utils/theme';
-import { light } from '@mui/material/styles/createPalette';
-import { UserProvider } from "./hooks/UserContext"
+import React from "react";
+import ReactDOM from "react-dom/client";
+import "./css/index.css";
+import App from "./pages/App";
+import reportWebVitals from "./reportWebVitals";
+import { CustomThemeProvider } from "./Components/ThemeProvider";
+import { lightTheme } from "./utils/theme";
+import { light } from "@mui/material/styles/createPalette";
+import { UserProvider } from "./hooks/UserContext";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
