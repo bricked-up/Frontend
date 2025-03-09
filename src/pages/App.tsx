@@ -5,7 +5,6 @@ import { useTheme } from "@mui/material/styles";
 import ThemeToggleButton from "../Components/ThemeToggleButton";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
-import forgotpwd from "./forgot_pwd";
 import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 
