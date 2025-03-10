@@ -17,7 +17,6 @@ import {
   MenuItem,
   Collapse,
 } from "@mui/material";
-import { motion } from "framer-motion";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import FullCalendar from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
@@ -29,7 +28,6 @@ import dayjs from "dayjs";
 interface CalendarEvent {
   title: string;
   start: string;
-  end?: string;
   allDay?: boolean;
   backgroundColor?: string;
 }
@@ -139,7 +137,9 @@ const HomePage: React.FC = () => {
 
       <div style={{ display: "flex", flex: 1, padding: "20px" }}>
         <Paper sx={{ width: "250px", padding: 2, backgroundColor: "#f0f8ff", flexShrink: 0 }}>
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>Navigation</Typography>
+          <Typography variant="h6" sx={{ fontWeight: "bold", backgroundColor: "#3f51b5", color: "black", padding: "10px", textAlign: "center", borderRadius: "4px" }}>
+            Navigation
+          </Typography>
           <Button fullWidth sx={{ mt: 1, color: "#3f51b5" }}>Home</Button>
           <Button fullWidth sx={{ mt: 1, color: "#3f51b5" }}>Meetings</Button>
           <Button fullWidth sx={{ mt: 1, color: "#3f51b5" }}>Create Meeting</Button>
