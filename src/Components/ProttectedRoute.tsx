@@ -3,9 +3,16 @@ import { useUser } from "../hooks/UserContext";
 import { JSX } from "react";
 
 /**
+ * This checks if the user is logged in, if he/she is not connected
+ * allow them to go to the child otherwise it redirects to the login page
  * 
- * @param param 
- * @returns 
+ * @example
+ * <Route path="/dashboard" element={<ProtectedRoute><Dashbour /></ProtectedRoute>} />
+ * <Route path="/Edit-Account" element={<ProtectedRoute><Edit-Account /></ProtectedRoute>} />
+ * <Route path="/Teans" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
+ * 
+ * @param {JSX.Element} children  
+ * @returns {JSX.Element} children 
  */
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
     const { user } = useUser();
