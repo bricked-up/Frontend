@@ -10,7 +10,7 @@ function App() {
   return (
     <Router>
       <div className="App">
-        <ThemeToggleButton />
+        {/* <ThemeToggleButton /> */}
         {/* Set up Routes */}
         <Routes>
           <Route path="/login" element={<Login />} />
