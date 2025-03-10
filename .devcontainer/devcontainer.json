@@ -27,7 +27,7 @@
 		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind"
 	],
 	"containerEnv": {
-		"DISPLAY": "unix:0"
+		"DISPLAY": "unix:1"
 	},
 	"customizations": {
 		"vscode": {

@@ -14,6 +14,7 @@ RUN apt-get update \
     gitk \
     meld \
     terminator \
+    #if i have to add anything add here end with \
     && rm -rf /var/lib/apt/lists/*
 
 # Delete user if it exists in container (e.g Ubuntu Noble: ubuntu)
