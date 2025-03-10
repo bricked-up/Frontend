@@ -22,7 +22,7 @@ function App() {
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
           <Route path="*" element={<Page404 />} />
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><Page404 /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<ProtectedRoute defaultRoute="/login" ><Page404 /></ProtectedRoute>} />
         </Routes>
       </div>
     </Router>
