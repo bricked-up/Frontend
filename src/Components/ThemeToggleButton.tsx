@@ -11,12 +11,14 @@ interface ThemeToggleButtonProps {
 }
 
 const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ toggleTheme }) => {
+  const { mode } = useContext(ThemeContext);
   return (
     <div className="toggle-switch">
       <input 
         type="checkbox" 
         id="toggle-switch" 
         onChange={toggleTheme} 
+        checked={mode === "dark"} 
       />
       <label htmlFor="toggle-switch"></label>
     </div>
