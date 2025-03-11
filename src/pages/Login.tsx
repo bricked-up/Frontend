@@ -24,6 +24,8 @@ import React, { useState } from "react";
 //using a custom react hook for validating password confirmation
 import usePasswordValidation from "../hooks/usePasswordValidation";
 import { red } from "@mui/material/colors";
+import NavBar from "../Components/NavBar";
+import { useTheme } from "@mui/material/styles";
 
 // typescript file for Log In & Sign Up page
 const Login = () => {
@@ -65,10 +67,19 @@ const Login = () => {
     }
   };
 
+  const theme = useTheme();
+
   return (
-    <>
+    <div
+      style={{
+        backgroundColor: theme.palette.background.default,
+        minHeight: "100vh",
+        width: "100vw",
+      }}
+    >
+      <NavBar />
       <section className="forms-section">
-        <h1 className="section-title">Welcome to Bricked Up!</h1>
+        <h1 className="section-title" style={{ color : theme.palette.text.primary}}>Welcome to Bricked Up!</h1>
         <div className="forms">
           {/*dynamically switching between the css classes*/}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
@@ -202,7 +213,7 @@ const Login = () => {
           </div>
         </div>
       </section>
-    </>
+    </div>
   );
 };
 

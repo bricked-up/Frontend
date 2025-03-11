@@ -1,5 +1,5 @@
 // src/CustomThemeProvider.tsx
-import React, { createContext, useState, ReactNode } from "react";
+import React, { createContext, useState, ReactNode, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
 import { lightTheme, darkTheme } from "../utils/theme";
@@ -17,7 +17,16 @@ export const ThemeContext = createContext<ThemeContextProps>({
 export const CustomThemeProvider: React.FC<{ children: ReactNode }> = ({
   children,
 }) => {
-  const [mode, setMode] = useState<"light" | "dark">("light");
+   // Initialize mode from localStorage, defaulting to "light" if not found
+   const [mode, setMode] = useState<"light" | "dark">(() => {
+    const storedMode = localStorage.getItem("themeMode");
+    return storedMode === "dark" ? "dark" : "light";
+  });
+
+  // Update localStorage whenever mode changes
+  useEffect(() => {
+    localStorage.setItem("themeMode", mode);
+  }, [mode]);
 
   const toggleTheme = () => {
     setMode((prev) => (prev === "light" ? "dark" : "light"));
