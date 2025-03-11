@@ -1,9 +1,17 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
-import { useNavigate } from "react-router-dom"; // import useNavigate
+import { useNavigate } from "react-router-dom";
 import "../css/LoginButton.css";
 
+/**
+ * A button component that navigates the user to the login page.
+ *
+ * @component
+ * @returns {JSX.Element}
+ * @example
+ * <LoginButton />
+ */
 const LoginButton: React.FC = () => {
   const theme = useTheme();
   const navigate = useNavigate(); // initialize the navigation hook
