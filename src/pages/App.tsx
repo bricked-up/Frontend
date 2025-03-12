@@ -8,6 +8,7 @@ import Login from "./Login";
 import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProttectedRoute";
+import LandingPage from "./LandingPage";
 
 function App() {
   const theme = useTheme();
@@ -18,6 +19,7 @@ function App() {
         {/*set up Routes */}
         <Routes>
           {/*route for login and signup */}
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
           <Route path="*" element={<Page404 />} />
