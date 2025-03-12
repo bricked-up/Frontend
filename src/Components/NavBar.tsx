@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import "../css/NavBar.css";
 import HomeButton from "./HomeButton";
+import { useUser } from "../hooks/UserContext";
 import ThemeToggleButton from "./ThemeToggleButton";
 import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
@@ -25,6 +26,7 @@ import logo from '../assets/BrickedUpLogo.png';
  * 
  */
 const NavBar: React.FC = () => {
+  const { user } = useUser(); // Get the current user from context
   const theme = useTheme();
   const { toggleTheme } = useContext(ThemeContext);
 
@@ -41,8 +43,7 @@ const NavBar: React.FC = () => {
       <div className="actions">
         <HomeButton />
         <ThemeToggleButton toggleTheme={toggleTheme} />
-        <LoginButton />
-        <ProfileButton />
+        {user && user.email ? <ProfileButton /> : <LoginButton />}
       </div>
     </nav>
   );
