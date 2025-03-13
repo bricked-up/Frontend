@@ -1,46 +1,34 @@
-# Getting Started with Create React App
+# Getting Started
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the repo for the frontent. We are using `React` and `Typescript`. The main entry point is found
+int the index.tsx file but the actual code begins in the App.tsx. Please note that the App.tsx should
+only be used for routing and global context wrappers. 
 
-## Available Scripts
+to get started run the following commands if you are on Linux/MacOs.
 
-In the project directory, you can run:
+```
+1.⁠ ⁠npm install react@18.2.0 react-dom@18.2.0
+2. rm -rf node_modules package-lock.json
+3.⁠ ⁠npm install
+```
 
-### `npm start`
+# Running and all of that
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+to run the code please use `npm start` or `npm run start` and it should open a localhost on port
+`3000`. The website will automatically update upon saving your files so you do not need to re type ever time.
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+to test run, `npm test` and it will test any files that have the .test in their file name. 
 
-### `npm test`
+## Coding style and commenting
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+please refere to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
+PR naming as anything that does not match the expected format will not be accepted. 
 
-### `npm run build`
+# NPM
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+If you are including a custom third party library, it first must be approved by the other teams members and must
+be added **manually** to the package.json. Any changes to the package-lock.json file will be rejected.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# documentation of our interal APIs
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `npm run eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+TODO:()
