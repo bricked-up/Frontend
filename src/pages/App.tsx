@@ -12,6 +12,7 @@ import LandingPage from "./LandingPage";
 
 function App() {
   const theme = useTheme();
+  /*this is code I do not want to modify*/
 
   return (
     <Router>
