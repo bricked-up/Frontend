@@ -1,0 +1,40 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
+{
+	"name": "Frontend",
+	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}",
+			"USERNAME": "${localEnv:USER}",
+		}
+	},
+	"workspaceFolder": "/home/ubuntu/ws",
+	"workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/ws,type=bind",
+	"remoteUser": "${localEnv:USER}",
+	"runArgs": [
+		"--network=host",
+		"--cap-add=SYS_PTRACE",
+		"--security-opt=seccomp:unconfined",
+		"--security-opt=apparmor:unconfined",
+		"--ipc=host",
+		// "--gpus",
+		// "all"
+	],
+	"mounts": [
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		// "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
+		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind"
+	],
+	"containerEnv": {
+		"DISPLAY": "unix:1"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"swellaby.node-pack",
+				"rockingskier.copy-copy-paste"
+			]
+		}
+	}
+}
