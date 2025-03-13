@@ -1,40 +1,39 @@
-// For format details, see https://aka.ms/devcontainer.json. For config options, see the
-// README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
-{
-	"name": "Frontend",
-	"dockerFile": "Dockerfile",
-	"build": {
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}",
-			"USERNAME": "${localEnv:USER}",
-		}
-	},
-	"workspaceFolder": "/home/ubuntu/ws",
-	"workspaceMount": "source=${localWorkspaceFolder},target=/home/ubuntu/ws,type=bind",
-	"remoteUser": "${localEnv:USER}",
-	"runArgs": [
-		"--network=host",
-		"--cap-add=SYS_PTRACE",
-		"--security-opt=seccomp:unconfined",
-		"--security-opt=apparmor:unconfined",
-		"--ipc=host",
-		// "--gpus",
-		// "all"
-	],
-	"mounts": [
-		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
-		// "source=/dev/dri,target=/dev/dri,type=bind,consistency=cached",
-		"source=${localEnv:HOME}/.ssh,target=/home/${localEnv:USER}/.ssh,type=bind"
-	],
-	"containerEnv": {
-		"DISPLAY": "unix:1"
-	},
-	"customizations": {
-		"vscode": {
-			"extensions": [
-				"swellaby.node-pack",
-				"rockingskier.copy-copy-paste"
-			]
-		}
-	}
-}
+FROM mcr.microsoft.com/devcontainers/typescript-node
+ARG USERNAME
+ARG USER_UID=1000
+ARG USER_GID=$USER_UID
+
+# Example of installing programs
+RUN apt-get update \
+    && apt-get install -y \
+    nano \
+    vim \
+    bash-completion \
+    git \
+    git-gui \
+    gitk \
+    meld \
+    terminator \
+    curl \
+    #if i have to add anything add here end with \
+    && rm -rf /var/lib/apt/lists/*
+
+# Delete user if it exists in container (e.g Ubuntu Noble: ubuntu)
+RUN if id -u $USER_UID ; then userdel `id -un $USER_UID` ; fi
+
+# Create the user
+RUN groupadd --gid $USER_GID $USERNAME \
+  && useradd -s /bin/bash --uid $USER_UID --gid $USER_GID -m $USERNAME \
+  && mkdir /home/$USERNAME/.config && chown $USER_UID:$USER_GID /home/$USERNAME/.config
+
+
+# Set up sudo
+RUN apt-get update \
+  && apt-get install -y sudo \
+  && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME\
+  && chmod 0440 /etc/sudoers.d/$USERNAME \
+  && rm -rf /var/lib/apt/lists/*
+
+USER $USERNAME
+
+CMD ["/bin/bash"]
