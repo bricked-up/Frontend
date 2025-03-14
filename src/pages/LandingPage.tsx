@@ -6,6 +6,20 @@ import stickyNoteIcon from "../assets/sticky_note_icon.png";
 import calendarIcon from "../assets/calendar_icon.png";
 import emailIcon from "../assets/email_icon.png";
 
+/**
+ * The Landing Page for Bricked Up
+ *
+ * Renders the main landing page with a brief introduction and icons representing features.
+ * The background color is dynamically set using the current theme's palette.
+ *
+ * @component
+ * @returns {JSX.Element}
+ *
+ * @example
+ * return(
+ *   <LandingPage />
+ * )
+ */
 const LandingPage: React.FC = () => {
   const theme = useTheme();
 
@@ -64,7 +78,7 @@ const LandingPage: React.FC = () => {
           opacity: 0.9,
         }}
       >
-        © 2023 Bricked Up, Inc.
+        © 2025 Bricked Up, Inc.
       </footer>
     </div>
   );
