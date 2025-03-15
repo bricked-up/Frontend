@@ -17,7 +17,8 @@
  * @throws  {any} 
  */
 export const authUser = async (email: string, password: string, endPoint: string): Promise<number> => {
-    const url: string = `URL_PLEASE/${endPoint}`;
+    const back_end_url = process.env.REACT_APP_BACK_END_URL;
+    const url: string = `${back_end_url}/${endPoint}`;
 
     try {
         const requestBody = endPoint == "verify"
@@ -33,7 +34,7 @@ export const authUser = async (email: string, password: string, endPoint: string
         if (!response.ok) {
             throw new Error("Could not even connect to the server");
         }
-      
+
         return response.status as number;
 
     } catch (error: any) { // could not even make the fetch response

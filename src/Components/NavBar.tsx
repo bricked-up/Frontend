@@ -5,9 +5,10 @@ import { useUser } from "../hooks/UserContext";
 import ThemeToggleButton from "./ThemeToggleButton";
 import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
-import { ThemeContext } from "./ThemeProvider"; 
+import { ThemeContext } from "./ThemeProvider";
 import { useTheme } from "@mui/material/styles";
 import logo from '../assets/BrickedUpLogo.png';
+import { useNavigate } from "react-router-dom";
 
 /**
  * NavBar Component for Bricked Up
@@ -37,7 +38,7 @@ const NavBar: React.FC = () => {
         backgroundColor: theme.palette.background.paper,
       }}>
       <div className="logo-container">
-      <img src={logo} alt="Company Logo" className="logo" />
+        <img src={logo} alt="Company Logo" className="logo" />
         <span className="company-name">Bricked Up</span>
       </div>
       <div className="actions">

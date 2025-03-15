@@ -12,7 +12,8 @@ import LandingPage from "./LandingPage";
 
 function App() {
   const theme = useTheme();
-
+  const back_end_url = process.env.BACK_END_URL;
+  console.log(back_end_url);
   return (
     <Router>
       <div className="App">

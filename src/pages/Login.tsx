@@ -32,6 +32,7 @@ const Login = () => {
   const [password, setPassword] = useState("");
   const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
 
+
   //to toggle over login and sign up forms i'm using usestate
   const [isLoginActive, setisLoginActive] = useState(true);
   const [registerAttempt, setRegisterAttempt] = useState(false);
@@ -79,7 +80,7 @@ const Login = () => {
     >
       <NavBar />
       <section className="forms-section">
-        <h1 className="section-title" style={{ color : theme.palette.text.primary}}>Welcome to Bricked Up!</h1>
+        <h1 className="section-title" style={{ color: theme.palette.text.primary }}>Welcome to Bricked Up!</h1>
         <div className="forms">
           {/*dynamically switching between the css classes*/}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
