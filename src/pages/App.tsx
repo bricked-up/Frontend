@@ -9,6 +9,7 @@ import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProttectedRoute";
 import LandingPage from "./LandingPage";
+import Dashboard from "./DashBoard";
 
 function App() {
   const theme = useTheme();
@@ -24,7 +25,7 @@ function App() {
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
           <Route path="*" element={<Page404 />} />
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<ProtectedRoute><Page404 /></ProtectedRoute>} />
+          <Route path="/dashboard" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>
