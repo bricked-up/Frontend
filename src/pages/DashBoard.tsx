@@ -1,20 +1,16 @@
 import * as React from "react";
 import { Box } from "@mui/material";
-import Channels from "../Components/Channels"; // Importing Channels.tsx
+import Channels from "../Components/Channels";
+import Calendar from "../Components//Calendar";
 
 function Dashboard() {
   return (
-    <Box 
-      display="flex" 
-      flexDirection="column" 
-      alignItems="center" 
-      justifyContent="flex-start" 
-      minHeight="100vh" 
-      bgcolor="#2A2A2A" 
-      pt={4} // Moves content slightly down from the top
-    >
-      <Box width="90%"> {/* Controls width for a better layout */}
-        <Channels /> {/* Rendering Channels component */}
+    <Box display="flex" flexDirection="column" alignItems="center" minHeight="100vh" bgcolor="#2A2A2A" pt={80}>
+      <Box width="90%">
+        <Channels />
+      </Box>
+      <Box width="80%" mt={-10} display="flex" justifyContent="center"> {/* Centering Calendar */}
+        <Calendar />
       </Box>
     </Box>
   );
