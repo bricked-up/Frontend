@@ -13,6 +13,7 @@ import {
   Divider,
   Popover,
   Button,
+  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
@@ -38,6 +39,7 @@ function Channels() {
   const [selected, setSelected] = React.useState<number[]>([]);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [taskContent, setTaskContent] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const handleSelectAll = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSelected(event.target.checked ? rows.map((row) => row.id) : []);
@@ -60,6 +62,14 @@ function Channels() {
     setAnchorEl(null);
   };
 
+  const filteredRows = rows.filter(
+    (row) =>
+      row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.status.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.tasks.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      row.publishedBy.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <Box display="flex" justifyContent="center" alignItems="start" minHeight="100vh" bgcolor="#2A2A2A" paddingTop={4}>
       <TableContainer component={Paper} sx={{ width: "90%", backgroundColor: "#1E1E1E", borderRadius: 2 }}>
@@ -69,6 +79,23 @@ function Channels() {
         <Divider sx={{ backgroundColor: "#333" }} />
         <Table>
           <TableHead>
+            <TableRow>
+              <TableCell colSpan={6} sx={{ backgroundColor: "#1A1A1A", padding: 2 }}>
+                <TextField
+                  fullWidth
+                  variant="outlined"
+                  placeholder="Search channels..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  sx={{
+                    backgroundColor: "#1E1E1E",
+                    borderRadius: 1,
+                    input: { color: "#fff" },
+                    fieldset: { borderColor: "#555" },
+                  }}
+                />
+              </TableCell>
+            </TableRow>
             <TableRow sx={{ backgroundColor: "#1A1A1A" }}>
               <TableCell padding="checkbox">
                 <Checkbox
@@ -86,73 +113,69 @@ function Channels() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {rows.map((row) => (
-              <TableRow key={row.id} hover selected={selected.includes(row.id)}>
-                <TableCell padding="checkbox">
-                  <Checkbox
-                    checked={selected.includes(row.id)}
-                    onChange={() => handleSelect(row.id)}
-                    sx={{ color: "#fff" }}
-                  />
+            {filteredRows.length > 0 ? (
+              filteredRows.map((row) => (
+                <TableRow key={row.id} hover selected={selected.includes(row.id)}>
+                  <TableCell padding="checkbox">
+                    <Checkbox
+                      checked={selected.includes(row.id)}
+                      onChange={() => handleSelect(row.id)}
+                      sx={{ color: "#fff" }}
+                    />
+                  </TableCell>
+                  <TableCell>
+                    <span
+                      style={{
+                        backgroundColor: row.status === "Online" ? "#008000" : "#555",
+                        color: "#fff",
+                        padding: "4px 8px",
+                        borderRadius: "12px",
+                        fontSize: "12px",
+                      }}
+                    >
+                      {row.status}
+                    </span>
+                  </TableCell>
+                  <TableCell>
+                    <Box
+                      onClick={() => handleChannelClick(row.name)}
+                      sx={{
+                        display: "inline-block",
+                        padding: "4px 8px",
+                        backgroundColor: "transparent",
+                        color: "#fff",
+                        cursor: "pointer",
+                        borderRadius: "4px",
+                        '&:hover': {
+                          backgroundColor: "#333",
+                        },
+                      }}
+                    >
+                      {row.name}
+                    </Box>
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{row.members}</TableCell>
+                  <TableCell>
+                    <Button
+                      onClick={(event) => handleTaskClick(event, row.taskDescription)}
+                      sx={{ color: "#fff", textTransform: "none" }}
+                    >
+                      {row.tasks}
+                    </Button>
+                  </TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{row.publishedBy}</TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={6} sx={{ color: "#fff", textAlign: "center", padding: 3 }}>
+                  No channels found
                 </TableCell>
-                <TableCell>
-                  <span
-                    style={{
-                      backgroundColor: row.status === "Online" ? "#008000" : "#555",
-                      color: "#fff",
-                      padding: "4px 8px",
-                      borderRadius: "12px",
-                      fontSize: "12px",
-                    }}
-                  >
-                    {row.status}
-                  </span>
-                </TableCell>
-                <TableCell>
-                  <Box
-                    onClick={() => handleChannelClick(row.name)}
-                    sx={{
-                      display: "inline-block",
-                      padding: "4px 8px",
-                      backgroundColor: "transparent",
-                      color: "#fff",
-                      cursor: "pointer",
-                      borderRadius: "4px",
-                      '&:hover': {
-                        backgroundColor: "#333", // Adds hover effect for visibility
-                      },
-                    }}
-                  >
-                    {row.name}
-                  </Box>
-                </TableCell>
-                <TableCell sx={{ color: "#fff" }}>{row.members}</TableCell>
-                <TableCell>
-                  <Button
-                    onClick={(event) => handleTaskClick(event, row.taskDescription)}
-                    sx={{ color: "#fff", textTransform: "none" }}
-                  >
-                    {row.tasks}
-                  </Button>
-                </TableCell>
-                <TableCell sx={{ color: "#fff" }}>{row.publishedBy}</TableCell>
               </TableRow>
-            ))}
+            )}
           </TableBody>
         </Table>
       </TableContainer>
-
-      {/* Popover for Task Description */}
-      <Popover
-        open={Boolean(anchorEl)}
-        anchorEl={anchorEl}
-        onClose={handleClosePopover}
-        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-        transformOrigin={{ vertical: "top", horizontal: "left" }}
-        PaperProps={{ sx: { backgroundColor: "#1E1E1E", padding: 2, borderRadius: 1, color: "#fff" } }}
-      >
-        <Typography>{taskContent}</Typography>
-      </Popover>
     </Box>
   );
 };
