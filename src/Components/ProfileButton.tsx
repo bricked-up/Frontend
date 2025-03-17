@@ -8,6 +8,7 @@ import { useUser } from "../hooks/UserContext";
 const ProfileButton: React.FC = () => {
   const theme = useTheme();
   const { user } = useUser();
+  const navigate = useNavigate();
 
   return (
     <Button
@@ -18,6 +19,7 @@ const ProfileButton: React.FC = () => {
           backgroundColor: theme.palette.primary.dark,
         },
       }}
+      onClick={() => navigate(`/users/${user.email}`)}
     >
       👤
     </Button>
