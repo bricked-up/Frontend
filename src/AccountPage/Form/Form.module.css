@@ -1,0 +1,94 @@
+.Form {
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+  }
+  
+  .Form_box {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.124);
+  }
+  
+  .Form_box_input {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 15px;
+  }
+  
+  .Form_box_input label {
+    font-size: 14px;
+    font-weight: bold;
+  }
+  
+  .Form_box_input input {
+    padding: 10px;
+    border: 1px solid #8752A3;
+    border-radius: 5px;
+  }
+
+  .org_banner {
+    display: flex;
+    justify-content: center;
+}
+  .org_banner ul li {
+    color: hsla(0, 6%, 20%, 0.7);
+    margin-top: 30px;
+    min-height: 20px;
+    display: flex;
+    justify-content: center;
+    border-radius: 6px;
+    cursor: copy;
+    background: linear-gradient(145deg, #866895, #ceabe0);
+    border: 2px solid #6a6a6093;
+  }
+
+  .org_banner ul li:hover {
+    transform: scale(1.05);
+    box-shadow: 3px 3px 0 #6a6a6093;
+    transition: all 0.3s ease;
+
+  }
+  .org-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+  }
+
+   
+  
+.org-item.copy {
+    display: inline-block;
+    padding: 10px;
+    margin: 5px;
+    border-radius: 8px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.save_btn {
+    font-family: Arial, sans-serif;
+    cursor: crosshair;
+    background: linear-gradient(145deg, #f3f5f5, #e1e3e3);
+    border: 2px solid #6a6a6093;
+    padding: 10px 20px;
+    color: rgba(64, 61, 61, 0.719);
+    font-size: 16px;
+    border-radius: 5px;
+    transition: all 0.3s ease;
+    margin-top: 15px;  
+}
+
+.save_btn:hover {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 5px #77a4a44f;
+}
+
+.team-member-image {
+    width: 50px; /* Adjust this value as needed */
+    height: 50px; /* Adjust this value as needed */
+    object-fit: cover; /* Maintains aspect ratio while cropping */
+    border-radius: 50%; /* Optional, makes the image circular */
+  }

@@ -18,11 +18,6 @@ root.render(
         <App />
       </CustomThemeProvider>
     </UserProvider>
-    <UserProvider>
-      <CustomThemeProvider>
-        <App />
-      </CustomThemeProvider>
-    </UserProvider>
   </React.StrictMode>
 );
 
