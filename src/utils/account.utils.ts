@@ -29,7 +29,7 @@ import { User } from "../hooks/UserContext";
  * @returns {number} response code 
  */
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {
-    const URL: string = `URL_FOR_API/${endpoint}`;
+    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
     try {
         const response = await fetch(URL, {
             method: "PATCH",
@@ -64,16 +64,15 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
  * @returns User or null
  */
 export const fetchUserData = async (endpoint: string): Promise<User | null> => {
-    const URL: string = `URL_FOR_APU/${endpoint}`;
+    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
     try {
         const response = await fetch(URL, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
         });
 
         if (!response.ok) { return null }
 
-        return response.body as User;
+        return response.json() as Promise<User>;
 
     } catch (error: any) {
         console.log(error.message);
@@ -108,8 +107,8 @@ export const fetchUserData = async (endpoint: string): Promise<User | null> => {
  * @returns {number} response code 
  */
 export const logout = async (endpoint: string): Promise<number> => {
-    const URL: string = `URL_FOR_API/${endpoint}`;
-
+    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+    
     try {
         const response = await fetch(URL, {
             method: "POST",

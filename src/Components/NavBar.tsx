@@ -41,8 +41,8 @@ const NavBar: React.FC = () => {
         <span className="company-name">Bricked Up</span>
       </div>
       <div className="actions">
-        <HomeButton />
         <ThemeToggleButton toggleTheme={toggleTheme} />
+        <HomeButton />
         {user && user.email ? <ProfileButton /> : <LoginButton />}
       </div>
     </nav>
