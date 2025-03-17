@@ -1,10 +1,13 @@
 import React from "react";
 import { Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
+import { useNavigate } from "react-router-dom";
 import "../css/ProfileButton.css";
+import { useUser } from "../hooks/UserContext";
 
 const ProfileButton: React.FC = () => {
   const theme = useTheme();
+  const { user } = useUser();
 
   return (
     <Button
