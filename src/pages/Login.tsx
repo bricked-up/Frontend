@@ -79,7 +79,7 @@ const Login = () => {
     >
       <NavBar />
       <section className="forms-section">
-        <h1 className="section-title" style={{ color : theme.palette.text.primary}}>Welcome to Bricked Up!</h1>
+        <h1 className="section-title" style={{ color: theme.palette.text.primary }}>Welcome to Bricked Up!</h1>
         <div className="forms">
           {/*dynamically switching between the css classes*/}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
