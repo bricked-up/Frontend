@@ -25,7 +25,7 @@ import { User } from "../hooks/UserContext";
  * }
  * 
  * @param {User} user 
- * @param {string} endpoint  /user 
+ * @param {string} endpoint  user 
  * @returns {number} response code 
  */
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {

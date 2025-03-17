@@ -23,9 +23,11 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
+          <Route path="user/:id" element={<ForgotPwd />} /> {/* TODO: please change to the account Page */}
           <Route path="*" element={<Page404 />} />
           {/* Protected Routes */}
-          <Route path="/dashboard" element={<Dashboard />} />
+          <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+          <Route path="/test" element={<Dashboard />} />
         </Routes>
       </div>
     </Router>
