@@ -12,7 +12,8 @@ import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProttectedRoute";
 import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
-//import AboutUser from "./AboutUser";
+import Layout from "../Components/Layout";
+import AboutUser from "./AboutUser";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -27,16 +28,17 @@ function App() {
         <CssBaseline /> {/* Ensure baseline styles are applied */}
         <Router>
           <div className="App">
-            {/*set up Routes */}
             <Routes>
               {/*route for login and signup */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="*" element={<Page404 />} />
-              {/* Protected Routes */}
-              <Route path="/dashboard" element={<Dashboard />} />
-              {/*<Route path="/about_user" element={<AboutUser />} />*/}
+              {/* Protected Routes that we wrap in layout (sidebar + topbar appears)*/}
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/about_user" element={<AboutUser />} />
+              </Route>
             </Routes>
           </div>
         </Router>

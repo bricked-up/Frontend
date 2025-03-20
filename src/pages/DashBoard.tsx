@@ -9,43 +9,17 @@ function Dashboard() {
   return (
     <Box
       display="flex"
+      flex="1"
       flexDirection="column"
-      minHeight="100vh"
-      bgcolor="#2A2A2A"
+      alignItems="center"
+      paddingTop={"650px"}
+      width="100%"
     >
-      {/* Topbar */}
-      <Box pt={20}>
-        <Topbar />
+      <Box width="90%">
+        <Channels />
       </Box>
-
-      <Box display="flex" flex="1">
-        {/* Sidebar */}
-        <Box
-          flex="0 0 250px"
-          sx={{
-            height: "100vh",
-            zIndex: 100,
-          }}
-        >
-          <Sidebar />
-        </Box>
-
-        {/* Main Content */}
-        <Box
-          display="flex"
-          flexDirection="column"
-          alignItems="center"
-          flex="1"
-          pt={8}
-          width="100%"
-        >
-          <Box width="90%">
-            <Channels />
-          </Box>
-          <Box width="80%" mt={-10} display="flex" justifyContent="center">
-            <Calendar />
-          </Box>
-        </Box>
+      <Box width="80%" mt={-10} display="flex" justifyContent="center">
+        <Calendar />
       </Box>
     </Box>
   );

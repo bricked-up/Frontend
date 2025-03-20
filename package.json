@@ -26,6 +26,7 @@
     "react": "^19.0.0",
     "react-big-calendar": "^1.18.0",
     "react-dom": "^19.0.0",
+    "react-dropzone": "^14.3.8",
     "react-password-validation": "github:StevenCreates/react-password-validation",
     "react-pro-sidebar": "^1.1.0",
     "react-router-dom": "^7.2.0",

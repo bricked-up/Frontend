@@ -9,13 +9,25 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 
-const Topbar: React.FC = () => {
+interface TopbarProps {
+  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+}
+const Topbar: React.FC<{
+  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
 
   return (
-    <Box display="flex" justifyContent="space-between" p={2}>
+    <Box
+      display="flex"
+      justifyContent="space-between"
+      p={2}
+      height="64px"
+      alignItems="center"
+    >
       {/* SEARCH BAR */}
       <Box
         display="flex"
