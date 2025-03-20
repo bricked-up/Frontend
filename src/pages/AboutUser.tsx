@@ -1,9 +1,23 @@
 import React, { useState, useMemo, useCallback, useContext } from "react";
-// import Image from "next/image"
 import { useUser } from "../hooks/UserContext";
-//import { useDropzone } from "react-dropzone";
 import Style from "../AccountPage/AboutUser.module.css";
 import Form from "../AccountPage/Form";
+
+/**
+ * AboutUser Component
+ *
+ * This component represents the profile settings page where users can:
+ * - View and change their profile picture.
+ * - Modify account details through a form.
+ *
+ * @component
+ * @example
+ * <AboutUser />
+ *
+ * @returns {JSX.Element} The AboutUser profile settings component.
+ *
+ * TO D0: Definitely change some design / ask about adding more things/too simple??
+ */
 
 const AboutUser = () => {
   const { user, setUser } = useUser();
@@ -18,10 +32,6 @@ const AboutUser = () => {
     <div className={Style.account}>
       <div className={Style.account_info}>
         <h1> Profile Settings</h1>
-        <p>
-          You can set preferred display name, create your profile URL and manage
-          other personal settings.
-        </p>
       </div>
 
       <div className={Style.account_box}>

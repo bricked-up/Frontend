@@ -25,6 +25,16 @@ interface SidebarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+/**
+ * Sidebar Menu Item Component
+ *
+ * Represents a single menu item in the sidebar.
+ *
+ * @component
+ * @param {ItemProps} props - The component props.
+ * @returns {JSX.Element} A clickable sidebar item.
+ */
+
 const Item: React.FC<ItemProps> = ({
   title,
   to,
@@ -61,97 +71,124 @@ const Item: React.FC<ItemProps> = ({
   );
 };
 
+/**
+ * Sidebar Component
+ *
+ * A collapsible sidebar that contains navigation items.
+ *
+ * @component
+ * @param {SidebarProps} props - The component props.
+ * @returns {JSX.Element} The Sidebar component.
+ */
+
 const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState<string>("Dashboard");
 
   return (
-    <Drawer
-      open={isSidebar}
-      onClose={() => setIsSidebar(false)}
-      variant="persistent"
-      sx={{
-        width: isSidebar ? 250 : 0,
-        flexShrink: 0,
-        "& .MuiDrawer-paper": {
-          width: isSidebar ? 250 : 0,
-          backgroundColor: colors.primary[400],
-          color: colors.grey[100],
-          transition: "width 0.3s ease",
-        },
-      }}
-    >
-      {/* Sidebar Header */}
-      <Box
+    <>
+      <Drawer
+        open={isSidebar}
+        onClose={() => setIsSidebar(false)}
+        variant="persistent"
         sx={{
-          padding: "10px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
+          width: isSidebar ? 250 : 0,
+          flexShrink: 0,
+          "& .MuiDrawer-paper": {
+            width: isSidebar ? 250 : 0,
+            backgroundColor: colors.primary[400],
+            color: colors.grey[100],
+            transition: "width 0.3s ease",
+          },
         }}
       >
-        <Typography variant="h5" color={colors.grey[100]}>
-          App Name
-        </Typography>
-        <IconButton onClick={() => setIsSidebar(false)}>
+        <Box
+          sx={{
+            padding: "10px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
+          <Typography variant="h5" color={colors.grey[100]}>
+            Bricked Up
+          </Typography>
+          <IconButton onClick={() => setIsSidebar(false)}>
+            <MenuOutlinedIcon />
+          </IconButton>
+        </Box>
+
+        <Box>
+          <Item
+            title="Dashboard"
+            to="/dashboard"
+            icon={<HomeOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="View Teams"
+            to="/teams"
+            icon={<PeopleOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="Create Team"
+            to="/contacts"
+            icon={<ContactsOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="Change Profile"
+            to="/about_user"
+            icon={<PersonOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="Activity"
+            to="/activity"
+            icon={<ReceiptOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="Calendar"
+            to="/calendar"
+            icon={<CalendarTodayOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="FAQ Page"
+            to="/faq"
+            icon={<HelpOutlineOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+        </Box>
+      </Drawer>
+
+      {!isSidebar && (
+        <IconButton
+          onClick={() => setIsSidebar(true)}
+          sx={{
+            position: "absolute",
+            top: 14,
+            left: 10,
+            backgroundColor: colors.primary[400],
+            color: colors.grey[100],
+            zIndex: 1300,
+            "&:hover": { backgroundColor: colors.primary[300] },
+          }}
+        >
           <MenuOutlinedIcon />
         </IconButton>
-      </Box>
-
-      {/* Sidebar Items */}
-      <Box>
-        <Item
-          title="Dashboard"
-          to="/dashboard"
-          icon={<HomeOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="View Teams"
-          to="/teams"
-          icon={<PeopleOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="Create Team"
-          to="/contacts"
-          icon={<ContactsOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="Change Profile"
-          to="/about_user"
-          icon={<PersonOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="Activity"
-          to="/activity"
-          icon={<ReceiptOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="Calendar"
-          to="/calendar"
-          icon={<CalendarTodayOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-        <Item
-          title="FAQ Page"
-          to="/faq"
-          icon={<HelpOutlineOutlinedIcon />}
-          selected={selected}
-          setSelected={setSelected}
-        />
-      </Box>
-    </Drawer>
+      )}
+    </>
   );
 };
 

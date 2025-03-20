@@ -6,6 +6,21 @@ interface HeaderProps {
   subtitle: string;
 }
 
+/**
+ * Header Component
+ *
+ * Displays a title and subtitle for a page or section.
+ *
+ * @component
+ * @example
+ *
+ * @param {HeaderProps} props - The component props.
+ * @param {string} props.title - The main title text.
+ * @param {string} props.subtitle - The subtitle text.
+ *
+ * @returns {JSX.Element} The Header component.
+ */
+
 const Header = ({ title, subtitle }: HeaderProps) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);

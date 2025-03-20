@@ -9,6 +9,21 @@ interface OrgMember {
   position: string;
 }
 
+/**
+ * Form Component
+ *
+ * This component allows users to update their profile information.
+ * - Users can change their display name.
+ * - Email is displayed as read-only.
+ * - Profile data is stored in `localStorage` when saved.
+ *
+ * @component
+ * @example
+ * <Form />
+ *
+ * @returns {JSX.Element} The profile update form.
+ */
+
 const Form = () => {
   const { user, setUser } = useUser(); // getting user from UserContext
 
@@ -19,6 +34,11 @@ const Form = () => {
     }
   };
 
+  /**
+   * Handles username change.
+   *
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The input change event.
+   */
   const handleSaveChanges = () => {
     localStorage.setItem("user", JSON.stringify(user)); // Save to localStorage
     alert("Changes saved successfully!");
@@ -49,38 +69,6 @@ const Form = () => {
                 <EmailOutlined />
               </div>
               <input type="text" value={user.email || "Email*"} readOnly />
-            </div>
-          </div>
-
-          <div className={Style.Form_box_input}>
-            <label htmlFor="org">Organisations</label>
-            <div className={Style.org_banner}>
-              <ul className="org-list">
-                {(user.org && user.org.length > 0
-                  ? user.org
-                  : ["No current organisation"]
-                ).map((org, index) => (
-                  <li key={index} className="org-item copy">
-                    {org}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          </div>
-
-          <div className={Style.Form_box_input}>
-            <label htmlFor="projects">Projects</label>
-            <div className={Style.org_banner}>
-              <ul className="org-list">
-                {(user.teams && user.teams.length > 0
-                  ? user.teams
-                  : ["No current projects"]
-                ).map((project, index) => (
-                  <li key={index} className="org-item copy">
-                    {project}
-                  </li>
-                ))}
-              </ul>
             </div>
           </div>
 

@@ -12,6 +12,27 @@ import SearchIcon from "@mui/icons-material/Search";
 interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+/**
+ * The topbar component
+ *
+ * This component represents the top navigation bar of our app.
+ * It contains:
+ * - A **search bar** to find specific content.
+ * - A **theme toggle button** for switching between light and dark modes.
+ * - Icons for **notifications, settings, and user profile**. (might change notifications)
+ *
+ * @component
+ * @example
+ * <Topbar setIsSidebar={setIsSidebar} setIsCollapsed={setIsCollapsed} />
+ *
+ * @param {Object} props - The component props.
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsSidebar - Function to toggle sidebar visibility.
+ * @param {React.Dispatch<React.SetStateAction<boolean>>} props.setIsCollapsed - Function to collapse or expand the sidebar.
+ *
+ * @returns {JSX.Element} The Topbar component.
+ */
+
 const Topbar: React.FC<{
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
@@ -31,7 +52,12 @@ const Topbar: React.FC<{
       {/* SEARCH BAR */}
       <Box
         display="flex"
-        sx={{ backgroundColor: colors.primary[400], borderRadius: "3px" }}
+        sx={{
+          backgroundColor: colors.primary[400],
+          borderRadius: "3px",
+          ml: 5,
+          paddingX: 1,
+        }}
       >
         <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
         <IconButton type="button" sx={{ p: 1 }}>
