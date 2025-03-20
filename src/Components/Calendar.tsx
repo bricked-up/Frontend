@@ -25,6 +25,12 @@ const events = [
 function CustomCalendar() {
   const navigate = useNavigate();
 
+  const handleEventClick = (event: any) => {
+    if (event.channel) {
+      navigate(`/channels/${event.channel}`);
+    }
+  };
+
   return (
     <Box width="90%" bgcolor="#1E1E1E" padding={2} borderRadius={2} mt={4}>
       <Typography variant="h6" sx={{ color: "#fff", textAlign: "center", paddingBottom: 2 }}>
@@ -36,12 +42,10 @@ function CustomCalendar() {
         events={events}
         startAccessor="start"
         endAccessor="end"
-        style={{ height: 500, color: "#fff" }}
-        onSelectEvent={(event) => navigate(`/channels/${event.channel}`)}
-
-        // Allow view switching: day, week, month
+        style={{ height: 500, color: "white" }} // Fixed color styling
+        onSelectEvent={handleEventClick}
         views={['month', 'week', 'day']}
-        defaultView="month" // Start with the month view
+        defaultView="month"
 
         // Fix for showing only days of the current month
         dayPropGetter={(date) => {
@@ -49,7 +53,7 @@ function CustomCalendar() {
           if (date.getMonth() !== today.getMonth()) {
             return {
               style: {
-                visibility: 'hidden', // Hide days that are not part of the current month
+                display: 'none', // Hide days that are not part of the current month
               },
             };
           }

@@ -66,7 +66,7 @@ function Channels() {
     setAnchorEl(null);
   };
 
-  // Filters the rows based on the search input
+  
   const filteredRows = rows.filter(
     (row) =>
       row.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
