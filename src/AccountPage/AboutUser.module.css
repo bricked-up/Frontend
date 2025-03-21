@@ -1,0 +1,75 @@
+.account {
+  font-family: Nunito, sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  
+  .account_info {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .account_box {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 20px;
+    background: #f9f9f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    max-width: 500px;
+    width: 100%;
+  }
+  
+  .account_box_img {
+    position: relative;
+    flex-shrink: 0; /* Prevent shrinking */
+    width: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .account_box_img img {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #ddd;
+  }
+  
+  .account_box_img_para {
+    color: hsla(0, 6%, 20%, 0.7);
+    margin-top: 8px;
+    padding: 5px 10px;
+    font-size: 14px;
+    color: hsla(0, 6%, 20%, 0.7);
+    cursor: text;
+    background: linear-gradient(145deg, #8752A3, #ceabe0);
+    border: 2px solid #6a6a6093;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .account_box_img_para:hover {
+    transform: scale(1.02);
+    letter-spacing: 0.7px;
+    transition: all 0.3s ease;
+    }
+  
+  .account_box_img_para:not(:hover) {
+      transition: letter-spacing 0.3s ease; 
+  }
+  .account_box_form {
+    flex-grow: 1;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
