@@ -33,11 +33,14 @@ function App() {
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
+              <Route path="user/:id" element={<ForgotPwd />} /> {/* TODO: please change to the account Page */}
               <Route path="*" element={<Page404 />} />
               {/* Protected Routes that we wrap in layout (sidebar + topbar appears)*/}
               <Route element={<Layout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/test" element={<Dashboard />} />
+                <Route path="/about_user" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
+                <Route path="/test_user" element={<AboutUser />} />
               </Route>
             </Routes>
           </div>

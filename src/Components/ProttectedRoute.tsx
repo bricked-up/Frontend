@@ -7,7 +7,7 @@ import { JSX } from "react";
  * allow them to go to the child otherwise it redirects to the login page
  * 
  * @example
- * <Route path="/dashboard" element={<ProtectedRoute><Dashbour /></ProtectedRoute>} />
+ * <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
  * <Route path="/Edit-Account" element={<ProtectedRoute><Edit-Account /></ProtectedRoute>} />
  * <Route path="/Teans" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
  * 
