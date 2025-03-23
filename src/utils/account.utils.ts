@@ -82,53 +82,9 @@ export const fetchUserData = async (endpoint: string): Promise<User | null> => {
 }
 
 /**
- * when the user logsout something on their account this function should be called first. 
- * If it is successuful, the function will automatically remove the user from localStorage which
- * is how variables are stored persitently. Caller of this function must reload the page however 
- * after use
- * 
- * 200 - OK
- * 
- * 400 - invallid request
- * 
- * 401 - unauthorised
- * 
- * 405 - method not allowed
- * 
- * 500 - backend issues (exact error in the body of the response)
- * 
- * @example 
- * 
- * const oncClick = async (endpoint: string) => {
- *  if (await logout(endpoint) !== 200) { console.log("Saving unsucesfull"); return; }
- *      <Link to="page"/> // or smth like that, 
- * }
- *
- * @param {string} endpoint Chose LOGOUT to logout or DELETE
- * @returns {number} response code 
+ *  just click this and it will remove user data from localstorage and remove cookies
  */
-export const logout = async (endpoint: string): Promise<number> => {
-    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
-
-    try {
-        const response = await fetch(URL, {
-            method: "POST",
-            headers: { 'Content-Type': 'application/json' },
-        });
-
-        if (!response.ok) {
-            return 500;
-        }
-
-        localStorage.removeItem("user");
-
-        document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
-
-        // Redirect to login page
-        return response.status as number
-
-    } catch (error: any) {
-        console.log(error.message);
-        return 500;
-    }
+export const logout = () => {
+    localStorage.removeItem("user");
+    document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
 };
