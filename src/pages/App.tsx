@@ -19,15 +19,29 @@ function App() {
       <div className="App">
         {/*set up Routes */}
         <Routes>
-          {/*route for login and signup */}
           <Route path="/" element={<LandingPage />} />
+          {/*route for login and signup */}
           <Route path="/login" element={<Login />} />
           <Route path="/forgot_pwd" element={<ForgotPwd />} />
-          <Route path="user/:id" element={<ForgotPwd />} /> {/* TODO: please change to the account Page */}
-          <Route path="*" element={<Page404 />} />
+          {/* user related routes */}
+          <Route path="/:userId" element={<ForgotPwd />}>
+            {/* all of these routes are subroutes of :userId*/}
+            <Route path="organizations/:orgId" />
+            <Route path="projects/:projectId" />
+          </Route>
+          {/* project related routes */}
+          <Route path="/:projectId">
+            <Route path="users/:userId" />
+          </Route>
+          {/* organization related routes */}
+          <Route path="/:orgId">
+            <Route path="users/:userId" />
+            <Route path="projects/:projectId" />
+          </Route>
           {/* Protected Routes */}
           <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/test" element={<Dashboard />} />
+          {/* routes for 404 and server errors */}
+          <Route path="*" element={<Page404 />} />
         </Routes>
       </div>
     </Router>
