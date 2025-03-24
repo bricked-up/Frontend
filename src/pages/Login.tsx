@@ -146,7 +146,17 @@ const Login = () => {
                 </div>
               </fieldset>
 
-              <button type="submit" className="btn-login">
+              <button type="submit" className="btn-login"
+                onClick={async () => {
+                  const response = await authUser(account, password, "login")
+                  if (response === 500) {
+                    navigate("/500");
+                  }
+                  if (response === 200) {
+                    setUser({ ...user, email: account });
+                    navigate("/dashboard");
+                  }
+                }}>
                 Login
               </button>
             </form>
@@ -216,7 +226,6 @@ const Login = () => {
               </fieldset>
               <button type="submit" className="btn-signup"
                 onClick={async () => {
-                  console.log(account);
                   const response = await authUser(account, password, "signup")
                   if (response === 500) {
                     navigate("/500");
