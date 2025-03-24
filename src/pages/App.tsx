@@ -20,28 +20,53 @@ function App() {
 
   return (
     <ColorModeContext.Provider value={colorMode}>
-      {" "}
-      {/* Wrap the app with ColorModeContext.Provider */}
       <ThemeProvider theme={theme}>
-        {" "}
-        {/* Pass the theme to ThemeProvider */}
-        <CssBaseline /> {/* Ensure baseline styles are applied */}
+        <CssBaseline />
         <Router>
           <div className="App">
             <Routes>
-              {/*route for login and signup */}
+              {/* Public Routes */}
               <Route path="/" element={<LandingPage />} />
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
-              <Route path="user/:id" element={<ForgotPwd />} /> {/* TODO: please change to the account Page */}
-              <Route path="*" element={<Page404 />} />
-              {/* Protected Routes that we wrap in layout (sidebar + topbar appears)*/}
-              <Route element={<Layout />}>
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/test" element={<Dashboard />} />
-                <Route path="/about_user" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
-                <Route path="/test_user" element={<AboutUser />} />
+
+              {/* Dev version nested dynamic routes */}
+              <Route path="/:userId" element={<ForgotPwd />}>
+                <Route path="organizations/:orgId" />
+                <Route path="projects/:projectId" />
               </Route>
+              <Route path="/:projectId">
+                <Route path="users/:userId" />
+              </Route>
+              <Route path="/:orgId">
+                <Route path="users/:userId" />
+                <Route path="projects/:projectId" />
+              </Route>
+
+              {/* Protected Routes wrapped in layout */}
+              <Route element={<Layout />}>
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/about_user"
+                  element={
+                    <ProtectedRoute>
+                      <AboutUser />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/testd" element={<Dashboard />} />
+                <Route path="/testau" element={<AboutUser />} />
+              </Route>
+
+              {/* Catch-all for 404s */}
+              <Route path="*" element={<Page404 />} />
             </Routes>
           </div>
         </Router>
