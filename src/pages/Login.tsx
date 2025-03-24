@@ -26,9 +26,14 @@ import usePasswordValidation from "../hooks/usePasswordValidation";
 import { red } from "@mui/material/colors";
 import NavBar from "../Components/NavBar";
 import { useTheme } from "@mui/material/styles";
+import authUser from "../utils/loginPage.utils";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../hooks/UserContext";
 
 // typescript file for Log In & Sign Up page
 const Login = () => {
+  const { user, setUser } = useUser();
+
   const [password, setPassword] = useState("");
   const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
 
@@ -38,6 +43,8 @@ const Login = () => {
 
   const [account, setAccount] = useState(""); //for checking if user has input an email for verification
   const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const toggle = () => {
     setisLoginActive(!isLoginActive);
@@ -78,6 +85,7 @@ const Login = () => {
       }}
     >
       <NavBar />
+      <p>{account}</p>
       <section className="forms-section">
         <h1 className="section-title" style={{ color: theme.palette.text.primary }}>Welcome to Bricked Up!</h1>
         <div className="forms">
@@ -168,7 +176,7 @@ const Login = () => {
                 </legend>
                 <div className="input-block">
                   <label htmlFor="signup-email">E-mail</label>
-                  <input id="signup-email" type="email" required />
+                  <input id="signup-email" type="email" onChange={(e) => setAccount(e.target.value)} required />
                 </div>
                 <div className="input-block">
                   <label htmlFor="signup-password">Password</label>
@@ -206,7 +214,19 @@ const Login = () => {
                   </ul>
                 )}
               </fieldset>
-              <button type="submit" className="btn-signup">
+              <button type="submit" className="btn-signup"
+                onClick={async () => {
+                  console.log(account);
+                  const response = await authUser(account, password, "signup")
+                  if (response !== 200) {
+                    console.log(response);
+                    navigate("/500");
+                  }
+                  if (response === 200) {
+                    // setUser() TODO: set the user and maybe create a init file
+                    navigate("/404");
+                  }
+                }}>
                 Register
               </button>
             </form>

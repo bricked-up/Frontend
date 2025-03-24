@@ -4,32 +4,24 @@ import NavBar from "../Components/NavBar";
 import { useTheme } from "@mui/material/styles";
 
 /**
- *this component displays the 404 error message when the user navigates to a non-existing page.
+ * This component displays the 404 error message when the user navigates to a non-existing page.
  *
- * It will handle undefined routes and provide a link (through a button) for the user to return
+ * It handles undefined routes and provides a link (through a button) for the user to return
  * to the landing page.
  *
  * @component
  * @example
- * return(
- *  <PageNotFound />
+ * return (
+ *   <Page404 />
  * )
- *
  */
 const Page404: React.FC = () => {
   const theme = useTheme();
+
   return (
     <div
       style={{
         backgroundColor: theme.palette.background.default,
-        minHeight: "100vh",
-        width: "100vw",
-      }}
-    >
-      <NavBar />
-      <div>
-        <GhostMouse />
-
         <div
           className="box"
           style={{ backgroundColor: theme.palette.primary.main }}
@@ -58,7 +50,6 @@ const Page404: React.FC = () => {
             </div>
             <div className="box__ghost-shadow"></div>
           </div>
-
           <div className="box__description">
             <div
               className="box__description-container"

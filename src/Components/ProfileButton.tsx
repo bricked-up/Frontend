@@ -14,9 +14,14 @@ const ProfileButton: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Box
-      onMouseEnter={() => setIsHovered(true)}
-      sx={{ position: "relative", display: "inline-block" }}
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: theme.palette.secondary.main,
+        "&:hover": {
+          backgroundColor: theme.palette.neutral.dark,
+        },
+      }}
     >
       <Button
         variant="contained"

@@ -1,8 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.svg";
 import "../css/App.css";
-import { useTheme } from "@mui/material/styles";
-import ThemeToggleButton from "../Components/ThemeToggleButton";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
@@ -16,6 +13,7 @@ import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
 
 function App() {
+
   const [theme, colorMode] = useMode();
 
   return (
