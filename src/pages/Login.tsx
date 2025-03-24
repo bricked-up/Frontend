@@ -1,3 +1,15 @@
+
+import { specialChars } from "@testing-library/user-event";
+import React, { useState } from "react";
+//using a custom react hook for validating password confirmation
+import usePasswordValidation from "../hooks/usePasswordValidation";
+import { red } from "@mui/material/colors";
+import NavBar from "../Components/NavBar";
+import { useTheme } from "@mui/material/styles";
+import authUser from "../utils/loginPage.utils";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../hooks/UserContext";
+
 /**
  * provides the UI for logging into an existing account or signing up for a new account.
  *
@@ -19,18 +31,6 @@
  *  <Login />
  * );
  */
-import { specialChars } from "@testing-library/user-event";
-import React, { useState } from "react";
-//using a custom react hook for validating password confirmation
-import usePasswordValidation from "../hooks/usePasswordValidation";
-import { red } from "@mui/material/colors";
-import NavBar from "../Components/NavBar";
-import { useTheme } from "@mui/material/styles";
-import authUser from "../utils/loginPage.utils";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../hooks/UserContext";
-
-// typescript file for Log In & Sign Up page
 const Login = () => {
   const { user, setUser } = useUser();
 
