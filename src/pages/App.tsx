@@ -29,8 +29,11 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               {/* user related routes */}
-              <Route path="/:userId" element={<ForgotPwd />}>
+              <Route path="/:userId" element={<AboutUser />}>
                 {/* all of these routes are subroutes of :userId*/}
+                <Route element={<Layout />}>
+                  <Route path="about" element={<AboutUser />} />
+                </Route>
                 <Route path="organizations/:orgId" />
                 <Route path="projects/:projectId" />
               </Route>
@@ -44,14 +47,17 @@ function App() {
                 <Route path="projects/:projectId" />
               </Route>
               {/* Protected Routes */}
-              <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route path="/test" element={<Dashboard />}></Route>
+              </Route>
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
             </Routes>
           </div>
         </Router>
-      </ThemeProvider>
-    </ColorModeContext.Provider>
+      </ThemeProvider >
+    </ColorModeContext.Provider >
 
   );
 }

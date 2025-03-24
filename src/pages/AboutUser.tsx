@@ -2,6 +2,7 @@ import React, { useState, useMemo, useCallback, useContext } from "react";
 import { useUser } from "../hooks/UserContext";
 import Style from "../AccountPage/AboutUser.module.css";
 import Form from "../AccountPage/Form";
+import { useParams } from "react-router-dom";
 
 /**
  * AboutUser Component

@@ -224,7 +224,7 @@ const Login = () => {
                   }
                   if (response === 200) {
                     // setUser() TODO: set the user and maybe create a init file
-                    navigate("/404");
+                    navigate("/dashboard");
                   }
                 }}>
                 Register
