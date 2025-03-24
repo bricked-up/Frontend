@@ -218,12 +218,11 @@ const Login = () => {
                 onClick={async () => {
                   console.log(account);
                   const response = await authUser(account, password, "signup")
-                  if (response !== 200) {
-                    console.log(response);
+                  if (response === 500) {
                     navigate("/500");
                   }
                   if (response === 200) {
-                    // setUser() TODO: set the user and maybe create a init file
+                    setUser({ ...user, email: account });
                     navigate("/dashboard");
                   }
                 }}>
