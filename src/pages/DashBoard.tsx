@@ -1,3 +1,8 @@
+import * as React from "react";
+import { Box } from "@mui/material";
+import Channels from "../Components/Channels";
+import Calendar from "../Components/Calendar";
+
 /**
  * The dashboard component
  *
@@ -16,12 +21,6 @@
  *
  * @returns {JSX.Element} The Dashboard component.
  */
-
-import * as React from "react";
-import { Box } from "@mui/material";
-import Channels from "../Components/Channels";
-import Calendar from "../Components/Calendar";
-
 function Dashboard() {
   return (
     <Box
