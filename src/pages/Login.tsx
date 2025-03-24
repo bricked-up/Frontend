@@ -1,3 +1,15 @@
+
+import { specialChars } from "@testing-library/user-event";
+import React, { useState } from "react";
+//using a custom react hook for validating password confirmation
+import usePasswordValidation from "../hooks/usePasswordValidation";
+import { red } from "@mui/material/colors";
+import NavBar from "../Components/NavBar";
+import { useTheme } from "@mui/material/styles";
+import authUser from "../utils/loginPage.utils";
+import { useNavigate } from "react-router-dom";
+import { useUser } from "../hooks/UserContext";
+
 /**
  * provides the UI for logging into an existing account or signing up for a new account.
  *
@@ -19,18 +31,6 @@
  *  <Login />
  * );
  */
-import { specialChars } from "@testing-library/user-event";
-import React, { useState } from "react";
-//using a custom react hook for validating password confirmation
-import usePasswordValidation from "../hooks/usePasswordValidation";
-import { red } from "@mui/material/colors";
-import NavBar from "../Components/NavBar";
-import { useTheme } from "@mui/material/styles";
-import authUser from "../utils/loginPage.utils";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../hooks/UserContext";
-
-// typescript file for Log In & Sign Up page
 const Login = () => {
   const { user, setUser } = useUser();
 
@@ -146,7 +146,17 @@ const Login = () => {
                 </div>
               </fieldset>
 
-              <button type="submit" className="btn-login">
+              <button type="submit" className="btn-login"
+                onClick={async () => {
+                  const response = await authUser(account, password, "login")
+                  if (response === 500) {
+                    navigate("/500");
+                  }
+                  if (response === 200) {
+                    setUser({ ...user, email: account });
+                    navigate("/dashboard");
+                  }
+                }}>
                 Login
               </button>
             </form>
@@ -216,14 +226,12 @@ const Login = () => {
               </fieldset>
               <button type="submit" className="btn-signup"
                 onClick={async () => {
-                  console.log(account);
                   const response = await authUser(account, password, "signup")
-                  if (response !== 200) {
-                    console.log(response);
+                  if (response === 500) {
                     navigate("/500");
                   }
                   if (response === 200) {
-                    // setUser() TODO: set the user and maybe create a init file
+                    setUser({ ...user, email: account });
                     navigate("/dashboard");
                   }
                 }}>
