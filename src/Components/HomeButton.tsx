@@ -2,6 +2,7 @@ import React from "react";
 import { Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import "../css/HomeButton.css";
+import { useNavigate } from "react-router-dom";
 
 /**
  * A button component that navigates the user to the home page.
@@ -13,6 +14,7 @@ import "../css/HomeButton.css";
  */
 const HomeButton: React.FC = () => {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <Button
@@ -20,11 +22,11 @@ const HomeButton: React.FC = () => {
       sx={{
         backgroundColor: theme.palette.secondary.main,
         "&:hover": {
-          backgroundColor: theme.palette.neutral.dark,
+          backgroundColor: theme.palette.primary.dark,
         },
       }}
       onClick={() => {
-        window.location.href = "/";
+        navigate("/");
       }}
     >
       Home

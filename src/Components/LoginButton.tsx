@@ -22,7 +22,7 @@ const LoginButton: React.FC = () => {
       sx={{
         backgroundColor: theme.palette.secondary.main,
         "&:hover": {
-          backgroundColor: theme.palette.neutral.dark,
+          backgroundColor: theme.palette.primary.dark,
         },
       }}
       onClick={() => navigate("/login")} // navigate to the login page when clicked

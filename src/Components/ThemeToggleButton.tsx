@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { ColorModeContext } from '../utils/theme'; // Use the new context from your theme file
+import { ColorModeContext } from '../theme'; // Use the new context from your theme file
 import { useTheme } from '@mui/material/styles';
 import "../css/ThemeToggleButton.css";
 

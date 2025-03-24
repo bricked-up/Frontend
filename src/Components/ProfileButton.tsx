@@ -14,25 +14,26 @@ const ProfileButton: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: theme.palette.secondary.main,
-        "&:hover": {
-          backgroundColor: theme.palette.neutral.dark,
-        },
-      }}
-    >
+    <Box>
       <Button
         variant="contained"
         sx={{
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: theme.palette.secondary.main,
           "&:hover": {
             backgroundColor: theme.palette.primary.dark,
           },
         }}
-        onClick={() => navigate(`/users/${user.email}`)}
       >
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            "&:hover": {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          }}
+          onClick={() => navigate(`/users/${user.email}`)}
+        />
         👤
       </Button>
 

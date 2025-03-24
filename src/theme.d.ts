@@ -7,8 +7,8 @@ declare module '@mui/material/styles' {
     };
     neutral: {
       main: string;
-      dark: string; 
-      light: string; 
+      dark: string;
+      light: string;
     };
   }
   interface PaletteOptions {
@@ -17,8 +17,8 @@ declare module '@mui/material/styles' {
     };
     neutral?: {
       main?: string;
-      dark?: string;  
-      light?: string; 
+      dark?: string;
+      light?: string;
     };
   }
 }
