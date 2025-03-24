@@ -1,33 +1,28 @@
 import React, { useContext } from 'react';
-import { ThemeContext } from './ThemeProvider';
+import { ColorModeContext } from '../utils/theme'; // Use the new context from your theme file
 import { useTheme } from '@mui/material/styles';
-import { Button } from '@mui/material';        
-import "../css/ThemeToggleButton.css"; 
+import "../css/ThemeToggleButton.css";
 
 /**
- * A button component that toggles the application's theme between light and dark modes.
- * Changing the colors of background, text and buttons in the application.
+ * A toggle switch component that toggles the application's theme between light and dark modes.
+ * Changing the colors of background, text, and buttons throughout the application.
  *
  * @component
- * 
- * @returns {JSX.Element}
- * 
  * @example
- * <ThemeToggleButton toggleTheme={toggleTheme} />
- * 
+ * <ThemeToggleButton />
+ *
+ * @returns {JSX.Element} The rendered theme toggle switch.
  */
-interface ThemeToggleButtonProps {
-  toggleTheme: () => void;
-}
+const ThemeToggleButton: React.FC = () => {
+  const theme = useTheme();
+  const colorMode = useContext(ColorModeContext); // Access the new color mode context
 
-const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ toggleTheme }) => {
-  const { mode } = useContext(ThemeContext);
   return (
     <input
       type="checkbox"
       className="theme-checkbox"
-      onChange={toggleTheme}
-      checked={mode === "dark"}
+      onChange={colorMode.toggleColorMode}  // Use the toggleColorMode function from the new context
+      checked={theme.palette.mode === "dark"} // Determine checked state based on the theme mode
     />
   );
 };
