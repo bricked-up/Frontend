@@ -44,13 +44,11 @@ const ProfileButton: React.FC = () => {
             onMouseLeave={() => setIsHovered(false)}
             variant="contained"
             color="error"
-            onClick={async () => {
-              if (await logout("/logout") === 500) {
-                navigate("/505");
-                return;
-              }
+            onClick={() => {
+              logout();
               window.location.href = "/";
-            }}
+            }
+            }
           >
             Logout
           </Button>
