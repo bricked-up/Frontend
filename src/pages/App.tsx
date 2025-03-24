@@ -1,8 +1,5 @@
 import React from "react";
-import logo from "../assets/logo.svg";
 import "../css/App.css";
-import { useTheme } from "@mui/material/styles";
-import ThemeToggleButton from "../Components/ThemeToggleButton";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Login from "./Login";
 import ForgotPwd from "./forgot_pwd";
@@ -12,7 +9,6 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 
 function App() {
-  const theme = useTheme();
 
   return (
     <Router>

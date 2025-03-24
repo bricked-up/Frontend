@@ -10,9 +10,9 @@ const ProfileButton: React.FC = () => {
     <Button
       variant="contained"
       sx={{
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: theme.palette.secondary.main,
         "&:hover": {
-          backgroundColor: theme.palette.primary.dark,
+          backgroundColor: theme.palette.neutral.dark,
         },
       }}
     >
