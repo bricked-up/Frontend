@@ -6,6 +6,7 @@ import "../css/ProfileButton.css";
 import { useUser } from "../hooks/UserContext";
 import { logout } from "../utils/account.utils";
 
+
 const ProfileButton: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();

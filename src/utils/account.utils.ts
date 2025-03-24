@@ -83,6 +83,31 @@ export const fetchUserData = async (endpoint: string): Promise<User | null> => {
 /**
  *  just click this and it will remove user data from localstorage and remove cookies
  */
+export const logout = async (endpoint: string): Promise<number> => {
+    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+
+    try {
+        const response = await fetch(URL, {
+            method: "POST",
+            headers: { 'Content-Type': 'application/json' },
+        });
+
+        if (!response.ok) {
+            return 500;
+        }
+
+        localStorage.removeItem("user");
+
+        document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+
+        // Redirect to login page
+        return response.status as number
+
+    } catch (error: any) {
+        console.log(error.message);
+        return 500;
+    }
+  
 export const logout = () => {
     localStorage.removeItem("user");
     document.cookie = 'session=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';

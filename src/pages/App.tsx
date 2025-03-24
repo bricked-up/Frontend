@@ -1,16 +1,25 @@
 import React from "react";
 import "../css/App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
 import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProttectedRoute";
 import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
+import Layout from "../Components/Layout";
+import AboutUser from "./AboutUser";
 
 function App() {
 
+  const [theme, colorMode] = useMode();
+
   return (
+    <ColorModeContext.Provider value={colorMode}>
+      <ThemeProvider theme={theme}>
+        <CssBaseline />
     <Router>
       <div className="App">
         {/*set up Routes */}
@@ -41,6 +50,9 @@ function App() {
         </Routes>
       </div>
     </Router>
+         </ThemeProvider>
+    </ColorModeContext.Provider>
+
   );
 }
 

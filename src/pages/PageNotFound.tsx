@@ -21,61 +21,49 @@ const Page404: React.FC = () => {
   return (
     <div
       style={{
-        backgroundColor: theme.palette.background.default, // Page background color from theme
-        minHeight: "100vh",
-        width: "100vw",
-      }}
-    >
-      <NavBar />
-      <div>
-        <GhostMouse />
-
-        <div className="box" style={{ backgroundColor: theme.palette.contrast.main }}>
-          {/* For ghost elements, we now use the page's background default color */}
+        backgroundColor: theme.palette.background.default,
+        <div
+          className="box"
+          style={{ backgroundColor: theme.palette.primary.main }}
+        >
           <div className="box__ghost">
             {[...Array(6)].map((_, index) => (
-              <div
-                key={index}
-                className="symbol"
-                style={{ backgroundColor: theme.palette.background.default }}
-              ></div>
+              <div key={index} className="symbol"></div>
             ))}
 
-            <div className="box__ghost-container" style={{ backgroundColor: theme.palette.background.default }}>
+            <div className="box__ghost-container">
               <div className="box__ghost-eyes">
                 <div
                   className="box__eye-left"
-                  style={{ backgroundColor: theme.palette.contrast.main }}
+                  style={{ backgroundColor: theme.palette.primary.main }}
                 ></div>
                 <div
                   className="box__eye-right"
-                  style={{ backgroundColor: theme.palette.contrast.main }}
+                  style={{ backgroundColor: theme.palette.primary.main }}
                 ></div>
               </div>
               <div className="box__ghost-bottom">
                 {[...Array(5)].map((_, index) => (
-                  <div
-                    key={index}
-                    style={{ backgroundColor: theme.palette.background.default }}
-                  ></div>
+                  <div key={index}></div>
                 ))}
               </div>
             </div>
-            <div
-              className="box__ghost-shadow"
-            ></div>
+            <div className="box__ghost-shadow"></div>
           </div>
-
           <div className="box__description">
             <div
               className="box__description-container"
               style={{ color: theme.palette.text.primary }}
             >
               <div className="box__description-title">Whoops!</div>
-              <div className="box__description-text">
+              <div
+                className="box__description-text"
+                style={{ color: theme.palette.text.primary }}
+              >
                 It seems like we couldn't find the page you were looking for
               </div>
             </div>
+            {/*will replace link with landing page once done*/}
             <a
               href="/"
               className="box__button"
