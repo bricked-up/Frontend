@@ -13,8 +13,7 @@
  * @param   {string} email 
  * @param   {string} password 
  * @param   {string} endPoint should be signup | verify | login
- * @returns {Promise<number>}
- * @throws  {any} 
+ * @returns {Promise<number>} 
  */
 export const authUser = async (email: string, password: string, endPoint: string): Promise<number> => {
     const url: string = `${process.env.REACT_APP_BACK_END_URL}/${endPoint}`;
@@ -31,7 +30,7 @@ export const authUser = async (email: string, password: string, endPoint: string
         });
 
         if (!response.ok) {
-            throw new Error("Could not even connect to the server");
+            return 500;
         }
 
         return response.status as number;
