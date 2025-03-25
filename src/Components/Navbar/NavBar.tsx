@@ -1,12 +1,12 @@
 import React from "react";
-import "../css/NavBar.css";
+import "../../css/NavBar.css";
 import HomeButton from "./HomeButton";
-import { useUser } from "../hooks/UserContext";
+import { useUser } from "../../hooks/UserContext";
 import ThemeToggleButton from "./ThemeToggleButton";
 import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
 import { useTheme } from "@mui/material/styles";
-import logo from "../assets/BrickedUpLogo.png";
+import logo from "../../assets/BrickedUpLogo.png";
 
 /**
  * NavBar Component for Bricked Up
@@ -37,7 +37,7 @@ const NavBar: React.FC = () => {
     >
       <div className="logo-container">
         <img src={logo} alt="Company Logo" className="logo" />
-        <span className="company-name" style={{ color: theme.palette.text.secondary}}>Bricked Up</span>
+        <span className="company-name" style={{ color: theme.palette.text.secondary }}>Bricked Up</span>
       </div>
       <div className="actions">
         <ThemeToggleButton />

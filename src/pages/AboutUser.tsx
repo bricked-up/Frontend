@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useCallback, useContext } from "react";
 import { useUser } from "../hooks/UserContext";
-import Style from "../AccountPage/AboutUser.module.css";
-import Form from "../AccountPage/Form";
+import Style from "../Components/AccountPage/AboutUser.module.css";
+import Form from "../Components/AccountPage/Form";
 import { useParams } from "react-router-dom";
 
 /**
@@ -37,7 +37,7 @@ const AboutUser = () => {
 
       <div className={Style.account_box}>
         <div className={Style.account_box_img}>
-          <img src={user.pfp || "https://via.placeholder.com/150"} />
+          <img src={user.pfp || "https://v]ia.placeholder.com/150"} />
           <label className={Style.account_box_img_para}>
             Change Profile
             <input
