@@ -68,12 +68,11 @@ export const fetchUserData = async (endpoint: string): Promise<User | null> => {
     try {
         const response = await fetch(URL, {
             method: "POST",
-            headers: { 'Content-Type': 'application/json' },
         });
 
         if (!response.ok) { return null }
 
-        return response.body as User;
+        return response.json() as Promise<User>;
 
     } catch (error: any) {
         console.log(error.message);

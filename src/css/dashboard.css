@@ -1,0 +1,19 @@
+.dashboard {
+    background-color: #1e1e2f; 
+    color: #ffffff;
+    min-height: 100vh;
+    padding: 20px;
+  }
+  
+  .dashboard::-webkit-scrollbar-track {
+    background: #222;
+  }
+  
+  .dashboard::-webkit-scrollbar-thumb {
+    background: #555;
+  }
+  
+  .dashboard::-webkit-scrollbar-thumb:hover {
+    background: #777;
+  }
+  

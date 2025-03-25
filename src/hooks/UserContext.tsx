@@ -7,6 +7,7 @@ import { createContext, useContext, useState, ReactNode, useEffect } from "react
 export type User = {
   email?: string | null;
   displayName?: string | null;
+  description?: string | null,
   pfp?: string | null;
   org?: string[] | null;
   teams?: string[] | null;

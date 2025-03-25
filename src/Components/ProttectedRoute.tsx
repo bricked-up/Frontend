@@ -9,7 +9,7 @@ import { JSX } from "react";
  * @example
  * <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
  * <Route path="/Edit-Account" element={<ProtectedRoute><Edit-Account /></ProtectedRoute>} />
- * <Route path="/Teans" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
+ * <Route path="/Teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
  * 
  * @param {JSX.Element} children  
  * @returns {JSX.Element} children 

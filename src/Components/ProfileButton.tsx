@@ -6,6 +6,7 @@ import "../css/ProfileButton.css";
 import { useUser } from "../hooks/UserContext";
 import { logout } from "../utils/account.utils";
 
+
 const ProfileButton: React.FC = () => {
   const [isHovered, setIsHovered] = useState(false);
   const theme = useTheme();
@@ -13,20 +14,26 @@ const ProfileButton: React.FC = () => {
   const navigate = useNavigate();
 
   return (
-    <Box
-      onMouseEnter={() => setIsHovered(true)}
-      sx={{ position: "relative", display: "inline-block" }}
-    >
+    <Box>
       <Button
         variant="contained"
         sx={{
-          backgroundColor: theme.palette.primary.main,
+          backgroundColor: theme.palette.secondary.main,
           "&:hover": {
             backgroundColor: theme.palette.primary.dark,
           },
         }}
-        onClick={() => navigate(`/users/${user.email}`)}
       >
+        <Button
+          variant="contained"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            "&:hover": {
+              backgroundColor: theme.palette.primary.dark,
+            },
+          }}
+          onClick={() => navigate(`/users/${user.email}`)}
+        />
         👤
       </Button>
 
@@ -44,13 +51,11 @@ const ProfileButton: React.FC = () => {
             onMouseLeave={() => setIsHovered(false)}
             variant="contained"
             color="error"
-            onClick={async () => {
-              if (await logout("/logout") === 500) {
-                navigate("/505");
-                return;
-              }
+            onClick={() => {
+              logout();
               window.location.href = "/";
-            }}
+            }
+            }
           >
             Logout
           </Button>
