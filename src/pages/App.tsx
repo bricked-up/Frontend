@@ -28,6 +28,7 @@ function App() {
               {/*route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
+
               {/* user related routes */}
               <Route path="/:userId" element={<AboutUser />}>
                 {/* all of these routes are subroutes of :userId*/}
@@ -37,20 +38,24 @@ function App() {
                 <Route path="organizations/:orgId" />
                 <Route path="projects/:projectId" />
               </Route>
+
               {/* project related routes */}
               <Route path="/:projectId">
                 <Route path="users/:userId" />
               </Route>
+
               {/* organization related routes */}
               <Route path="/:orgId">
                 <Route path="users/:userId" />
                 <Route path="projects/:projectId" />
               </Route>
+
               {/* Protected Routes */}
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
                 <Route path="/test" element={<Dashboard />}></Route>
               </Route>
+
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
             </Routes>
