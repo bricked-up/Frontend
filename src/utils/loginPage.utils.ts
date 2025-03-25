@@ -1,10 +1,10 @@
 /**
  * used to register, login or reset password. This function sends a fetch requestion by HTTP
- * and waits for the responde code.
+ * and waits for the response code.
  * 
  * 200 - OK
- * 400 - or invallid request
- * 401 - unauthorised
+ * 400 - or invalid request
+ * 401 - unauthorized
  * 405 - method not allowed
  * 500 - backend issues (exact error in the body of the response)
  * 

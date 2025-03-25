@@ -26,7 +26,7 @@ const AboutUser = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setUser({ ...user, pfp: imageUrl });
+      setUser({ ...user, avatar: imageUrl });
     }
   };
   return (
@@ -37,7 +37,7 @@ const AboutUser = () => {
 
       <div className={Style.account_box}>
         <div className={Style.account_box_img}>
-          <img src={user.pfp || "https://via.placeholder.com/150"} />
+          <img src={user.avatar || "https://via.placeholder.com/150"} />
           <label className={Style.account_box_img_para}>
             Change Profile
             <input
