@@ -1,28 +1,5 @@
 import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-/**
- * User is the way we will model users for the profile page. 
- * All of the data will be fetched by the db based apart from the emial. 
- * When the user succsefully logs in a new instance should be created 
- */
-export type User = {
-  email?: string | null;
-  displayName?: string | null;
-  description?: string | null,
-  pfp?: string | null;
-  org?: string[] | null;
-  teams?: string[] | null;
-  teamMembers?: string[] | null;
-  orgMemmbers?: string[] | null;
-};
-
-// Default user object
-const DEFAULT_USER: User = {
-  email: null,
-  displayName: "Logged-in User",
-  pfp: "https://via.placeholder.com/150",
-  org: ["Company Inc"],
-  teams: ["Engineering", "Product"],
-};
+import { User } from "../utils/types"
 
 // create the UserContext
 const UserContext = createContext<{ user: User; setUser: (user: User) => void } | undefined>(
@@ -30,11 +7,11 @@ const UserContext = createContext<{ user: User; setUser: (user: User) => void } 
 );
 
 // provider component to wrap our App
-// this stores the variables in loval storage with the key value of 'user'
+// this stores the variables in local storage with the key value of 'user'
 export const UserProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User>(() => {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : DEFAULT_USER;
+    return savedUser ? JSON.parse(savedUser) : null;
   });
 
   useEffect(() => {
@@ -45,16 +22,16 @@ export const UserProvider = ({ children }: { children: ReactNode }) => {
 };
 
 /**
- * This variable is going to be the persitent user. The data will be obtained from the server and then
- * stored. if email is null, this means that the user is not logged in. Note that everytime you do 
+ * This variable is going to be the persistent user. The data will be obtained from the server and then
+ * stored. if email is null, this means that the user is not logged in. Note that every time you do 
  * a change to the user, the data is saved locally and not sent to the server. For that please use
  * sendUserData and to fetch most recent data from the server do getUserData
  * 
  * @example
- * // initialise the variable. Must be done for every page that needs it.
+ * // initialize the variable. Must be done for every page that needs it.
  * const {user, setUser} = useUser();
  * 
- * // to Modidy the user's name
+ * // to Modify the user's name
  * setUser(...user, displayName: newDisplayName)
  * 
  * // to change the whole user
@@ -69,5 +46,3 @@ export const useUser = () => {
   }
   return context;
 };
-
-//TODO: get and send user data to the server

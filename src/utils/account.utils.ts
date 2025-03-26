@@ -1,15 +1,15 @@
-import { User } from "../hooks/UserContext";
+import { User } from "./types";
 
 /**
  * when the user saves something on their account this function should be called first. 
- * If it is successuful, then the data should also be saved locally using `setUser` from 
+ * If it is successful, then the data should also be saved locally using `setUser` from 
  * UserContext hook
  * 
  * 200 - OK
  * 
- * 400 - invallid request
+ * 400 - invalid request
  * 
- * 401 - unauthorised
+ * 401 - unauthorized
  * 
  * 405 - method not allowed
  * 
@@ -19,7 +19,7 @@ import { User } from "../hooks/UserContext";
  * 
  * const oncClick = async (user) => {
  *  const updatedUser = { ...user, displayName: "New Name" };
- *  if (await sendUserData(updatedUser, "ENDPOINT") !== 200) { console.log("Saving unsucesfull"); return; }
+ *  if (await sendUserData(updatedUser, "ENDPOINT") !== 200) { console.log("Saving unsuccessful"); return; }
  *  
  *  setUser(updatedUser);
  * }
@@ -46,7 +46,7 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
 };
 
 /**
- * After succesfully loging in, this function needs to be called. It creates a new instance of User
+ * After successfully login in, this function needs to be called. It creates a new instance of User
  * note that this does not save it to the localstorage and the `setUser` function still needs to 
  * be called. 
  * 
