@@ -7,6 +7,7 @@ import LoginButton from "./LoginButton";
 import ProfileButton from "./ProfileButton";
 import { useTheme } from "@mui/material/styles";
 import logo from "../../assets/BrickedUpLogo.png";
+import { useNavigate } from "react-router-dom";
 
 /**
  * NavBar Component for Bricked Up
@@ -27,6 +28,7 @@ import logo from "../../assets/BrickedUpLogo.png";
 const NavBar: React.FC = () => {
   const { user } = useUser(); // Get the current user from context
   const theme = useTheme();
+  const navigate = useNavigate();
 
   return (
     <nav
@@ -35,7 +37,7 @@ const NavBar: React.FC = () => {
         backgroundColor: theme.palette.background.paper,
       }}
     >
-      <div className="logo-container">
+      <div className="logo-container" onClick={() => navigate("/")}>
         <img src={logo} alt="Company Logo" className="logo" />
         <span className="company-name" style={{ color: theme.palette.text.secondary }}>Bricked Up</span>
       </div>
@@ -44,7 +46,7 @@ const NavBar: React.FC = () => {
         <HomeButton />
         {user && user.email ? <ProfileButton /> : <LoginButton />}
       </div>
-    </nav>
+    </nav >
   );
 };
 
