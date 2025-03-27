@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import "../../css/ProfileButton.css";
 import { useUser } from "../../hooks/UserContext";
 import { logout } from "../../utils/account.utils";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 
 
 const ProfileButton: React.FC = () => {
@@ -34,7 +35,7 @@ const ProfileButton: React.FC = () => {
           }}
           onClick={() => navigate(`/users/${user.email}`)}
         />
-        👤
+        <PersonOutlinedIcon />
       </Button>
 
       {isHovered && (
