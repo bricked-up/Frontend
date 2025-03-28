@@ -28,14 +28,19 @@ import { User } from "./types";
  * @param {string} endpoint  user 
  * @returns {number} response code 
  */
-// TODO: Refactor to use x-www-form
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {
-    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+    // TODO: send the image separately 
     try {
-        const response = await fetch(URL, {
+        const params = new URLSearchParams({
+            email: user.email,
+            displayName: user.displayName,
+            password: user.password,
+            avatar: user.avatar as string,
+        });
+        const response = await fetch(`/${endpoint}`, {
             method: "PATCH",
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: JSON.stringify(user),
+            body: params,
         });
 
         return response.status as number

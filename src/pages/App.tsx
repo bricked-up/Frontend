@@ -30,13 +30,13 @@ function App() {
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
 
               {/* user related routes */}
-              <Route path="/:userId" element={<AboutUser />}>
+              <Route path="/:userId" >
                 {/* all of these routes are subroutes of :userId*/}
+                <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
                 <Route element={<Layout />}>
-                  <Route path="about" element={<AboutUser />} />
+                  <Route path="organizations/:orgId" />
+                  <Route path="projects/:projectId" />
                 </Route>
-                <Route path="organizations/:orgId" />
-                <Route path="projects/:projectId" />
               </Route>
 
               {/* project related routes */}
