@@ -28,12 +28,13 @@ import { User } from "./types";
  * @param {string} endpoint  user 
  * @returns {number} response code 
  */
+// TODO: Refactor to use x-www-form
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {
     const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
     try {
         const response = await fetch(URL, {
             method: "PATCH",
-            headers: { 'Content-Type': 'application/json' },
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: JSON.stringify(user),
         });
 
@@ -60,14 +61,19 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
  *      // ERROR MESSAGE
  * }
  * 
- * @param endpoint TODO: endpoint
+ * @param endpoint
  * @returns User or null
  */
-export const fetchUserData = async (endpoint: string): Promise<User | null> => {
-    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+export const fetchUserData = async (email: string, endpoint: string): Promise<User | null> => {
     try {
-        const response = await fetch(URL, {
+        const params = new URLSearchParams();
+        params.append("email", email);
+        const response = await fetch(`/${endpoint}`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params
         });
 
         if (!response.ok) { return null }
