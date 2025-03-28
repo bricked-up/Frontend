@@ -22,7 +22,7 @@ import { User } from "../utils/types";
  * TODO: Definitely change some design / ask about adding more things/too simple??
  */
 const AboutUser = () => {
-  const userId = useParams().userId as string;
+  const userId = useParams().userId as string; // obtained from the URL
   const { user, setUser } = useUser();
   const [isLoaded, setIsLoaded] = useState(false);
   // if the page our user is visiting is their own account page. Used to be able to modify 

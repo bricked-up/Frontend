@@ -46,6 +46,7 @@ function App() {
 
               {/* organization related routes */}
               <Route path="/:orgId">
+                <Route path="users" />
                 <Route path="users/:userId" />
                 <Route path="projects/:projectId" />
               </Route>
