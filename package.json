@@ -67,5 +67,6 @@
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-router-dom": "^5.3.3"
-  }
+  },
+  "proxy": "http://clabsql.clamv.constructor.university:3100"
 }
