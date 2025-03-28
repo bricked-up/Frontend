@@ -24,7 +24,6 @@ import { User } from "../utils/types";
 const AboutUser = () => {
   const userId = useParams().userId as string;
   const { user, setUser } = useUser();
-  const [userState, setUserState] = useState<User | null>();
   const [isLoaded, setIsLoaded] = useState(false);
   // if the page our user is visiting is their own account page. Used to be able to modify 
   const [isCurrentViewed, setIsCurrentViewed] = useState(false);
