@@ -11,9 +11,9 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
+import ViewTeams from "../Components/ViewTeam";
 
 function App() {
-
   const [theme, colorMode] = useMode();
 
   return (
@@ -53,7 +53,17 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
-                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/viewteam" element={<ViewTeams />} />
+                <Route path="/about_user" element={<AboutUser />} />
+
                 <Route path="/test" element={<Dashboard />}></Route>
               </Route>
 
@@ -62,9 +72,8 @@ function App() {
             </Routes>
           </div>
         </Router>
-      </ThemeProvider >
-    </ColorModeContext.Provider >
-
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 
