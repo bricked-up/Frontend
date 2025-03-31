@@ -129,7 +129,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
           />
           <Item
             title="View Teams"
-            to="/teams"
+            to="/viewteam"
             icon={<PeopleOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
