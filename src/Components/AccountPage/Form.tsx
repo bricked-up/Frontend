@@ -1,5 +1,5 @@
 import React from "react";
-import { useUser } from "../hooks/UserContext";
+import { useUser } from "../../hooks/UserContext";
 import { EmailOutlined } from "@mui/icons-material";
 import Style from "./Form.module.css";
 
@@ -30,7 +30,7 @@ const Form = () => {
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setUser({ ...user, pfp: imageUrl });
+      setUser({ ...user, avatar: imageUrl });
     }
   };
 

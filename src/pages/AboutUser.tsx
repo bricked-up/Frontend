@@ -1,8 +1,10 @@
-import React, { useState, useMemo, useCallback, useContext } from "react";
+import React, { useState, useMemo, useCallback, useContext, useEffect } from "react";
 import { useUser } from "../hooks/UserContext";
-import Style from "../AccountPage/AboutUser.module.css";
-import Form from "../AccountPage/Form";
-import { useParams } from "react-router-dom";
+import Style from "../Components/AccountPage/AboutUser.module.css";
+import Form from "../Components/AccountPage/Form";
+import { useNavigate, useParams } from "react-router-dom";
+import { fetchUserData } from "../utils/account.utils";
+import { User } from "../utils/types";
 
 /**
  * AboutUser Component
@@ -17,18 +19,45 @@ import { useParams } from "react-router-dom";
  *
  * @returns {JSX.Element} The AboutUser profile settings component.
  *
- * TO D0: Definitely change some design / ask about adding more things/too simple??
+ * TODO: Definitely change some design / ask about adding more things/too simple??
  */
-
 const AboutUser = () => {
+  const userId = useParams().userId as string; // obtained from the URL
   const { user, setUser } = useUser();
+  const [isLoaded, setIsLoaded] = useState(false);
+  // if the page our user is visiting is their own account page. Used to be able to modify 
+  const [isCurrentViewed, setIsCurrentViewed] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchAndSetUser = async () => {
+      const fetchedUser = await fetchUserData(userId, "update");
+
+      if (fetchedUser === null) {
+        window.alert("User does not exist");
+        navigate("/login");
+        return;
+      }
+
+      if (fetchedUser.email === user.email) {
+        setIsCurrentViewed(true);
+      }
+
+      setIsLoaded(true);
+    };
+
+    fetchAndSetUser();
+  }, [user]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setUser({ ...user, pfp: imageUrl });
+      setUser({ ...user, avatar: imageUrl });
     }
   };
+
+  if (!isLoaded) { return (<p> Meow meow it is not loaded</p>) } // TODO: change to loading screen
+
   return (
     <div className={Style.account}>
       <div className={Style.account_info}>
@@ -37,7 +66,8 @@ const AboutUser = () => {
 
       <div className={Style.account_box}>
         <div className={Style.account_box_img}>
-          <img src={user.pfp || "https://via.placeholder.com/150"} />
+          <img src={user.avatar || "https://via.placeholder.com/150"} />
+          <img src={user.avatar || "https://v]ia.placeholder.com/150"} />
           <label className={Style.account_box_img_para}>
             Change Profile
             <input

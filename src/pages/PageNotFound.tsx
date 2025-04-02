@@ -1,6 +1,6 @@
 import React from "react";
 import GhostMouse from "../Components/GhostMouse";
-import NavBar from "../Components/NavBar";
+import NavBar from "../Components/Navbar/NavBar";
 import { useTheme } from "@mui/material/styles";
 
 /**

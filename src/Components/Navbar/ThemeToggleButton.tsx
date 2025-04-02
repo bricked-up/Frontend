@@ -1,7 +1,7 @@
 import React, { useContext } from 'react';
-import { ColorModeContext } from '../theme'; // Use the new context from your theme file
+import { ColorModeContext } from '../../theme'; // Use the new context from your theme file
 import { useTheme } from '@mui/material/styles';
-import "../css/ThemeToggleButton.css";
+import "../../css/ThemeToggleButton.css";
 
 /**
  * A toggle switch component that toggles the application's theme between light and dark modes.
