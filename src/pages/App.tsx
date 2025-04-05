@@ -11,7 +11,11 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
+<<<<<<< HEAD
+import LoadingPage from "./LoadingPage";
+=======
 import ViewTeams from "../Components/ViewTeam";
+>>>>>>> dev
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -53,6 +57,9 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
+<<<<<<< HEAD
+                <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+=======
                 <Route
                   path="/dashboard"
                   element={
@@ -65,7 +72,9 @@ function App() {
                 <Route path="/about_user" element={<AboutUser />} />
 
                 <Route path="/test" element={<Dashboard />}></Route>
+>>>>>>> dev
               </Route>
+              <Route path="/test" element={<LoadingPage />}></Route>
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
