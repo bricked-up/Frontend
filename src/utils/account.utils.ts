@@ -1,15 +1,15 @@
-import { User } from "../hooks/UserContext";
+import { User } from "./types";
 
 /**
  * when the user saves something on their account this function should be called first. 
- * If it is successuful, then the data should also be saved locally using `setUser` from 
+ * If it is successful, then the data should also be saved locally using `setUser` from 
  * UserContext hook
  * 
  * 200 - OK
  * 
- * 400 - invallid request
+ * 400 - invalid request
  * 
- * 401 - unauthorised
+ * 401 - unauthorized
  * 
  * 405 - method not allowed
  * 
@@ -19,7 +19,7 @@ import { User } from "../hooks/UserContext";
  * 
  * const oncClick = async (user) => {
  *  const updatedUser = { ...user, displayName: "New Name" };
- *  if (await sendUserData(updatedUser, "ENDPOINT") !== 200) { console.log("Saving unsucesfull"); return; }
+ *  if (await sendUserData(updatedUser, "ENDPOINT") !== 200) { console.log("Saving unsuccessful"); return; }
  *  
  *  setUser(updatedUser);
  * }
@@ -29,12 +29,18 @@ import { User } from "../hooks/UserContext";
  * @returns {number} response code 
  */
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {
-    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+    // TODO: send the image separately 
     try {
-        const response = await fetch(URL, {
+        const params = new URLSearchParams({
+            email: user.email,
+            displayName: user.displayName,
+            password: user.password,
+            avatar: user.avatar as string,
+        });
+        const response = await fetch(`/${endpoint}`, {
             method: "PATCH",
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(user),
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: params,
         });
 
         return response.status as number
@@ -46,7 +52,7 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
 };
 
 /**
- * After succesfully loging in, this function needs to be called. It creates a new instance of User
+ * After successfully login in, this function needs to be called. It creates a new instance of User
  * note that this does not save it to the localstorage and the `setUser` function still needs to 
  * be called. 
  * 
@@ -60,14 +66,19 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
  *      // ERROR MESSAGE
  * }
  * 
- * @param endpoint TODO: endpoint
+ * @param endpoint
  * @returns User or null
  */
-export const fetchUserData = async (endpoint: string): Promise<User | null> => {
-    const URL: string = `${process.env.REACT_APP_BACK_END_URL}/${endpoint}`;
+export const fetchUserData = async (email: string, endpoint: string): Promise<User | null> => {
     try {
-        const response = await fetch(URL, {
+        const params = new URLSearchParams();
+        params.append("email", email);
+        const response = await fetch(`/${endpoint}`, {
             method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded",
+            },
+            body: params
         });
 
         if (!response.ok) { return null }

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 //using a custom react hook for validating password confirmation
 import usePasswordValidation from "../hooks/usePasswordValidation";
 import { red } from "@mui/material/colors";
-import NavBar from "../Components/NavBar";
+import NavBar from "../Components/Navbar/NavBar";
 import { useTheme } from "@mui/material/styles";
 import authUser from "../utils/loginPage.utils";
 import { useNavigate } from "react-router-dom";
@@ -228,7 +228,7 @@ const Login = () => {
                 onClick={async () => {
                   const response = await authUser(account, password, "signup")
                   if (response === 500) {
-                    navigate("/500");
+                    navigate("/404");
                   }
                   if (response === 200) {
                     setUser({ ...user, email: account });

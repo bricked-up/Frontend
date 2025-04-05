@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-import NavBar from "../Components/NavBar";
+import NavBar from "../Components/Navbar/NavBar";
 import "../css/LandingPage.css";
 import stickyNoteIcon from "../assets/sticky_note_icon.png";
 import calendarIcon from "../assets/calendar_icon.png";
@@ -28,7 +28,7 @@ const LandingPage: React.FC = () => {
       style={{
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh", 
+        minHeight: "100vh",
         backgroundColor: theme.palette.background.default,
       }}
     >

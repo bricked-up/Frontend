@@ -11,10 +11,13 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
+<<<<<<< HEAD
 import LoadingPage from "./LoadingPage";
+=======
+import ViewTeams from "../Components/ViewTeam";
+>>>>>>> dev
 
 function App() {
-
   const [theme, colorMode] = useMode();
 
   return (
@@ -31,13 +34,13 @@ function App() {
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
 
               {/* user related routes */}
-              <Route path="/:userId" element={<AboutUser />}>
+              <Route path="/:userId" element={<ProtectedRoute><AboutUser /></ProtectedRoute>}>
                 {/* all of these routes are subroutes of :userId*/}
+                <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
                 <Route element={<Layout />}>
-                  <Route path="about" element={<AboutUser />} />
+                  <Route path="organizations/:orgId" />
+                  <Route path="projects/:projectId" />
                 </Route>
-                <Route path="organizations/:orgId" />
-                <Route path="projects/:projectId" />
               </Route>
 
               {/* project related routes */}
@@ -47,13 +50,29 @@ function App() {
 
               {/* organization related routes */}
               <Route path="/:orgId">
+                <Route path="users" />
                 <Route path="users/:userId" />
                 <Route path="projects/:projectId" />
               </Route>
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
+<<<<<<< HEAD
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+=======
+                <Route
+                  path="/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route path="/viewteam" element={<ViewTeams />} />
+                <Route path="/about_user" element={<AboutUser />} />
+
+                <Route path="/test" element={<Dashboard />}></Route>
+>>>>>>> dev
               </Route>
               <Route path="/test" element={<LoadingPage />}></Route>
 
@@ -62,9 +81,8 @@ function App() {
             </Routes>
           </div>
         </Router>
-      </ThemeProvider >
-    </ColorModeContext.Provider >
-
+      </ThemeProvider>
+    </ColorModeContext.Provider>
   );
 }
 

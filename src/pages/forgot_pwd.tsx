@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-import NavBar from "../Components/NavBar";
+import NavBar from "../Components/Navbar/NavBar";
 
 const ForgotPwd = () => {
   const theme = useTheme();
