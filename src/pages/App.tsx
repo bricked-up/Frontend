@@ -11,6 +11,7 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
+import LoadingPage from "./LoadingPage";
 
 function App() {
 
@@ -53,8 +54,8 @@ function App() {
               {/* Protected Routes */}
               <Route element={<Layout />}>
                 <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-                <Route path="/test" element={<Dashboard />}></Route>
               </Route>
+              <Route path="/test" element={<LoadingPage />}></Route>
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
