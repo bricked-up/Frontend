@@ -1,7 +1,7 @@
 import React from 'react';
 import { Typography, useTheme } from '@mui/material';
-import './LoadingPage.css';
-import NavBar from '../Components/NavBar';
+import '../css/LoadingPage.css';
+import NavBar from '../Components/Navbar/NavBar';
 
 /**
  * this is used for when you are fetching data, this should be used while the data is being

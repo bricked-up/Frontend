@@ -5,6 +5,7 @@ import Form from "../Components/AccountPage/Form";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchUserData } from "../utils/account.utils";
 import { User } from "../utils/types";
+import LoadingPage from "./LoadingPage";
 
 /**
  * AboutUser Component
@@ -56,7 +57,9 @@ const AboutUser = () => {
     }
   };
 
-  if (!isLoaded) { return (<p> Meow meow it is not loaded</p>) } // TODO: change to loading screen
+  if (!isLoaded) {
+    return <LoadingPage />
+  }
 
   return (
     <div className={Style.account}>
