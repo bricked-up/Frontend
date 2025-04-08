@@ -31,25 +31,30 @@ function App() {
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
 
               {/* user related routes */}
-              <Route path="/:userId" element={<ProtectedRoute><AboutUser /></ProtectedRoute>}>
+              <Route path="/user" >
                 {/* all of these routes are subroutes of :userId*/}
-                <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
-                <Route element={<Layout />}>
-                  <Route path="organizations/:orgId" />
-                  <Route path="projects/:projectId" />
+                <Route path="/:userId">
+                  <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
+                  <Route element={<Layout />}>
+                    <Route path="organizations/:orgId" />
+                    <Route path="projects/:projectId" />
+                  </Route>
                 </Route>
               </Route>
 
               {/* project related routes */}
-              <Route path="/:projectId">
-                <Route path="users/:userId" />
+              <Route path="/project">
+                <Route path="/:projectId">
+                  <Route path="users" />
+                </Route>
               </Route>
 
               {/* organization related routes */}
-              <Route path="/:orgId">
-                <Route path="users" />
-                <Route path="users/:userId" />
-                <Route path="projects/:projectId" />
+              <Route path="/organization">
+                <Route path="/:orgId">
+                  <Route path="users" />
+                  <Route path="projects" />
+                </Route>
               </Route>
 
               {/* Protected Routes */}
@@ -62,15 +67,18 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/viewteam" element={<ViewTeams />} />
+
+                <Route path="/view_team" element={<ViewTeams />} />
                 <Route path="/about_user" element={<AboutUser />} />
 
                 <Route path="/test" element={<Dashboard />}></Route>
               </Route>
-              <Route path="/test" element={<LoadingPage />}></Route>
+              <Route path="/test1" element={<LoadingPage />}></Route>
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
+              <Route path="/505" element={<Page404 />} />
+
             </Routes>
           </div>
         </Router>
