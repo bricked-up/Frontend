@@ -70,10 +70,7 @@ function App() {
 
                 <Route path="/view_team" element={<ViewTeams />} />
                 <Route path="/about_user" element={<AboutUser />} />
-
-                <Route path="/test" element={<Dashboard />}></Route>
               </Route>
-              <Route path="/test1" element={<LoadingPage />}></Route>
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
