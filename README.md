@@ -8,6 +8,7 @@ to get started run the following commands if you are on Linux/MacOs.
 
 ```
 1.⁠ ⁠npm install --force
+1.⁠ ⁠npm install --force
 2. rm -rf node_modules package-lock.json
 3.⁠ ⁠npm install
 ```
