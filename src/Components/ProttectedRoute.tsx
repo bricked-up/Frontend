@@ -4,7 +4,8 @@ import { JSX } from "react";
 
 /**
  * This checks if the user is logged in, if he/she is not connected
- * allow them to go to the child otherwise it redirects to the login page
+ * allow them to go to the child otherwise it redirects to the login page or if you
+ * specify to another page
  * 
  * @example
  * <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
@@ -12,6 +13,7 @@ import { JSX } from "react";
  * <Route path="/Teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
  * 
  * @param {JSX.Element} children  
+ * @param {string} backup 
  * @returns {JSX.Element} children 
  */
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {

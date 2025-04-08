@@ -13,9 +13,11 @@ import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
 import ViewTeams from "../Components/ViewTeam";
 import LoadingPage from "./LoadingPage";
+import { useUser } from "../hooks/UserContext";
 
 function App() {
   const [theme, colorMode] = useMode();
+  const { user } = useUser();
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -25,7 +27,14 @@ function App() {
           <div className="App">
             {/*set up Routes */}
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              {user ?
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Dashboard />} />
+                </Route>
+                :
+                <Route path="/" element={<LandingPage />} />
+              }
+
               {/*route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
