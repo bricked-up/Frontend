@@ -13,8 +13,6 @@ import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
 import ViewTeams from "../Components/ViewTeam";
 import LoadingPage from "./LoadingPage";
-import Calendar from "../Components/Calendar/CustomCalendar";
-import Activity from "./Activity";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -66,8 +64,6 @@ function App() {
                 />
                 <Route path="/viewteam" element={<ViewTeams />} />
                 <Route path="/about_user" element={<AboutUser />} />
-                <Route path="calendar" element={<Calendar />} /> 
-                <Route path="/activity" element={<Activity />} /> 
 
                 <Route path="/test" element={<Dashboard />}></Route>
               </Route>
