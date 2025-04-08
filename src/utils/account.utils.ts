@@ -37,6 +37,7 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
             password: user.password,
             avatar: user.avatar as string,
         });
+
         const response = await fetch(`/${endpoint}`, {
             method: "PATCH",
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },

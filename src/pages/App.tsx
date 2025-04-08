@@ -83,7 +83,7 @@ function App() {
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
-              <Route path="/505" element={<Page404 />} />
+              <Route path="/500" element={<Page404 />} />
 
             </Routes>
           </div>
