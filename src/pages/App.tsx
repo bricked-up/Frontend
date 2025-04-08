@@ -14,6 +14,7 @@ import AboutUser from "./AboutUser";
 import ViewTeams from "../Components/ViewTeam";
 import LoadingPage from "./LoadingPage";
 import { useUser } from "../hooks/UserContext";
+import Error500Page from "./Error500Page";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -83,7 +84,7 @@ function App() {
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
-              <Route path="/500" element={<Page404 />} />
+              <Route path="/500" element={<Error500Page />} />
 
             </Routes>
           </div>
