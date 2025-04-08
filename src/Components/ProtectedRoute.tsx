@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import { JSX } from "react";
 
@@ -17,11 +17,14 @@ import { JSX } from "react";
  * @returns {JSX.Element} children 
  */
 const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
+    const navigate = useNavigate();
     const { user } = useUser();
 
-    console.log(user.email);
+    if ((!user) || (!user.email)) {
+        navigate("/login");
+    }
 
-    return user.email ? children : <Navigate to="/login" replace />
+    return user ? children : <Navigate to="/login" replace />
 }
 
 export default ProtectedRoute;
