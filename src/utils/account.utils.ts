@@ -51,45 +51,6 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
     }
 };
 
-/**
- * After successfully login in, this function needs to be called. It creates a new instance of User
- * note that this does not save it to the localstorage and the `setUser` function still needs to 
- * be called. 
- * 
- * if the response is null, there was an internal server error
- * 
- * @example
- * const userResponse = fetchUserData("update");
- * if (userResponse) {
- *      setUser{...user, userResponse};
- * } else {
- *      // ERROR MESSAGE
- * }
- * 
- * @param endpoint
- * @returns User or null
- */
-export const fetchUserData = async (email: string, endpoint: string): Promise<User | null> => {
-    try {
-        const params = new URLSearchParams();
-        params.append("email", email);
-        const response = await fetch(`/${endpoint}`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded",
-            },
-            body: params
-        });
-
-        if (!response.ok) { return null }
-
-        return response.json() as Promise<User>;
-
-    } catch (error: any) {
-        console.log(error.message);
-        return null;
-    }
-}
 
 /**
  *  just click this and it will remove user data from localstorage and remove cookies
