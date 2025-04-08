@@ -1,6 +1,6 @@
 # Getting Started
 
-This is the repo for the frontent. We are using `React` and `Typescript`. The main entry point is found
+This is the repo for the frontend. We are using `React` and `Typescript`. The main entry point is found
 int the index.tsx file but the actual code begins in the App.tsx. Please note that the App.tsx should
 only be used for routing and global context wrappers. 
 
@@ -21,7 +21,7 @@ to test run, `npm test` and it will test any files that have the .test in their 
 
 ## Coding style and commenting
 
-please refere to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
+please refer to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
 PR naming as anything that does not match the expected format will not be accepted. 
 
 # NPM
@@ -36,19 +36,21 @@ be added **manually** to the package.json. Any changes to the package-lock.json 
     /about         - about the user
     /projects      - list of the projects they are in
     /organizations - list of all the organizations they are in
+    /issues        - all the issues the user has assigned to them
 
 ### All project related
 /project/:projectId
-    /users - all the users in the project
+    /users   - all the users in the project
+    /issues  - all issues for the given project
 
 ### All org related
 /organization/:orgId
-    /user     - all of the users in the org
+    /users     - all of the users in the org
     /projects - all of the project in the org
+    /issues   - all issues of the organization 
 
 if for example you are in /organization/:orgId/users and click on a user
 change the URL to /user/:usrId/about and so on
-
 
 # documentation of our internal APIs
 
