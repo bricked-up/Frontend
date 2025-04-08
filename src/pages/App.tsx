@@ -36,8 +36,8 @@ function App() {
                 <Route path="/:userId">
                   <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
                   <Route element={<Layout />}>
-                    <Route path="organizations/:orgId" />
-                    <Route path="projects/:projectId" />
+                    <Route path="organizations" />
+                    <Route path="projects" />
                   </Route>
                 </Route>
               </Route>
