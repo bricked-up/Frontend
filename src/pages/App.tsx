@@ -33,7 +33,7 @@ function App() {
               {/* user related routes */}
               <Route path="/user" >
                 {/* all of these routes are subroutes of :userId*/}
-                <Route path="/:userId">
+                <Route path=":userId">
                   <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
                   <Route element={<Layout />}>
                     <Route path="organizations" />
@@ -44,14 +44,14 @@ function App() {
 
               {/* project related routes */}
               <Route path="/project">
-                <Route path="/:projectId">
+                <Route path=":projectId">
                   <Route path="users" />
                 </Route>
               </Route>
 
               {/* organization related routes */}
               <Route path="/organization">
-                <Route path="/:orgId">
+                <Route path=":orgId">
                   <Route path="users" />
                   <Route path="projects" />
                 </Route>
