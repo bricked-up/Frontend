@@ -37,6 +37,7 @@ function App() {
               {/*route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
+              <Route path="/testt" element={<LandingPage />} />
 
               {/* user related routes */}
               <Route path="/user" >
