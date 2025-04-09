@@ -9,17 +9,17 @@ import { User, Issue } from "./types";
  * 
  * @example
  * 
- * const [issue, setIssue] = useState<Issue>();
+ * const [User, setUser] = useState<User>();
  * 
  * useEffect(() => {
  *  const getData = async () => {
- *    const newIssue: Issue | null = await getUserData("324ui32iui4i23");
+ *    const newUser: User | null = await getUserData("324ui32iui4i23");
  * 
- *    if (newIssue === null) {
+ *    if (newUser === null) {
  *          navigate("/500");
  *    }
  * 
- *    setUsers(newIssue);
+ *    setUsers(newUser);
  *  };
  *  getData();
  * }, []);
@@ -27,23 +27,22 @@ import { User, Issue } from "./types";
  * @param endpoint
  * @returns User or null
  */
-export const getUser = async (id: string): Promise<Issue | null> => {
+export const getUser = async (email: string): Promise<User | null> => {
     try {
         const params = new URLSearchParams({
-            id
+            email
         });
 
-        const response = await fetch(`/get-user`, {
+        const response = await fetch(`/get-user?${params.toString()}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: params
         });
 
         if (!response.ok) { return null }
 
-        const data: Issue | null = await response.json();
+        const data: User | null = await response.json();
 
         return data;
 
@@ -62,41 +61,40 @@ export const getUser = async (id: string): Promise<Issue | null> => {
  * 
  * @example
  * 
- * const [user, setUser] = useState<User>();
+ * const [issues, setIssues] = useState<Issue>();
  * 
  * useEffect(() => {
  *  const getData = async () => {
- *    const users: User | null = await getUserData("meow@kitty.com");
+ *    const newIssues: Issue | null = await getUserData("meow@kitty.com");
  * 
- *    if (user === null) {
+ *    if (newIssues === null) {
  *          navigate("/500");
  *    }
  * 
- *    setUsers(users);
+ *    setIssues(newIssues);
  *  };
  *  getData();
  * }, []);
  * 
  * @param endpoint
- * @returns User or null
+ * @returns Issue or null
  */
-export const getIssue = async (email: string): Promise<User | null> => {
+export const getUserIssues = async (userId: number): Promise<Issue | null> => {
     try {
         const params = new URLSearchParams({
-            email
+            userId: String(userId)
         });
 
-        const response = await fetch(`/get-user`, {
+        const response = await fetch(`/get-user?${params.toString()}`, {
             method: "GET",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded",
             },
-            body: params
         });
 
         if (!response.ok) { return null }
 
-        const data: User | null = await response.json();
+        const data: Issue | null = await response.json();
 
         return data;
 
@@ -133,7 +131,7 @@ export const getIssue = async (email: string): Promise<User | null> => {
  * @param {string} project 
  * @returns {Promise<string[] | null>}
  */
-export const getProjectMember = async (project: string): Promise<string[] | null> => {
+export const getProjectMembers = async (project: string): Promise<string[] | null> => {
     try {
         const param = new URLSearchParams({
             project
@@ -156,3 +154,7 @@ export const getProjectMember = async (project: string): Promise<string[] | null
         return null;
     }
 };
+
+// TODO: export const getProjectIssues = async (projectId: string): Promise<Issue | null> => { }
+// TODO: export const getOrgIssues = async (orgId: string): Promise<Issue | null> => { }
+// TODO: export const getProjectIssues = async (projectId: string): Promise<Issue | null> => { }

@@ -3,7 +3,7 @@ import { useUser } from "../hooks/UserContext";
 import Style from "../Components/AccountPage/AboutUser.module.css";
 import Form from "../Components/AccountPage/Form";
 import { useNavigate, useParams } from "react-router-dom";
-import { fetchUserData } from "../utils/account.utils";
+import { getUser } from "../utils/getters.utils";
 import { User } from "../utils/types";
 import LoadingPage from "./LoadingPage";
 
@@ -32,7 +32,7 @@ const AboutUser = () => {
 
   useEffect(() => {
     const fetchAndSetUser = async () => {
-      const fetchedUser = await fetchUserData(userId, "update");
+      const fetchedUser = await getUser(userId);
 
       if (fetchedUser === null) {
         window.alert("User does not exist");
