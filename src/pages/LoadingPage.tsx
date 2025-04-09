@@ -29,7 +29,6 @@ const LoadingPage: React.FC = () => {
         backgroundColor: theme.palette.background.default,
       }}
     >
-      <NavBar />
       <main style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", }}>
         <div
           aria-label="Orange and tan hamster running in a metal wheel"
