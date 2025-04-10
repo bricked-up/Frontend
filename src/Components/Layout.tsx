@@ -11,7 +11,7 @@ const Layout: React.FC = () => {
   useEffect(() => {
     const main = document.getElementById("main");
     if (main) {
-      main.style.transition = "margin-left 0.5s";
+      main.style.transition = "margin-left 0.5s ease";
       main.style.marginLeft = isSidebar ? "250px" : "0";
     }
   }, [isSidebar]);
@@ -21,8 +21,15 @@ const Layout: React.FC = () => {
       {/* Sidebar */}
       <Sidebar isSidebar={isSidebar} setIsSidebar={setIsSidebar} />
 
-      {/* Main Content Area */}
-      <Box id="main" sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      {/* Main Content */}
+      <Box
+        id="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* Topbar */}
         <Box
           sx={{
