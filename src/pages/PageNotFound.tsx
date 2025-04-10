@@ -13,7 +13,7 @@ import { Route, Routes } from "react-router-dom";
  * 
  * @component
  * @example
- * return (
+ * return ()
  *   <Page404 />
  * )
  */
