@@ -48,7 +48,6 @@ const Layout: React.FC = () => {
           }}
         >
           <Topbar setIsSidebar={setIsSidebar} setIsCollapsed={setIsSidebar} />
-          < LogoutButton />
         </Box>
 
         {/* Page Content */}

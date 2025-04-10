@@ -1,5 +1,5 @@
+import React, { useState, useContext } from "react";
 import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
 import { ColorModeContext, tokens } from "../theme";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -8,10 +8,8 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-
-interface TopbarProps {
-  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { useNavigate } from "react-router-dom";
+import { logout } from "../utils/account.utils";
 
 /**
  * The topbar component
@@ -33,13 +31,27 @@ interface TopbarProps {
  * @returns {JSX.Element} The Topbar component.
  */
 
-const Topbar: React.FC<{
+interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setIsSidebar, setIsCollapsed }) => {
+}
+
+const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+
+  // State to control visibility of the logout popup
+  const [showLogout, setShowLogout] = useState(false);
+
+  // For redirecting the user after logout (if desired)
+  const navigate = useNavigate();
+
+  // Handle the actual logout logic plus optional redirect
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <Box
@@ -66,7 +78,7 @@ const Topbar: React.FC<{
       </Box>
 
       {/* ICONS */}
-      <Box display="flex">
+      <Box display="flex" alignItems="center">
         <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
             <DarkModeOutlinedIcon />
@@ -74,15 +86,42 @@ const Topbar: React.FC<{
             <LightModeOutlinedIcon />
           )}
         </IconButton>
+
         <IconButton>
           <NotificationsOutlinedIcon />
         </IconButton>
+
         <IconButton>
           <SettingsOutlinedIcon />
         </IconButton>
-        <IconButton>
-          <PersonOutlinedIcon />
-        </IconButton>
+
+        {/* Container holding Person Icon + Logout Menu. 
+            Mouse leaves this box entirely => hide the menu. */}
+        <Box
+          position="relative"
+          onMouseEnter={() => setShowLogout(true)}
+          onMouseLeave={() => setShowLogout(false)}
+        >
+          <IconButton aria-label="Profile Icon">
+            <PersonOutlinedIcon />
+          </IconButton>
+
+          {/* Conditionally render the Logout button below the icon */}
+          {showLogout && (
+            <Box
+              position="absolute"
+              top="40px"
+              right="0"
+              p="8px"
+              bgcolor="white"
+              border="1px solid #ccc"
+              borderRadius="4px"
+              // Add styles or MUI components as desired
+            >
+              <button onClick={handleLogout}>Logout</button>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   );
