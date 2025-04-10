@@ -22,58 +22,67 @@ const Page404: React.FC = () => {
     <div
       style={{
         backgroundColor: theme.palette.background.default,
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: "2rem",
       }}
     >
-      <div
-        className="box"
-        style={{ backgroundColor: theme.palette.primary.main }}
-      >
-        <div className="box__ghost">
-          {[...Array(6)].map((_, index) => (
-            <div key={index} className="symbol"></div>
-          ))}
+      {/* <NavBar /> */}
 
-          <div className="box__ghost-container">
-            <div className="box__ghost-eyes">
-              <div
-                className="box__eye-left"
-                style={{ backgroundColor: theme.palette.primary.main }}
-              ></div>
-              <div
-                className="box__eye-right"
-                style={{ backgroundColor: theme.palette.primary.main }}
-              ></div>
-            </div>
-            <div className="box__ghost-bottom">
-              {[...Array(5)].map((_, index) => (
-                <div key={index}></div>
-              ))}
-            </div>
-          </div>
-          <div className="box__ghost-shadow"></div>
-        </div>
-        <div className="box__description">
-          <div
-            className="box__description-container"
-            style={{ color: theme.palette.text.primary }}
-          >
-            <div className="box__description-title">Whoops!</div>
+      <div className="box__ghost">
+        {[...Array(6)].map((_, index) => (
+          <div key={index} className="symbol"></div>
+        ))}
+
+        <div className="box__ghost-container">
+          <div className="box__ghost-eyes">
             <div
-              className="box__description-text"
-              style={{ color: theme.palette.text.primary }}
-            >
-              It seems like we couldn't find the page you were looking for
-            </div>
+              className="box__eye-left"
+              style={{ backgroundColor: theme.palette.primary.main }}
+            ></div>
+            <div
+              className="box__eye-right"
+              style={{ backgroundColor: theme.palette.primary.main }}
+            ></div>
           </div>
-          {/* Will replace link with landing page once done */}
-          <a
-            href="/"
-            className="box__button"
-            style={{ color: theme.palette.text.primary }}
-          >
-            Go back
-          </a>
+          <div className="box__ghost-bottom">
+            {[...Array(5)].map((_, index) => (
+              <div key={index}></div>
+            ))}
+          </div>
         </div>
+        <div className="box__ghost-shadow"></div>
+      </div>
+
+      <div
+        style={{
+          marginTop: "2rem",
+          textAlign: "center",
+          color: theme.palette.text.primary,
+        }}
+      >
+        <div style={{ fontSize: "2rem", fontWeight: "bold" }}>Whoops!</div>
+        <div style={{ marginTop: "0.5rem" }}>
+          It seems like we couldn't find the page you were looking for.
+        </div>
+        <a
+          href="/"
+          style={{
+            marginTop: "1.5rem",
+            display: "inline-block",
+            textDecoration: "none",
+            padding: "0.75rem 1.5rem",
+            backgroundColor: theme.palette.primary.main,
+            color: "#fff",
+            borderRadius: "8px",
+            fontWeight: "bold",
+          }}
+        >
+          Go back
+        </a>
       </div>
     </div>
   );
