@@ -1,8 +1,14 @@
-import { JSX } from "react";
+import { JSX, useEffect } from "react";
 import { useState } from "react";
-import { Box, IconButton, Typography, Drawer, useTheme } from "@mui/material";
+import {
+  Box,
+  IconButton,
+  Typography,
+  Drawer,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import { Link } from "react-router-dom";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
 import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
@@ -27,14 +33,7 @@ interface SidebarProps {
 
 /**
  * Sidebar Menu Item Component
- *
- * Represents a single menu item in the sidebar.
- *
- * @component
- * @param {ItemProps} props - The component props.
- * @returns {JSX.Element} A clickable sidebar item.
  */
-
 const Item: React.FC<ItemProps> = ({
   title,
   to,
@@ -62,7 +61,6 @@ const Item: React.FC<ItemProps> = ({
           cursor: "pointer",
           "&:hover": { backgroundColor: colors.primary[400] },
         }}
-        onClick={() => setSelected(title)}
       >
         {icon}
         <Typography sx={{ marginLeft: "15px" }}>{title}</Typography>
@@ -73,33 +71,35 @@ const Item: React.FC<ItemProps> = ({
 
 /**
  * Sidebar Component
- *
- * A collapsible sidebar that contains navigation items.
- *
- * @component
- * @param {SidebarProps} props - The component props.
- * @returns {JSX.Element} The Sidebar component.
  */
-
 const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState<string>("Dashboard");
 
+  // Set body margin dynamically like in HTML example
+  useEffect(() => {
+    const main = document.getElementById("main");
+    if (main) {
+      main.style.transition = "margin-left 0.5s";
+      main.style.marginLeft = isSidebar ? "250px" : "0";
+    }
+  }, [isSidebar]);
+
   return (
     <>
       <Drawer
         open={isSidebar}
-        onClose={() => setIsSidebar(false)}
         variant="persistent"
         sx={{
           width: isSidebar ? 250 : 0,
           flexShrink: 0,
           "& .MuiDrawer-paper": {
-            width: isSidebar ? 250 : 0,
+            width: 250,
             backgroundColor: colors.primary[400],
             color: colors.grey[100],
-            transition: "width 0.3s ease",
+            transition: "width 0.5s ease",
+            overflowX: "hidden",
           },
         }}
       >
@@ -120,13 +120,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         </Box>
 
         <Box>
-          <Item
-            title="Dashboard"
-            to="/dashboard"
-            icon={<HomeOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
           <Item
             title="View Teams"
             to="/viewteam"
@@ -172,11 +165,12 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         </Box>
       </Drawer>
 
+      {/* Toggle button */}
       {!isSidebar && (
         <IconButton
           onClick={() => setIsSidebar(true)}
           sx={{
-            position: "absolute",
+            position: "fixed",
             top: 14,
             left: 10,
             backgroundColor: colors.primary[400],
