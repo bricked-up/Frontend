@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useCallback } from "react";
 import {
     Box,
     Typography,
@@ -17,190 +17,310 @@ import {
     Fade,
     Grow,
     useTheme,
-    useMediaQuery,
-    Paper, // Added for better background control
+    Paper,
+    Tooltip,
+    CircularProgress, // Added for potential loading states
+    Button
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import ExpandLessIcon from "@mui/icons-material/ExpandLess";
-import GroupIcon from "@mui/icons-material/Group";
-import WorkIcon from "@mui/icons-material/Work";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
-import FilterListIcon from "@mui/icons-material/FilterList"; // For Filter Toggle Group Title
-import InboxIcon from "@mui/icons-material/Inbox"; // Icon for Unread
-import AlternateEmailIcon from "@mui/icons-material/AlternateEmail"; // Icon for @Mentions
-import LocalOfferIcon from "@mui/icons-material/LocalOffer"; // Icon for Tags
-import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline"; // For empty state
+// Removed ExpandLessIcon as it's not used
+import WorkIcon from "@mui/icons-material/WorkOutline"; // Using Outline variant for consistency
+import CalendarTodayIcon from "@mui/icons-material/CalendarTodayOutlined"; // Using Outline variant
+import FilterListIcon from "@mui/icons-material/FilterList";
+import InboxIcon from "@mui/icons-material/InboxOutlined"; // Using Outline variant
+import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
+import LocalOfferIcon from "@mui/icons-material/LocalOfferOutlined"; // Using Outline variant
+import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney'; // Icon for Cost
+import ClearIcon from '@mui/icons-material/Clear'; // Icon for clearing search
 
 import { useNavigate } from "react-router-dom";
-// Ensure this path is correct for your project structure
-import { mockActivityData, TaskItem } from "../utils/mock_Activity_Calendar_Data";
+import { format, parseISO, isValid } from 'date-fns'; // Added isValid for robust date checking
+
+// --- Corrected Import Statement ---
+// Import the actual exported names and types from the file
+import {
+    mockIssues,      // Use mockIssues
+    MockIssue,       // Use MockIssue type
+    mockUsers,       // Need users for names
+    getProjectName,  // Use helper function
+    MockUser         // Import MockUser type for clarity in getUserName
+} from "../utils/mock_Activity_Calendar_Data"; // Adjusted path assuming it's relative
 
 // --- Constants ---
+// Added 'All' filter as a default starting point
 const FILTERS = [
-    { value: "Unread", label: "Unread", icon: <InboxIcon fontSize="small" /> },
-    { value: "@Mentions", label: "@Mentions", icon: <AlternateEmailIcon fontSize="small" /> },
-    { value: "Tags", label: "Tags", icon: <LocalOfferIcon fontSize="small" /> },
+    { value: "All", label: "All Activities", icon: <InboxIcon fontSize="small" /> },
+    { value: "High Priority", label: "High Priority", icon: <PriorityHighIcon fontSize="small" /> },
+    { value: "Due Soon", label: "Due Soon", icon: <CalendarTodayIcon fontSize="small" /> },
+    // Placeholder filters - require actual data fields if implemented fully
+    // { value: "Unread", label: "Unread", icon: <InboxIcon fontSize="small" /> },
+    // { value: "@Mentions", label: "@Mentions", icon: <AlternateEmailIcon fontSize="small" /> },
+    // { value: "Tags", label: "Tags", icon: <LocalOfferIcon fontSize="small" /> },
 ];
 
-const TRANSITION_DURATION = 300; // ms
+const TRANSITION_DURATION = 350; // Slightly increased duration for smoother feel
+const STAGGER_DELAY_INCREMENT = 50; // Delay for staggering card animations
 
-// --- Helper Type ---
+// --- Helper Functions ---
+
+// Get user name with improved handling for unknown IDs
+const getUserName = (userId?: number): string => {
+    if (userId === undefined || userId === null) return "Unassigned";
+    const user: MockUser | undefined = mockUsers.find(u => u.id === userId);
+    return user ? user.name : `Unknown User (ID: ${userId})`;
+};
+
+// Get priority text and associated color/icon (more robust)
+const getPriorityDetails = (priority: 1 | 2 | 3): { text: string; color: "error" | "warning" | "success"; icon: React.ReactElement } => {
+    switch (priority) {
+        case 1: return { text: "High", color: "error", icon: <PriorityHighIcon /> };
+        case 2: return { text: "Medium", color: "warning", icon: <PriorityHighIcon style={{ opacity: 0.7 }}/> }; // Example: slightly different icon style
+        case 3: return { text: "Low", color: "success", icon: <PriorityHighIcon style={{ opacity: 0.5 }}/> };
+        default: return { text: "Unknown", color: "success", icon: <PriorityHighIcon /> }; // Default to 'success' color visually
+    }
+};
+
+// Format deadline robustly
+const formatDeadline = (deadlineString: string): string => {
+    try {
+        // Append time and timezone offset to ensure correct parsing regardless of local timezone
+        // Using 'Z' for UTC, assuming deadlines are stored consistently. Adjust if needed.
+        const deadlineDate = parseISO(deadlineString + 'T00:00:00Z');
+        if (isValid(deadlineDate)) {
+            // Example format: Apr 10, 2025
+            return format(deadlineDate, 'MMM dd, yyyy');
+        }
+    } catch (e) {
+        console.error("Error parsing date:", deadlineString, e);
+    }
+    // Fallback if parsing fails or date is invalid
+    return deadlineString || "No Deadline";
+};
+
+// --- Enhanced ActivityCard Props ---
 interface ActivityCardProps {
-    task: TaskItem;
+    issue: MockIssue;
     isExpanded: boolean;
-    onToggleExpand: (id: string) => void;
+    onToggleExpand: (id: number) => void;
     onNavigateToCalendar: (date: string) => void;
+    onNavigateToIssue: (projectId: number, issueId: number) => void;
+    index: number; // Added index for staggered animation delay
 }
 
-// --- ActivityCard Component ---
+// --- Enhanced ActivityCard Component ---
 const ActivityCard: React.FC<ActivityCardProps> = ({
-    task,
+    issue,
     isExpanded,
     onToggleExpand,
     onNavigateToCalendar,
+    onNavigateToIssue,
+    index // Receive index prop
 }) => {
     const theme = useTheme();
+    const projectName = getProjectName(issue.projectId);
+    const priorityDetails = getPriorityDetails(issue.priority);
+    const formattedDeadline = formatDeadline(issue.deadline);
+    const assignedUserName = getUserName(issue.assignedMemberId);
 
-    const handleCardClick = () => {
-        onToggleExpand(task.id);
-    };
+    const handleCardClick = useCallback(() => {
+        // Navigate directly to issue detail on click, expand handled separately by icon
+         onNavigateToIssue(issue.projectId, issue.id);
+        // If you prefer expand on click, uncomment below and comment above
+        // onToggleExpand(issue.id);
+    }, [onNavigateToIssue, issue.projectId, issue.id /*, onToggleExpand */]); // Added dependencies
 
-    const handleDueDateClick = (e: React.MouseEvent) => {
-        e.stopPropagation(); // Prevent card expansion toggle
-        onNavigateToCalendar(task.dueDate);
-    };
+    const handleExpandClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click navigation when clicking expand icon
+        onToggleExpand(issue.id);
+    }, [onToggleExpand, issue.id]); // Added dependencies
 
-    // Mock "unread" status for visual demonstration - CORRECTED IDs
-    const isUnread = task.id === "1" || task.id === "3"; // Example logic using actual IDs
+    const handleDueDateClick = useCallback((e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent card click navigation
+        onNavigateToCalendar(issue.deadline);
+    }, [onNavigateToCalendar, issue.deadline]); // Added dependencies
+
+    // Simple unread simulation (replace with actual logic if available)
+    const isUnread = (issue.id % 5 === 1); // Example: Mark every 5th item starting from id 1 as unread
 
     return (
-        <Grow in timeout={TRANSITION_DURATION}>
+        // Staggered Grow animation based on index
+        <Grow in timeout={TRANSITION_DURATION} style={{ transitionDelay: `${index * STAGGER_DELAY_INCREMENT}ms` }}>
             <Card
+                elevation={isExpanded ? 8 : 2} // Increase elevation when expanded
                 sx={{
-                    backgroundColor: theme.palette.grey[900], // Slightly lighter than main bg
+                    // Use subtle background gradient based on priority
+                    background: `linear-gradient(to right, ${theme.palette.grey[900]}, ${
+                        isExpanded
+                        ? theme.palette.grey[800] // Darker when expanded
+                        : theme.palette.grey[800] // Slightly lighter base
+                    })`,
                     color: theme.palette.common.white,
-                    borderRadius: 3, // Softer corners
+                    borderRadius: 3,
                     mb: 2,
-                    transition: `transform ${TRANSITION_DURATION}ms ease-in-out, box-shadow ${TRANSITION_DURATION}ms ease-in-out, border-left ${TRANSITION_DURATION}ms ease-in-out`, // Added border-left transition
+                    transition: theme.transitions.create(['transform', 'box-shadow', 'border-left', 'background'], {
+                        duration: `${TRANSITION_DURATION}ms`,
+                        easing: theme.transitions.easing.easeInOut, // Smoother easing
+                    }),
                     borderLeft: isUnread ? `4px solid ${theme.palette.primary.main}` : `4px solid transparent`,
                     '&:hover': {
-                        transform: 'translateY(-3px)',
-                        boxShadow: `0 8px 25px -5px ${theme.palette.primary.dark}`,
-                        // Optional: Dim the border slightly on hover if unread
-                        // borderLeft: isUnread ? `4px solid ${theme.palette.primary.dark}` : `4px solid transparent`,
+                        transform: 'translateY(-4px) scale(1.01)', // Slightly more pronounced hover effect
+                        boxShadow: `0 10px 30px -8px ${theme.palette.primary.dark}`, // Enhanced shadow
+                        borderLeftColor: isUnread ? theme.palette.primary.light : theme.palette.grey[700] // Highlight border on hover
                     },
                 }}
             >
-                {/* Make the main area clickable for expansion */}
+                {/* Main clickable area */}
                 <CardActionArea
                     onClick={handleCardClick}
-                    aria-expanded={isExpanded}
-                    aria-controls={`activity-details-${task.id}`}
-                    sx={{ p: 2 }} // Padding for the clickable area
+                    aria-expanded={isExpanded} // Still useful for accessibility even if expand is separate button
+                    aria-controls={`activity-details-${issue.id}`}
+                    sx={{ p: 2.5 }} // Slightly more padding
                 >
                     <Stack direction="row" justifyContent="space-between" alignItems="center" spacing={2}>
-                        {/* Task Name and Basic Info */}
-                        <Stack spacing={0.5}>
-                            <Typography variant="h6" fontWeight={600} component="div">
-                                {task.taskName}
+                        {/* Left side: Issue Name & Project */}
+                        <Stack spacing={0.8} flexGrow={1} minWidth={0}> {/* Allow shrinking */}
+                            <Tooltip title={issue.name} placement="top-start">
+                                <Typography variant="h6" fontWeight={600} component="div" noWrap> {/* Prevent long names from breaking layout */}
+                                    {issue.name}
+                                </Typography>
+                            </Tooltip>
+                            <Tooltip title={`Project: ${projectName}`} placement="bottom-start">
+                            <Typography variant="body2" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.8, opacity: 0.8 }}>
+                                <WorkIcon fontSize="inherit" /> {projectName}
                             </Typography>
-                            <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                                <WorkIcon fontSize="inherit" sx={{ opacity: 0.7 }} /> {task.projectName}
-                            </Typography>
+                            </Tooltip>
                         </Stack>
 
-                        {/* Status Indicator (optional) & Expand Icon */}
-                        <Stack direction="row" alignItems="center" spacing={1}>
-                            {/* Optional: If you add status later
-                            <Chip size="small" label="In Progress" color="secondary" sx={{ height: 'auto', '.MuiChip-label': { py: 0.2 } }}/>
-                            */}
+                        {/* Right side: Priority & Expand */}
+                        <Stack direction="row" alignItems="center" spacing={1.5} flexShrink={0}> {/* Prevent shrinking */}
+                            <Tooltip title={`Priority: ${priorityDetails.text}`}>
+                                <Chip
+                                    icon={priorityDetails.icon}
+                                    label={priorityDetails.text}
+                                    size="small"
+                                    color={priorityDetails.color}
+                                    variant="filled" // Use filled for better contrast
+                                    sx={{
+                                        height: 'auto',
+                                        '.MuiChip-label': { py: 0.3, px: 1 },
+                                        fontSize: '0.75rem',
+                                        fontWeight: 500,
+                                        cursor: 'default' // Indicate it's not clickable
+                                    }}
+                                />
+                             </Tooltip>
+                            <Tooltip title={isExpanded ? "Collapse details" : "Expand details"}>
                             <IconButton
                                 size="small"
+                                onClick={handleExpandClick} // Use specific handler
                                 aria-label={isExpanded ? "Collapse task details" : "Expand task details"}
+                                aria-controls={`activity-details-${issue.id}`} // Link to the collapse section
+                                aria-expanded={isExpanded} // Explicitly set aria-expanded
                                 sx={{
                                     color: theme.palette.grey[400],
                                     transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
                                     transition: theme.transitions.create('transform', {
                                         duration: theme.transitions.duration.short,
                                     }),
+                                    '&:hover': { // Subtle hover for expand icon
+                                        backgroundColor: theme.palette.action.hover,
+                                        color: theme.palette.common.white,
+                                    }
                                 }}
                             >
                                 <ExpandMoreIcon />
                             </IconButton>
+                            </Tooltip>
                         </Stack>
                     </Stack>
                 </CardActionArea>
 
                 {/* Collapsible Details Section */}
                 <Collapse in={isExpanded} timeout={TRANSITION_DURATION} unmountOnExit>
-                    <Divider sx={{ borderColor: theme.palette.grey[700], mx: 2 }} />
-                    <CardContent sx={{ pt: 2, px: 3, pb: 3 }}> {/* More padding for content */}
-                        <Stack spacing={3}> {/* Increased spacing between sections */}
-                            {/* Row with Team, Project, Due Date */}
-                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2, sm: 3 }} alignItems={{ sm: 'flex-start' }}>
-                                {/* Team */}
-                                <Stack spacing={0.5} sx={{ flex: 1 }}>
-                                    <Typography variant="overline" color="text.secondary">
-                                        Team
+                    {/* Added Divider with softer color */}
+                    <Divider sx={{ borderColor: theme.palette.grey[700], mx: 2.5 }} />
+                    <CardContent sx={{ pt: 2, px: 3, pb: 3 }}>
+                        <Stack spacing={3}> {/* Increased spacing in details */}
+                            {/* Row for Assigned, Deadline, Cost */}
+                            <Stack direction={{ xs: 'column', sm: 'row' }} spacing={{ xs: 2.5, sm: 3 }} justifyContent="space-between">
+                                {/* Assigned To */}
+                                <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+                                    <Typography variant="overline" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <PersonOutlineIcon fontSize="inherit" /> Assigned To
                                     </Typography>
                                     <Chip
-                                        icon={<GroupIcon />}
-                                        label={task.teamName}
+                                        label={assignedUserName}
                                         variant="outlined"
                                         size="small"
-                                        sx={{
-                                            color: theme.palette.info.light, // Use theme colors
-                                            borderColor: theme.palette.info.dark,
-                                            backgroundColor: 'rgba(100, 181, 246, 0.1)', // Subtle background
-                                        }}
+                                        // Consistent styling using theme colors
+                                        sx={{ color: theme.palette.info.light, borderColor: theme.palette.info.dark, backgroundColor: 'rgba(100, 181, 246, 0.1)' }}
                                     />
                                 </Stack>
 
-                                {/* Due Date */}
-                                <Stack spacing={0.5} sx={{ flex: 1 }}>
-                                    <Typography variant="overline" color="text.secondary">
-                                        Due Date
+                                {/* Deadline */}
+                                <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+                                     <Typography variant="overline" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                        <CalendarTodayIcon fontSize="inherit"/> Deadline
                                     </Typography>
-                                    <Chip
-                                        icon={<CalendarTodayIcon />}
-                                        label={task.dueDate} // Assuming dueDate is a formatted string
-                                        variant="outlined"
-                                        size="small"
-                                        onClick={handleDueDateClick} // Use specific handler
-                                        clickable // Make it visually indicate clickability
-                                        sx={{
-                                            cursor: 'pointer',
-                                            color: theme.palette.warning.light,
-                                            borderColor: theme.palette.warning.dark,
-                                            backgroundColor: 'rgba(255, 183, 77, 0.1)',
-                                            '&:hover': {
-                                                backgroundColor: 'rgba(255, 183, 77, 0.2)',
-                                            }
-                                        }}
-                                    />
+                                    <Tooltip title="Go to this date in calendar">
+                                        <Chip
+                                            label={formattedDeadline}
+                                            variant="outlined"
+                                            size="small"
+                                            onClick={handleDueDateClick}
+                                            clickable
+                                            // Consistent styling using theme colors
+                                            sx={{ cursor: 'pointer', color: theme.palette.warning.light, borderColor: theme.palette.warning.dark, backgroundColor: 'rgba(255, 183, 77, 0.1)', '&:hover': { backgroundColor: 'rgba(255, 183, 77, 0.2)'} }}
+                                        />
+                                    </Tooltip>
                                 </Stack>
+
+                                {/* Estimated Cost - Conditionally rendered */}
+                                {issue.cost !== undefined && issue.cost !== null && (
+                                    <Stack spacing={1} sx={{ flex: 1, minWidth: 0 }}>
+                                        <Typography variant="overline" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                            <AttachMoneyIcon fontSize="inherit"/> Estimated Cost
+                                        </Typography>
+                                        <Chip
+                                            label={`$${issue.cost.toLocaleString()}`} // Format cost
+                                            variant="outlined"
+                                            size="small"
+                                            // Consistent styling using theme colors
+                                            sx={{ color: theme.palette.success.light, borderColor: theme.palette.success.dark, backgroundColor: 'rgba(102, 187, 106, 0.1)' }}
+                                        />
+                                    </Stack>
+                                )}
                             </Stack>
 
-                            {/* Description */}
-                            <Stack spacing={1}>
-                                <Typography variant="overline" color="text.secondary">
-                                    Description
-                                </Typography>
-                                <Paper
-                                    elevation={0} // No shadow, just using for background/padding
-                                    sx={{
-                                        backgroundColor: theme.palette.grey[800], // Slightly different background
-                                        borderRadius: 2,
-                                        padding: 2,
-                                        color: theme.palette.text.primary, // Brighter text for readability
-                                        lineHeight: 1.7,
-                                        fontSize: '0.9rem',
-                                    }}
-                                >
-                                    {task.description || <Typography variant="body2" fontStyle="italic" color="text.secondary">No description provided.</Typography>}
-                                </Paper>
-                            </Stack>
+                            {/* Description - Conditionally rendered */}
+                            {issue.description && (
+                                <Stack spacing={1}>
+                                    <Typography variant="overline" color="text.secondary">
+                                        Description
+                                    </Typography>
+                                    {/* Use Paper for better visual separation and padding */}
+                                    <Paper
+                                        elevation={0}
+                                        variant="outlined" // Use outlined variant for subtle border
+                                        sx={{
+                                            backgroundColor: theme.palette.grey[800],
+                                            borderColor: theme.palette.grey[700], // Match divider color
+                                            borderRadius: 2,
+                                            padding: 2,
+                                            color: theme.palette.text.primary,
+                                            lineHeight: 1.6, // Improved readability
+                                            fontSize: '0.9rem',
+                                             whiteSpace: 'pre-wrap', // Preserve whitespace/newlines
+                                        }}
+                                    >
+                                        {issue.description}
+                                    </Paper>
+                                </Stack>
+                            )}
                         </Stack>
                     </CardContent>
                 </Collapse>
@@ -212,161 +332,218 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 // --- Main Activity Component ---
 const Activity: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState("");
-    const [selectedFilter, setSelectedFilter] = useState<string>(FILTERS[0].value); // Default to first filter "Unread"
-    const [expandedTaskId, setExpandedTaskId] = useState<string | null>(null);
+    // Default to 'All' filter
+    const [selectedFilter, setSelectedFilter] = useState<string>(FILTERS[0].value);
+    const [expandedIssueId, setExpandedIssueId] = useState<number | null>(null);
+    // Add a loading state example (set to false for mock data)
+    const [isLoading, setIsLoading] = useState<boolean>(false);
     const navigate = useNavigate();
     const theme = useTheme();
 
-    const handleToggleExpand = (id: string) => {
-        setExpandedTaskId((prevId) => (prevId === id ? null : id));
-    };
+    // Memoize handlers to prevent unnecessary re-renders of cards
+    const handleToggleExpand = useCallback((id: number) => {
+        setExpandedIssueId((prevId) => (prevId === id ? null : id));
+    }, []); // No dependencies needed if setExpandedIssueId is stable
 
-    const handleNavigateToCalendar = (date: string) => {
-        navigate(`/calendar?date=${date}`);
-    };
+    const handleNavigateToCalendar = useCallback((date: string) => {
+        // Encode date component for URL safety
+        navigate(`/calendar?date=${encodeURIComponent(date)}`);
+    }, [navigate]); // Depends on navigate
 
-    // Memoize filtered tasks for performance
-    const filteredTasks = useMemo(() => {
-        // Start with the full list from mock data
-        let tasks = [...mockActivityData]; // Create a copy to avoid modifying the original
+    const handleNavigateToIssue = useCallback((projectId: number, issueId: number) => {
+        navigate(`/project/${projectId}/issue/${issueId}`);
+    }, [navigate]); // Depends on navigate
 
-        // 1. Filter based on selectedFilter
-        // NOTE: This uses placeholder logic based on IDs or simple content checks.
-        // Adapt this if your data has actual flags for 'unread', 'mentions', or 'tags'.
-        if (selectedFilter === "Unread") {
-            // Corrected IDs based on the provided mock data: "1" and "3"
-            tasks = tasks.filter(task => task.id === "1" || task.id === "3");
-        } else if (selectedFilter === "@Mentions") {
-            // Filter based on description containing '@'.
-            // Add '@' to descriptions in mock data to test this. Example: task '4' description.
-             tasks = tasks.filter(task => task.description?.includes('@')); // This will likely be empty with current data unless you add '@'
-        } else if (selectedFilter === "Tags") {
-             // Corrected ID based on the provided mock data: "2"
-             // This assumes task "2" represents having tags for demo purposes.
-             // You might have a task.tags array in real data.
-             tasks = tasks.filter(task => task.id === "2");
+    const handleFilterChange = useCallback((event: React.MouseEvent<HTMLElement>, newFilter: string | null) => {
+        if (newFilter !== null) {
+            setSelectedFilter(newFilter);
+            setExpandedIssueId(null); // Collapse any open card when filter changes
+             // Optionally reset search query on filter change:
+             // setSearchQuery("");
         }
-        // If no specific filter is selected (or logic doesn't apply), `tasks` remains the full list up to this point.
+    }, []); // No dependencies needed
 
-        // 2. Filter based on search query (applied AFTER the category filter)
+    const handleSearchChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(event.target.value);
+        setExpandedIssueId(null); // Collapse any open card when search changes
+    }, []); // No dependencies needed
+
+    const clearSearch = useCallback(() => {
+        setSearchQuery("");
+        setExpandedIssueId(null);
+    }, []); // No dependencies needed
+
+    // Enhanced Filtering and Searching Logic
+    const filteredIssues = useMemo(() => {
+        let issues = [...mockIssues];
+
+        // --- Apply Selected Filter ---
+        // Replace placeholder logic with actual filtering based on MockIssue fields
+        const now = new Date();
+        const soonDate = new Date();
+        soonDate.setDate(now.getDate() + 3); // Define "soon" as within the next 3 days
+
+        if (selectedFilter === "High Priority") {
+            issues = issues.filter(issue => issue.priority === 1);
+        } else if (selectedFilter === "Due Soon") {
+             issues = issues.filter(issue => {
+                try {
+                    const deadline = parseISO(issue.deadline + 'T00:00:00Z');
+                    return isValid(deadline) && deadline >= now && deadline <= soonDate;
+                } catch {
+                    return false;
+                }
+            });
+        }
+        // Add other filters here ('All' does nothing)
+        // else if (selectedFilter === "Unread") { ... } // Requires 'isUnread' field
+        // else if (selectedFilter === "@Mentions") { ... } // Requires parsing description or dedicated field
+        // else if (selectedFilter === "Tags") { ... } // Requires 'tags' field
+
+        // --- Apply Search Query ---
         if (searchQuery) {
-            const lowerCaseQuery = searchQuery.toLowerCase();
-            // Filter the result of the *previous* filter step
-            tasks = tasks.filter(
-                (task) =>
-                    task.taskName.toLowerCase().includes(lowerCaseQuery) ||
-                    task.projectName.toLowerCase().includes(lowerCaseQuery) ||
-                    task.teamName.toLowerCase().includes(lowerCaseQuery) ||
-                    // Ensure description exists before trying to search it
-                    (task.description && task.description.toLowerCase().includes(lowerCaseQuery))
-            );
+            const lowerCaseQuery = searchQuery.toLowerCase().trim();
+            if (lowerCaseQuery) { // Only filter if query is not just whitespace
+                issues = issues.filter(issue => {
+                    const projectName = getProjectName(issue.projectId).toLowerCase();
+                    const assignedName = getUserName(issue.assignedMemberId).toLowerCase();
+                    const description = issue.description?.toLowerCase() || "";
+                    const name = issue.name.toLowerCase();
+                    const priorityText = getPriorityDetails(issue.priority).text.toLowerCase();
+
+                    // Search across multiple relevant fields
+                    return (
+                        name.includes(lowerCaseQuery) ||
+                        projectName.includes(lowerCaseQuery) ||
+                        assignedName.includes(lowerCaseQuery) ||
+                        description.includes(lowerCaseQuery) ||
+                        priorityText.includes(lowerCaseQuery) || // Allow searching by priority text
+                        issue.id.toString() === lowerCaseQuery // Allow searching by ID
+                    );
+                });
+            }
         }
 
-        return tasks;
-     // Include mockActivityData in dependencies in case it could ever change (e.g., fetched data)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mockActivityData, selectedFilter, searchQuery]);
+        // --- Optional: Add Sorting ---
+        // Example: Sort by deadline (ascending), then priority (descending)
+        issues.sort((a, b) => {
+             try {
+                const dateA = parseISO(a.deadline + 'T00:00:00Z').getTime();
+                const dateB = parseISO(b.deadline + 'T00:00:00Z').getTime();
+                if (dateA !== dateB) return dateA - dateB; // Sort by date first
+            } catch {
+                // Handle potential parsing errors during sort if needed
+            }
+            // If dates are the same or invalid, sort by priority (High first)
+            return a.priority - b.priority;
+        });
+
+
+        return issues;
+    // Dependencies: Only re-filter when filter or search query changes. Mock data is static.
+    }, [selectedFilter, searchQuery]);
 
 
     return (
         <Box
             sx={{
-                minHeight: "calc(100vh - 64px)", // Use minHeight to allow content growth
-                paddingTop: "64px", // Assuming fixed header height
-                backgroundColor: theme.palette.grey[900], // Dark background
-                 backgroundImage: 'radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)', // Subtle gradient background
+                minHeight: "calc(100vh - 64px)", // Adjust if AppBar height differs
+                paddingTop: "64px", // Match AppBar height
+                backgroundColor: theme.palette.background.default, // Use theme default background
+                // Enhanced background gradient
+                backgroundImage: `radial-gradient(circle at 10% 10%, ${theme.palette.primary.dark}10, transparent 50%), radial-gradient(circle at 90% 90%, ${theme.palette.secondary.dark}15, transparent 60%)`,
+                backgroundAttachment: 'fixed', // Keep gradient fixed during scroll
                 display: "flex",
                 justifyContent: "center",
                 p: { xs: 2, sm: 3, md: 4 }, // Responsive padding
-                boxSizing: 'border-box', // Include padding in height calculation
+                boxSizing: 'border-box',
+                overflow: 'hidden', // Prevent potential horizontal scrollbars from gradients
             }}
         >
-            <Stack // Use Stack for vertical layout of controls and list
-                spacing={4} // Spacing between control bar and task list
+            <Stack
+                spacing={4}
                 sx={{
                     width: "100%",
-                    maxWidth: "900px", // Max width for content
+                    maxWidth: "950px", // Slightly wider max width
                 }}
             >
                  {/* Header */}
-                <Typography variant="h4" fontWeight={700} color="common.white" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
-                   Activity Feed
-                </Typography>
+                 <Box sx={{ display: 'flex', justifyContent: { xs: 'center', sm: 'space-between' }, alignItems: 'center', flexWrap: 'wrap', gap: 2 }}>
+                    <Typography variant="h4" fontWeight={700} color="text.primary" >
+                        Activity Feed
+                    </Typography>
+                    {/* Display count of items shown */}
+                    <Typography variant="overline" color="text.secondary">
+                         {isLoading ? 'Loading...' : `${filteredIssues.length} item${filteredIssues.length !== 1 ? 's' : ''} found`}
+                    </Typography>
+                 </Box>
 
-                {/* Filter + Search Controls */}
+                {/* Filter + Search Controls Paper */}
                 <Paper
-                     elevation={3}
+                     elevation={4} // Slightly more elevation for the control bar
                      sx={{
                        display: "flex",
-                       flexDirection: { xs: 'column', md: 'row' }, // Stack on small, row on medium+
+                       flexDirection: { xs: 'column', lg: 'row' }, // Switch to row later on larger screens
                        justifyContent: "space-between",
-                       alignItems: { md: "center" },
-                       gap: 2,
-                       p: 2.5, // More padding inside the control bar
-                       backgroundColor: theme.palette.grey[800], // Slightly different background for controls
-                       borderRadius: 3, // Consistent rounding
-                       position: 'sticky', // Make controls sticky
-                       top: 64, // Stick below the assumed header height
-                       zIndex: 10, // Ensure it stays above scrolling content
+                       alignItems: { lg: "center" },
+                       gap: 2.5, // Increased gap
+                       p: 3, // Increased padding
+                       backgroundColor: theme.palette.background.paper, // Use theme paper background
+                       borderRadius: 4, // More rounded corners
+                       position: 'sticky',
+                       top: 72, // Adjust based on AppBar height + desired spacing
+                       zIndex: 1100, // Ensure it's above cards
+                       // Subtle border
+                       border: `1px solid ${theme.palette.divider}`,
+                       boxShadow: theme.shadows[3], // Add subtle shadow
                      }}
                 >
                     {/* Filter Toggle Group */}
-                     <Stack direction="row" alignItems="center" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1 /* Allow wrapping on small screens */}} >
-                         <FilterListIcon sx={{ color: theme.palette.grey[400], display: { xs: 'none', sm: 'block' } /* Hide icon on xs */}}/>
+                     <Stack direction="row" alignItems="center" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1.5 }} > {/* Increased gap */}
+                         <FilterListIcon sx={{ color: theme.palette.text.secondary, display: { xs: 'none', sm: 'block' } }}/>
                         <ToggleButtonGroup
                             value={selectedFilter}
                             exclusive
-                            onChange={(e, newFilter) => {
-                                if (newFilter !== null) {
-                                    setSelectedFilter(newFilter);
-                                    setExpandedTaskId(null); // Collapse all cards on filter change
-                                }
-                            }}
+                            onChange={handleFilterChange} // Use memoized handler
                             aria-label="Activity Filters"
+                            size="small" // Make buttons slightly smaller
                             sx={{
-                                // backgroundColor: theme.palette.grey[700], // Darker background for the group itself
-                                // borderRadius: 2,
-                                flexWrap: 'wrap', // Allow buttons to wrap
-                                gap: 1, // Gap between wrapped buttons
-
-                                '.MuiToggleButtonGroup-grouped': { // Target individual buttons
-                                    border: `1px solid ${theme.palette.grey[600]}`, // Subtle border
-                                    borderRadius: '8px !important', // Apply consistent border radius, !important might be needed
-                                    padding: '6px 14px',
-                                   // mx: 0.5, // Add small horizontal margin between buttons
-                                    color: theme.palette.grey[300],
-                                    backgroundColor: theme.palette.grey[700],
-                                    textTransform: "none",
-                                    transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
+                                flexWrap: 'wrap',
+                                gap: 1, // Gap between buttons
+                                // Styling for individual buttons
+                                '.MuiToggleButtonGroup-grouped': {
+                                    border: `1px solid ${theme.palette.divider}`,
+                                    borderRadius: '20px !important', // Pill shape
+                                    padding: theme.spacing(0.75, 2), // Adjust padding
+                                    color: theme.palette.text.secondary,
+                                    backgroundColor: 'transparent',
+                                    textTransform: "none", // Keep label case
+                                    transition: theme.transitions.create(['background-color', 'color', 'border-color', 'box-shadow'], { duration: theme.transitions.duration.short }),
                                     '&:hover': {
-                                         backgroundColor: theme.palette.grey[600],
-                                         color: theme.palette.common.white,
-                                         borderColor: theme.palette.grey[500],
+                                        backgroundColor: theme.palette.action.hover,
+                                        color: theme.palette.text.primary,
+                                        borderColor: theme.palette.grey[500],
                                     },
+                                    // Styling for the selected button
                                     '&.Mui-selected': {
                                         backgroundColor: theme.palette.primary.main,
                                         color: theme.palette.primary.contrastText,
                                         fontWeight: 600,
-                                        borderColor: theme.palette.primary.dark, // Darker border when selected
+                                        borderColor: `${theme.palette.primary.dark} !important`, // Ensure border color overrides
+                                        boxShadow: `0 2px 8px -2px ${theme.palette.primary.dark}`, // Add subtle shadow to selected
                                         '&:hover': {
                                             backgroundColor: theme.palette.primary.dark,
                                             borderColor: theme.palette.primary.dark,
                                         },
                                     },
-                                     // Add icons
+                                    // Icon styling within buttons
                                     '& .MuiSvgIcon-root': {
                                         marginRight: theme.spacing(0.8),
-                                        fontSize: '1rem',
-                                    },
-                                },
-                                // Remove visual separators between buttons (handled by gap now)
-                                // '.MuiToggleButtonGroup-grouped:not(:first-of-type)': {
-                                //     borderLeft: 'none',
-                                //     marginLeft: theme.spacing(0.5), // Adjust spacing if needed
-                                // },
-                                // '.MuiToggleButtonGroup-grouped:not(:last-of-type)': {
-                                //      marginRight: theme.spacing(0.5),
-                                // },
+                                        fontSize: '1.1rem', // Slightly larger icon
+                                        // Color change on select/hover can be added if needed
+                                        // color: 'inherit' // Ensures icon color matches text
+                                    }
+                                }
                             }}
                         >
                             {FILTERS.map((filter) => (
@@ -382,85 +559,93 @@ const Activity: React.FC = () => {
                     <TextField
                         variant="outlined"
                         size="small"
-                        placeholder="Search activities..."
+                        placeholder="Search name, project, assignee, description..."
                         value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
+                        onChange={handleSearchChange} // Use memoized handler
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: theme.palette.grey[400] }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary }} />
                                 </InputAdornment>
                             ),
-                             endAdornment: searchQuery && ( // Show clear button only when there's input
+                            endAdornment: searchQuery && (
                                 <InputAdornment position="end">
-                                <IconButton
-                                    aria-label="clear search"
-                                    onClick={() => setSearchQuery("")}
-                                    edge="end"
-                                    size="small"
-                                    sx={{ color: theme.palette.grey[400] }}
-                                >
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                                    <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 5.354a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
-                                    </svg>
-                                </IconButton>
+                                    <Tooltip title="Clear search">
+                                        <IconButton
+                                            aria-label="clear search"
+                                            onClick={clearSearch} // Use memoized handler
+                                            edge="end"
+                                            size="small"
+                                            sx={{ color: theme.palette.text.secondary }}
+                                        >
+                                            <ClearIcon fontSize="small" />
+                                        </IconButton>
+                                    </Tooltip>
                                 </InputAdornment>
-                             ),
+                            ),
                             sx: {
-                                borderRadius: 2, // Consistent rounding
-                                backgroundColor: theme.palette.grey[700], // Match toggle group background
-                                color: theme.palette.common.white,
-                                transition: 'border-color 0.2s ease',
-                                '& fieldset': {
-                                    borderColor: theme.palette.grey[600], // Subtle border
-                                    transition: 'border-color 0.2s ease',
+                                borderRadius: '20px', // Match filter button shape
+                                backgroundColor: theme.palette.action.focus, // Subtle background
+                                color: theme.palette.text.primary,
+                                transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                '& fieldset': { borderColor: theme.palette.divider, transition: theme.transitions.create('border-color') },
+                                '&:hover fieldset': { borderColor: theme.palette.primary.light },
+                                '&.Mui-focused': { // Add subtle glow on focus
+                                    boxShadow: `0 0 0 2px ${theme.palette.primary.main}30`,
+                                    '& fieldset': {
+                                         borderColor: theme.palette.primary.main,
+                                         borderWidth: '1px !important', // Ensure focus ring doesn't double border
+                                    }
                                 },
-                                '&:hover fieldset': {
-                                    borderColor: theme.palette.primary.light, // Border on hover
-                                },
-                                '&.Mui-focused fieldset': {
-                                    borderColor: theme.palette.primary.main, // Border on focus
-                                    borderWidth: '1px',
-                                },
-                                // Style placeholder
-                                'input::placeholder': {
-                                    color: theme.palette.grey[500],
-                                    opacity: 1,
-                                },
+                                'input::placeholder': { color: theme.palette.text.disabled, opacity: 1 }
                             }
                         }}
-                        sx={{
-                            minWidth: { xs: '100%', md: 300 }, // Full width on small, fixed on medium+
-                        }}
+                        sx={{ minWidth: { xs: '100%', lg: 350 } }} // Take full width on small, fixed on large
                     />
                 </Paper>
 
-                {/* Task List Area */}
-                {/* Adjust maxHeight calculation if needed based on your actual sticky header/controls height */}
-                <Box sx={{ overflowY: "auto", maxHeight: 'calc(100vh - 64px - 100px - 32px)', /* vh - header - controls - stack_spacing */ pr: 0.5 /* Padding for scrollbar space */ }}>
-                    {filteredTasks.length > 0 ? (
-                         <Stack spacing={0}> {/* No extra space needed, handled by Card margin */}
-                            {filteredTasks.map((task) => (
+                {/* Activity List Area */}
+                {/* Use overflowY on a nested Box to ensure sticky header works correctly */}
+                <Box sx={{ flexGrow: 1, overflowY: "auto", pr: 0.5, // Add slight padding for scrollbar space
+                    // Calculate max height to allow scrolling within the container below the sticky header
+                    // Adjust '180px' based on the actual height of header + filter bar + spacing
+                     maxHeight: 'calc(100vh - 64px - 80px - 64px - 32px)', // Vh - TopPad - Header - FilterBar - StackSpacing
+                     minHeight: 200, // Ensure a minimum height even if empty
+                }}>
+                    {isLoading ? (
+                        // Loading State
+                        <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%', minHeight: 200 }}>
+                            <CircularProgress />
+                        </Box>
+                    ) : filteredIssues.length > 0 ? (
+                        // List of Cards
+                         <Stack spacing={0}> {/* Let cards handle their own margin bottom */}
+                            {filteredIssues.map((issue, index) => ( // Pass index for stagger
                                 <ActivityCard
-                                    key={task.id}
-                                    task={task}
-                                    isExpanded={expandedTaskId === task.id}
+                                    key={issue.id}
+                                    issue={issue}
+                                    isExpanded={expandedIssueId === issue.id}
                                     onToggleExpand={handleToggleExpand}
                                     onNavigateToCalendar={handleNavigateToCalendar}
+                                    onNavigateToIssue={handleNavigateToIssue}
+                                    index={index} // Pass index here
                                 />
                             ))}
                          </Stack>
                     ) : (
                          // Empty State Message
-                         <Fade in timeout={500}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 8, color: theme.palette.grey[500]}}>
-                                <ErrorOutlineIcon sx={{ fontSize: 48, mb: 2 }} />
-                                <Typography variant="h6" >
+                         <Fade in timeout={TRANSITION_DURATION}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 8, color: theme.palette.text.secondary, textAlign: 'center' }}>
+                                <ErrorOutlineIcon sx={{ fontSize: 56, mb: 2, color: theme.palette.warning.main }} /> {/* Larger icon, warning color */}
+                                <Typography variant="h6" fontWeight={500} >
                                     No activities found
                                 </Typography>
-                                <Typography variant="body2" >
-                                    Try adjusting your search or filters.
+                                <Typography variant="body1" >
+                                    {searchQuery ? "Try adjusting your search query." : "Try selecting a different filter."}
                                 </Typography>
+                                {searchQuery && (
+                                    <Button onClick={clearSearch} variant="text" sx={{ mt: 2}}>Clear Search</Button>
+                                )}
                             </Box>
                          </Fade>
                     )}
