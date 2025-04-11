@@ -30,7 +30,6 @@ import { logout } from "../utils/account.utils";
  *
  * @returns {JSX.Element} The Topbar component.
  */
-
 interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
@@ -47,8 +46,14 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   // For redirecting the user after logout (if desired)
   const navigate = useNavigate();
 
-  // Handle the actual logout logic plus optional redirect
-  const handleLogout = () => {
+  /**
+   * Calls the `logout()` function to remove user data (e.g., from localStorage/cookies),
+   * then navigates the user back to the home page ("/").
+   *
+   * @function handleLogout
+   * @returns {void}
+   */
+  const handleLogout = (): void => {
     logout();
     navigate("/");
   };
@@ -106,13 +111,22 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
             <PersonOutlinedIcon />
           </IconButton>
 
-          {/* Conditionally render the Logout button below the icon */}
+          {/**
+           * Logout button dropdown:
+           *
+           * Displays a red "Logout" button with curved edges when the user
+           * hovers over the Person icon. Clicking it triggers handleLogout().
+           *
+           * @name LogoutButton
+           * @description
+           *   A hover-triggered button that clears session data via `logout()`
+           *   and redirects the user to the homepage.
+           */}
           {showLogout && (
             <Box
               position="absolute"
               top="40px"
               right="0"
-              // Remove padding and border for an "invisible" surrounding area
               p={0}
               border="none"
               bgcolor="transparent"
@@ -125,7 +139,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
                   padding: "0.5rem 1rem",
                   border: "none",
                   cursor: "pointer",
-                  // Make the edges curved
                   borderRadius: "4px",
                 }}
               >
