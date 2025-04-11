@@ -1,3 +1,15 @@
+/**
+ * Renders the main content area for the Calendar page within the application's layout.
+ * This component is responsible for setting up the overall structure of the calendar view,
+ * including the page title and ensuring the calendar itself is displayed correctly
+ * within the available space provided by the parent layout component (likely via React Router's Outlet).
+ *
+ * The core visual presentation and interactive functionality of the calendar are delegated
+ * to the `CustomCalendar` component. `CalendarPage` acts primarily as a container,
+ * integrating the specialized `CustomCalendar` into the broader page context and applying
+ * necessary layout adjustments (like flexbox) to manage spacing and responsiveness.
+ * It utilizes Material UI's `Box` and `Typography` for layout and titling, respectively.
+ */
 import React from 'react';
 import { Box, Typography, useTheme } from '@mui/material'; // Added useTheme
 import CustomCalendar from '../Components/Calendar/CustomCalendar'; // Verify this path is correct
