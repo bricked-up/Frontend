@@ -95,8 +95,8 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           <SettingsOutlinedIcon />
         </IconButton>
 
-        {/* Container holding Person Icon + Logout Menu. 
-            Mouse leaves this box entirely => hide the menu. */}
+        {/* Container holding Person Icon + Logout Menu.
+            Mouse leaves this box => hide the menu. */}
         <Box
           position="relative"
           onMouseEnter={() => setShowLogout(true)}
@@ -112,13 +112,25 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
               position="absolute"
               top="40px"
               right="0"
-              p="8px"
-              bgcolor="white"
-              border="1px solid #ccc"
-              borderRadius="4px"
-              // Add styles or MUI components as desired
+              // Remove padding and border for an "invisible" surrounding area
+              p={0}
+              border="none"
+              bgcolor="transparent"
             >
-              <button onClick={handleLogout}>Logout</button>
+              <button
+                onClick={handleLogout}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "0.5rem 1rem",
+                  border: "none",
+                  cursor: "pointer",
+                  // Make the edges curved
+                  borderRadius: "4px",
+                }}
+              >
+                Logout
+              </button>
             </Box>
           )}
         </Box>
