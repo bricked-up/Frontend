@@ -44,7 +44,9 @@ const NavBar: React.FC = () => {
       <div className="actions">
         <ThemeToggleButton />
         <HomeButton />
-        {user && user.email ? <ProfileButton /> : <LoginButton />}
+        {/*{user && user.email ? <ProfileButton /> : <LoginButton />}*/}
+        {/*Issue in the Profile Button*/}
+        {<LoginButton />}
       </div>
     </nav >
   );
