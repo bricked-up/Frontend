@@ -7,12 +7,29 @@ import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
-import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewTeam";
+import ViewProject from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import Activity from "./Activity";
+import Calendar from "./Calendar";
+
+/**
+ * Main application component that sets up the routing and theming for the entire app.
+ * It uses React Router for navigation and Material-UI for styling and theming.
+ *
+ * @component
+ * @returns {JSX.Element}
+ *
+ * @example
+ * return(
+ *   <App />
+ * )
+ * FYI REMOVED DASHBOARD SINCE IT WAS USELESS AND MADE VIEWPROJECT AS THE MAIN DASHBOARD (DEFAULT PAGE)
+ * 
+ */
+
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -28,7 +45,7 @@ function App() {
             <Routes>
               {user ?
                 <Route element={<Layout />}>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/" element={<ViewProject />} />
                 </Route>
                 :
                 <Route path="/" element={<LandingPage />} />
@@ -71,16 +88,18 @@ function App() {
               {/* Protected Routes */}
               <Route element={<Layout />}>
                 <Route
-                  path="/dashboard"
+                  path="/viewproject"
                   element={
                     <ProtectedRoute>
-                      <Dashboard />
+                      <ViewProject />
                     </ProtectedRoute>
                   }
                 />
 
-                <Route path="/view_team" element={<ViewTeams />} />
                 <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/calendar" element={<Calendar />} />
+
               </Route>
 
               {/* routes for 404 and server errors */}

@@ -5,6 +5,19 @@ import { tokens } from "../theme"; // Assuming tokens provides color definitions
 import Header from "./Header"; // Assuming Header component exists
 import { mockDataContacts } from "../assets/mockData"; // Using Contacts data
 
+/**
+ * Renders the page responsible for displaying contact information within the application.
+ * This component leverages the Material UI `DataGrid` to present a structured table of contacts,
+ * sourced from mock data (`mockDataContacts`). It sets up the primary view for Browse and interacting
+ * with the contact list, including features like sorting, filtering, and pagination.
+ *
+ * It incorporates a `Header` component to display the page title ("Contacts") and subtitle.
+ * The `DataGrid` is enclosed within a `Paper` component for visual structure and elevation.
+ * Extensive custom styling is applied using the application's theme (`tokens` and `useTheme`),
+ * specifically targeting various parts of the `DataGrid` (headers, cells, rows, toolbar, footer, scrollbars)
+ * to ensure a consistent look and feel. The page itself features a themed background with radial gradients.
+ */
+
 // Define columns outside the component if they don't rely on component state/props
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
@@ -56,7 +69,7 @@ const columns: GridColDef[] = [
 ];
 
 
-const ViewTeam = () => {
+const ViewProject = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode); // Get colors from tokens
 
@@ -214,4 +227,4 @@ const ViewTeam = () => {
     );
 };
 
-export default ViewTeam;
+export default ViewProject;
