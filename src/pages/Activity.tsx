@@ -36,10 +36,8 @@ import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
 import PriorityHighIcon from '@mui/icons-material/PriorityHigh';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney'; // Icon for Cost
 import ClearIcon from '@mui/icons-material/Clear'; // Icon for clearing search
-
 import { useNavigate } from "react-router-dom";
 import { format, parseISO, isValid } from 'date-fns'; // Added isValid for robust date checking
-
 // --- Corrected Import Statement ---
 // Import the actual exported names and types from the file
 import {
@@ -49,6 +47,23 @@ import {
     getProjectName,  // Use helper function
     MockUser         // Import MockUser type for clarity in getUserName
 } from "../utils/mock_Activity_Calendar_Data"; // Adjusted path assuming it's relative
+
+/**
+ * Renders the primary "Activity Feed" page, displaying a dynamic list of issues or tasks.
+ * This component serves as a central hub for users to view relevant activities, sourcing data
+ * (currently from mock data) and presenting each item as an interactive card using the
+ * nested `ActivityCard` component. It provides an overview of issue names, projects,
+ * priorities, and other key details at a glance.
+ *
+ * Includes robust client-side filtering and searching capabilities, allowing users to
+ * narrow down the activity list based on predefined filters (like priority or due date)
+ * or a text search query matching various fields (name, project, assignee, description).
+ * It manages the expanded state of individual activity cards for viewing detailed information
+ * and utilizes React Router's `useNavigate` hook to link users to related sections like
+ * the calendar or specific issue/project pages. The component leverages Material UI for
+ * layout, styling, interactive controls, and animations, ensuring a consistent and
+ * responsive user experience with theme integration.
+ */
 
 // --- Constants ---
 // Added 'All' filter as a default starting point

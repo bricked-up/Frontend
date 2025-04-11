@@ -5,6 +5,20 @@ import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import "../css/dashboard.css";
 
+/**
+ * Provides the core structural layout for the entire application. This component
+ * orchestrates the arrangement of persistent UI elements like the navigation Sidebar
+ * and the Topbar, wrapping the main content area where different pages are rendered
+ * based on the current route.
+ *
+ * It manages the visibility state of the Sidebar (`isSidebar`) and uses this state
+ * to dynamically adjust the layout, specifically applying a margin to the main content
+ * area when the Sidebar is open, ensuring content doesn't overlap. The main content
+ * itself is rendered via React Router's `<Outlet />` component within a dedicated,
+ * scrollable `Box` that applies consistent padding and background color using the theme.
+ * The Topbar is made sticky for constant visibility.
+ */
+
 const Layout: React.FC = () => {
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const theme = useTheme(); // Get the theme object

@@ -2,6 +2,9 @@
 
 // --- Interfaces based on Go Structs & Requirements ---
 
+
+// This the mock data passed to both calendar and activity page. This attributes are the same as how it is set for the backend
+
 export interface MockOrganization {
   id: number;
   name: string;

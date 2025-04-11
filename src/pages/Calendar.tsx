@@ -1,3 +1,7 @@
+import React from 'react';
+import { Box, Typography, useTheme } from '@mui/material'; // Added useTheme
+import CustomCalendar from '../Components/Calendar/CustomCalendar';
+
 /**
  * Renders the main content area for the Calendar page within the application's layout.
  * This component is responsible for setting up the overall structure of the calendar view,
@@ -10,13 +14,7 @@
  * necessary layout adjustments (like flexbox) to manage spacing and responsiveness.
  * It utilizes Material UI's `Box` and `Typography` for layout and titling, respectively.
  */
-import React from 'react';
-import { Box, Typography, useTheme } from '@mui/material'; // Added useTheme
-import CustomCalendar from '../Components/Calendar/CustomCalendar'; // Verify this path is correct
 
-// REMOVE these incorrect imports:
-// import Layout from '../Components/Sidebar'; // Incorrect
-// import { Sidebar } from 'react-pro-sidebar'; // Incorrect
 
 // This component should render *only* the content for the calendar page area,
 // assuming it's rendered within the <Outlet /> of your main Layout.tsx
