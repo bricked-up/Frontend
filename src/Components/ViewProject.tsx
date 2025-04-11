@@ -56,7 +56,7 @@ const columns: GridColDef[] = [
 ];
 
 
-const ViewTeam = () => {
+const ViewProject = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode); // Get colors from tokens
 
@@ -214,4 +214,4 @@ const ViewTeam = () => {
     );
 };
 
-export default ViewTeam;
+export default ViewProject;
