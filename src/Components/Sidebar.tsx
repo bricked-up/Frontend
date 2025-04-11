@@ -93,8 +93,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
 
         {isSidebar && (
           <Box>
-            <Item title="View Teams" to="/viewteam" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Create Team" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="View Projects" to="/viewteam" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Create Projects" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
             <Item title="Change Profile" to="/about_user" icon={<PersonOutlinedIcon />} selected={selected} setSelected={setSelected} />
             <Item title="Activity" to="/activity" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
             <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
