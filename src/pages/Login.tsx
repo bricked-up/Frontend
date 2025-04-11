@@ -228,7 +228,7 @@ const Login = () => {
                 onClick={async () => {
                   const response = await authUser(account, password, "signup")
                   if (response === 500) {
-                    navigate("/404");
+                    navigate("/500");
                   }
                   if (response === 200) {
                     setUser({ ...user, email: account });
