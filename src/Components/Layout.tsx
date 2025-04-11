@@ -17,7 +17,7 @@ const Layout: React.FC = () => {
   }, [isSidebar]);
 
   return (
-    <Box className="dashboard" sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box className="viewProject" sx={{ display: "flex", minHeight: "100vh" }}>
       {/* Sidebar */}
       <Sidebar isSidebar={isSidebar} setIsSidebar={setIsSidebar} />
 
