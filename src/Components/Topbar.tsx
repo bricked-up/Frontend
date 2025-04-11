@@ -1,5 +1,5 @@
+import React, { useState, useContext } from "react";
 import { Box, IconButton, useTheme } from "@mui/material";
-import { useContext } from "react";
 import { ColorModeContext, tokens } from "../theme";
 import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
@@ -8,10 +8,8 @@ import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined
 import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
-
-interface TopbarProps {
-  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-}
+import { useNavigate } from "react-router-dom";
+import { logout } from "../utils/account.utils";
 
 /**
  * The topbar component
@@ -32,14 +30,33 @@ interface TopbarProps {
  *
  * @returns {JSX.Element} The Topbar component.
  */
-
-const Topbar: React.FC<{
+interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
   setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-}> = ({ setIsSidebar, setIsCollapsed }) => {
+}
+
+const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+
+  // State to control visibility of the logout popup
+  const [showLogout, setShowLogout] = useState(false);
+
+  // For redirecting the user after logout (if desired)
+  const navigate = useNavigate();
+
+  /**
+   * Calls the `logout()` function to remove user data (e.g., from localStorage/cookies),
+   * then navigates the user back to the home page ("/").
+   *
+   * @function handleLogout
+   * @returns {void}
+   */
+  const handleLogout = (): void => {
+    logout();
+    navigate("/");
+  };
 
   return (
     <Box
@@ -66,7 +83,7 @@ const Topbar: React.FC<{
       </Box>
 
       {/* ICONS */}
-      <Box display="flex">
+      <Box display="flex" alignItems="center">
         <IconButton onClick={colorMode.toggleColorMode}>
           {theme.palette.mode === "dark" ? (
             <DarkModeOutlinedIcon />
@@ -74,15 +91,62 @@ const Topbar: React.FC<{
             <LightModeOutlinedIcon />
           )}
         </IconButton>
+
         <IconButton>
           <NotificationsOutlinedIcon />
         </IconButton>
+
         <IconButton>
           <SettingsOutlinedIcon />
         </IconButton>
-        <IconButton>
-          <PersonOutlinedIcon />
-        </IconButton>
+
+        {/* Container holding Person Icon + Logout Menu.
+            Mouse leaves this box => hide the menu. */}
+        <Box
+          position="relative"
+          onMouseEnter={() => setShowLogout(true)}
+          onMouseLeave={() => setShowLogout(false)}
+        >
+          <IconButton aria-label="Profile Icon">
+            <PersonOutlinedIcon />
+          </IconButton>
+
+          {/**
+           * Logout button dropdown:
+           *
+           * Displays a red "Logout" button with curved edges when the user
+           * hovers over the Person icon. Clicking it triggers handleLogout().
+           *
+           * @name LogoutButton
+           * @description
+           *   A hover-triggered button that clears session data via `logout()`
+           *   and redirects the user to the homepage.
+           */}
+          {showLogout && (
+            <Box
+              position="absolute"
+              top="40px"
+              right="0"
+              p={0}
+              border="none"
+              bgcolor="transparent"
+            >
+              <button
+                onClick={handleLogout}
+                style={{
+                  backgroundColor: "red",
+                  color: "white",
+                  padding: "0.5rem 1rem",
+                  border: "none",
+                  cursor: "pointer",
+                  borderRadius: "4px",
+                }}
+              >
+                Logout
+              </button>
+            </Box>
+          )}
+        </Box>
       </Box>
     </Box>
   );
