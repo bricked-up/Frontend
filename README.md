@@ -31,4 +31,50 @@ be added **manually** to the package.json. Any changes to the package-lock.json 
 
 # Routing
 
+### All user related
+/user/:usrId
+    /about         - about the user
+    /projects      - list of the projects they are in
+    /organizations - list of all the organizations they are in
+    /issues        - all the issues the user has assigned to them
+
+### All project related
+/project/:projectId
+    /users   - all the users in the project
+    /issues  - all issues for the given project
+
+### All org related
+/organization/:orgId
+    /users     - all of the users in the org
+    /projects - all of the project in the org
+    /issues   - all issues of the organization 
+
+if for example you are in /organization/:orgId/users and click on a user
+change the URL to /user/:usrId/about and so on
+
+# documentation of our internal APIs
+
+### All user related
+/user/:usrId
+    /about         - about the user
+    /projects      - list of the projects they are in
+    /organizations - list of all the organizations they are in
+    /issues        - all the issues the user has assigned to them
+
+### All project related
+/project/:projectId
+    /users   - all the users in the project
+    /issues  - all issues for the given project
+
+### All org related
+/organization/:orgId
+    /users     - all of the users in the org
+    /projects - all of the project in the org
+    /issues   - all issues of the organization 
+
+if for example you are in /organization/:orgId/users and click on a user
+change the URL to /user/:usrId/about and so on
+
+# documentation of our internal APIs
+
 TODO:()
