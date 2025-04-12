@@ -1,6 +1,6 @@
 # Getting Started
 
-This is the repo for the frontent. We are using `React` and `Typescript`. The main entry point is found
+This is the repo for the frontend. We are using `React` and `Typescript`. The main entry point is found
 int the index.tsx file but the actual code begins in the App.tsx. Please note that the App.tsx should
 only be used for routing and global context wrappers. 
 
@@ -21,7 +21,7 @@ to test run, `npm test` and it will test any files that have the .test in their 
 
 ## Coding style and commenting
 
-please refere to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
+please refer to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
 PR naming as anything that does not match the expected format will not be accepted. 
 
 # NPM
@@ -29,6 +29,6 @@ PR naming as anything that does not match the expected format will not be accept
 If you are including a custom third party library, it first must be approved by the other teams members and must
 be added **manually** to the package.json. Any changes to the package-lock.json file will be rejected.
 
-# documentation of our interal APIs
+# Routing
 
 TODO:()

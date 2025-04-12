@@ -1,4 +1,3 @@
-import React from "react";
 import "../css/App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
@@ -6,15 +5,18 @@ import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
 import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
-import ProtectedRoute from "../Components/ProttectedRoute";
+import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
 import ViewTeams from "../Components/ViewTeam";
+import { useUser } from "../hooks/UserContext";
+import Error500Page from "./Error500Page";
 
 function App() {
   const [theme, colorMode] = useMode();
+  const { user } = useUser();
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -24,31 +26,46 @@ function App() {
           <div className="App">
             {/*set up Routes */}
             <Routes>
-              <Route path="/" element={<LandingPage />} />
+              {user ?
+                <Route element={<Layout />}>
+                  <Route path="/" element={<Dashboard />} />
+                </Route>
+                :
+                <Route path="/" element={<LandingPage />} />
+              }
+
               {/*route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
 
               {/* user related routes */}
-              <Route path="/:userId" element={<ProtectedRoute><AboutUser /></ProtectedRoute>}>
+              <Route path="/user" >
                 {/* all of these routes are subroutes of :userId*/}
-                <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
-                <Route element={<Layout />}>
-                  <Route path="organizations/:orgId" />
-                  <Route path="projects/:projectId" />
+                <Route path=":userId">
+                  <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
+                  <Route element={<Layout />}>
+                    <Route path="organizations" />
+                    <Route path="projects" />
+                    <Route path="issues" />
+                  </Route>
                 </Route>
               </Route>
 
               {/* project related routes */}
-              <Route path="/:projectId">
-                <Route path="users/:userId" />
+              <Route path="/project">
+                <Route path=":projectId">
+                  <Route path="users" />
+                  <Route path="issues" />
+                </Route>
               </Route>
 
               {/* organization related routes */}
-              <Route path="/:orgId">
-                <Route path="users" />
-                <Route path="users/:userId" />
-                <Route path="projects/:projectId" />
+              <Route path="/organization">
+                <Route path=":orgId">
+                  <Route path="users" />
+                  <Route path="projects" />
+                  <Route path="issues" />
+                </Route>
               </Route>
 
               {/* Protected Routes */}
@@ -61,15 +78,14 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/viewteam" element={<ViewTeams />} />
-                <Route path="/about_user" element={<AboutUser />} />
 
-                <Route path="/test" element={<Dashboard />}></Route>
+                <Route path="/view_team" element={<ViewTeams />} />
+                <Route path="/about_user" element={<AboutUser />} />
               </Route>
 
               {/* routes for 404 and server errors */}
               <Route path="*" element={<Page404 />} />
-              <Route path="/test404" element={<Page404 />} />
+              
             </Routes>
           </div>
         </Router>
