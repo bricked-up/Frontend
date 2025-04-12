@@ -13,7 +13,7 @@ import { Route, Routes } from "react-router-dom";
  * 
  * @component
  * @example
- * return ()
+ * return (
  *   <Page404 />
  * )
  */
@@ -24,7 +24,7 @@ const Page404Content: React.FC = () => {
     <Box
       className="box"
       sx={{
-        backgroundColor: theme.palette.primary.main,
+        backgroundColor: "transparent", // Removed colored background
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
