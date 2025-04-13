@@ -11,6 +11,7 @@ import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
 import ViewMembers from "../Components/ViewMembers";
+import ViewMembers from "../Components/ViewMembers";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 
@@ -79,7 +80,7 @@ function App() {
                   }
                 />
 
-                <Route path="/view_team" element={<ViewMembers />} />
+                <Route path="/ViewMembers" element={<ViewMembers />} />
                 <Route path="/about_user" element={<AboutUser />} />
               </Route>
 

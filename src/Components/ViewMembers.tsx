@@ -1,5 +1,6 @@
 // src/components/ViewMembers.tsx
 import React, { useState, useMemo } from "react";
+import { User } from "../utils/types";
 import {
   Box,
   Typography,
@@ -14,44 +15,56 @@ import {
   TextField,
 } from "@mui/material";
 
-// Define the user type
-interface User {
-  id: number;
-  name: string;
-  email: string;
-  role: string;
-}
-
-const sampleMembers: User[] = [
-  { id: 1, name: "Alice", email: "alice@email.com", role: "Developer" },
-  { id: 2, name: "Bob", email: "bob@email.com", role: "Manager" },
-  { id: 3, name: "Charlie", email: "charlie@email.com", role: "Designer" },
-  { id: 4, name: "Dave", email: "dave@email.com", role: "QA" },
-  { id: 5, name: "Eve", email: "eve@email.com", role: "Support" },
-  { id: 6, name: "Frank", email: "frank@email.com", role: "DevOps" },
-  { id: 7, name: "Grace", email: "grace@email.com", role: "HR" },
-  { id: 8, name: "Hannah", email: "hannah@email.com", role: "Product Owner" },
-  { id: 9, name: "Ivan", email: "ivan@email.com", role: "Intern" },
-  { id: 10, name: "Judy", email: "judy@email.com", role: "Developer" },
+/**
+ * Sample user data for demonstration.
+ * `role` is mocked since the original User type doesn't include it.
+ */
+const sampleMembers: (User & { role?: string })[] = [
+  { email: "alice@email.com", displayName: "Alice", password: "", verified: true, role: "Developer" },
+  { email: "bob@email.com", displayName: "Bob", password: "", verified: true, role: "Manager" },
+  { email: "charlie@email.com", displayName: "Charlie", password: "", verified: true, role: "Designer" },
+  { email: "dave@email.com", displayName: "Dave", password: "", verified: true, role: "QA" },
+  { email: "eve@email.com", displayName: "Eve", password: "", verified: true, role: "Support" },
+  { email: "frank@email.com", displayName: "Frank", password: "", verified: true, role: "DevOps" },
+  { email: "grace@email.com", displayName: "Grace", password: "", verified: true, role: "HR" },
+  { email: "hannah@email.com", displayName: "Hannah", password: "", verified: true, role: "Product Owner" },
+  { email: "ivan@email.com", displayName: "Ivan", password: "", verified: true, role: "Intern" },
+  { email: "judy@email.com", displayName: "Judy", password: "", verified: true, role: "Developer" },
 ];
 
+/**
+ * Component to view a list of members with search and pagination features.
+ * Uses sample static data.
+ */
 const ViewMembers: React.FC = () => {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchQuery, setSearchQuery] = useState("");
 
+  /**
+   * Returns filtered and alphabetically sorted list based on displayName.
+   */
   const sortedAndFiltered = useMemo(() => {
     return sampleMembers
       .filter((user) =>
-        user.name.toLowerCase().includes(searchQuery.toLowerCase())
+        user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
       )
-      .sort((a, b) => a.name.localeCompare(b.name));
+      .sort((a, b) => a.displayName.localeCompare(b.displayName));
   }, [searchQuery]);
 
+  /**
+   * Handles pagination page change.
+   * @param _ Event (ignored)
+   * @param newPage New page number
+   */
   const handleChangePage = (_: unknown, newPage: number) => {
     setPage(newPage);
   };
 
+  /**
+   * Handles change in number of rows per page.
+   * @param event Input change event
+   */
   const handleChangeRowsPerPage = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -89,11 +102,11 @@ const ViewMembers: React.FC = () => {
           <TableBody>
             {sortedAndFiltered
               .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-              .map((member) => (
-                <TableRow key={member.id} hover>
-                  <TableCell sx={{ color: "#fff" }}>{member.name}</TableCell>
+              .map((member, index) => (
+                <TableRow key={index} hover>
+                  <TableCell sx={{ color: "#fff" }}>{member.displayName}</TableCell>
                   <TableCell sx={{ color: "#fff" }}>{member.email}</TableCell>
-                  <TableCell sx={{ color: "#fff" }}>{member.role}</TableCell>
+                  <TableCell sx={{ color: "#fff" }}>{member.role ?? "—"}</TableCell>
                 </TableRow>
               ))}
             {sortedAndFiltered.length === 0 && (
