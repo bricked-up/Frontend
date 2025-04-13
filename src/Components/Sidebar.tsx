@@ -1,21 +1,21 @@
-import { JSX } from "react";
-import { useState } from "react";
-import { Box, IconButton, Typography, Drawer, useTheme } from "@mui/material";
+import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
-import HomeOutlinedIcon from "@mui/icons-material/HomeOutlined";
+import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
 import ContactsOutlinedIcon from "@mui/icons-material/ContactsOutlined";
-import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
-import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import { tokens } from "../theme";
+import { useState } from "react";
+import React from "react";
+
 
 interface ItemProps {
   title: string;
   to: string;
-  icon: JSX.Element;
+  icon: React.ReactNode;
   selected: string;
   setSelected: (title: string) => void;
 }
@@ -25,23 +25,7 @@ interface SidebarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-/**
- * Sidebar Menu Item Component
- *
- * Represents a single menu item in the sidebar.
- *
- * @component
- * @param {ItemProps} props - The component props.
- * @returns {JSX.Element} A clickable sidebar item.
- */
-
-const Item: React.FC<ItemProps> = ({
-  title,
-  to,
-  icon,
-  selected,
-  setSelected,
-}) => {
+const Item: React.FC<ItemProps> = ({ title, to, icon, selected, setSelected }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -62,7 +46,6 @@ const Item: React.FC<ItemProps> = ({
           cursor: "pointer",
           "&:hover": { backgroundColor: colors.primary[400] },
         }}
-        onClick={() => setSelected(title)}
       >
         {icon}
         <Typography sx={{ marginLeft: "15px" }}>{title}</Typography>
@@ -71,16 +54,6 @@ const Item: React.FC<ItemProps> = ({
   );
 };
 
-/**
- * Sidebar Component
- *
- * A collapsible sidebar that contains navigation items.
- *
- * @component
- * @param {SidebarProps} props - The component props.
- * @returns {JSX.Element} The Sidebar component.
- */
-
 const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -88,19 +61,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
 
   return (
     <>
-      <Drawer
-        open={isSidebar}
-        onClose={() => setIsSidebar(false)}
-        variant="persistent"
+      <Box
         sx={{
-          width: isSidebar ? 250 : 0,
-          flexShrink: 0,
-          "& .MuiDrawer-paper": {
-            width: isSidebar ? 250 : 0,
-            backgroundColor: colors.primary[400],
-            color: colors.grey[100],
-            transition: "width 0.3s ease",
-          },
+          width: isSidebar ? "250px" : "0",
+          overflowX: "hidden",
+          height: "100vh",
+          position: "fixed",
+          top: 0,
+          left: 0,
+          backgroundColor: colors.primary[400],
+          color: colors.grey[100],
+          transition: "width 0.3s ease",
+          zIndex: 1200,
         }}
       >
         <Box
@@ -111,72 +83,32 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             justifyContent: "space-between",
           }}
         >
-          <Typography variant="h5" color={colors.grey[100]}>
-            Bricked Up
+          <Typography variant="h5" sx={{ whiteSpace: "nowrap", overflow: "hidden" }}>
+            {isSidebar && "Bricked Up"}
           </Typography>
-          <IconButton onClick={() => setIsSidebar(false)}>
+          <IconButton onClick={() => setIsSidebar(false)} sx={{ color: colors.grey[100] }}>
             <MenuOutlinedIcon />
           </IconButton>
         </Box>
 
-        <Box>
-          <Item
-            title="Dashboard"
-            to="/dashboard"
-            icon={<HomeOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="View Teams"
-            to="/viewteam"
-            icon={<PeopleOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Create Team"
-            to="/contacts"
-            icon={<ContactsOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Change Profile"
-            to="/about_user"
-            icon={<PersonOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Activity"
-            to="/activity"
-            icon={<ReceiptOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Calendar"
-            to="/calendar"
-            icon={<CalendarTodayOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="FAQ Page"
-            to="/faq"
-            icon={<HelpOutlineOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-        </Box>
-      </Drawer>
+        {isSidebar && (
+          <Box>
+            <Item title="View Projects" to="/viewteam" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Create Projects" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Change Profile" to="/about_user" icon={<PersonOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Activity" to="/activity" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
+            <Item title="FAQ Page" to="/faq" icon={<HelpOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} />
+          </Box>
+        )}
+      </Box>
 
+      {/* Toggle button when collapsed */}
       {!isSidebar && (
         <IconButton
           onClick={() => setIsSidebar(true)}
           sx={{
-            position: "absolute",
+            position: "fixed",
             top: 14,
             left: 10,
             backgroundColor: colors.primary[400],

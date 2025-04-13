@@ -1,0 +1,30 @@
+.rbc-calendar {
+    background-color: #1e1e1e;
+    color: white;
+}
+
+.rbc-toolbar {
+    display: none; /* We handle this with MUI buttons */
+}
+
+.rbc-month-view, .rbc-time-view {
+    border-color: #444;
+}
+
+.rbc-event {
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.85rem;
+}
+
+.rbc-today {
+    background-color: #2e2e2e !important;
+}
+
+.rbc-time-slot {
+    border-color: #444;
+}
+
+.rbc-time-header-content, .rbc-timeslot-group {
+    border-color: #444;
+}
