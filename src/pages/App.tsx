@@ -10,7 +10,7 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewTeams";
+import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 
@@ -38,6 +38,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
+
 
               {/* user related routes */}
               <Route path="/user" >
@@ -80,7 +81,7 @@ function App() {
                   }
                 />
 
-                <Route path="/view_team" element={<ViewTeams />} />
+                <Route path="/view_team" element={<ViewTeam />} />
                 <Route path="/about_user" element={<AboutUser />} />
               </Route>
 
