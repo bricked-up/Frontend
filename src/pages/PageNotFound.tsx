@@ -2,14 +2,14 @@ import React from "react";
 import GhostMouse from "../Components/GhostMouse";
 import { useTheme } from "@mui/material/styles";
 import Layout from "../Components/Layout";
-import { Box } from "@mui/material";
-import { Route, Routes } from "react-router-dom";
+import { Box, Button } from "@mui/material";
+import { Route, Routes, useNavigate } from "react-router-dom";
 
 /**
  * This component displays the 404 error message when the user navigates to a non-existing page.
  * 
  * It handles undefined routes and provides a link (through a button) for the user to return
- * to the landing page.
+ * the previously accessed page.
  * 
  * @component
  * @example
@@ -17,9 +17,10 @@ import { Route, Routes } from "react-router-dom";
  *   <Page404 />
  * )
  */
-const Page404Content: React.FC = () => {
+const Page404: React.FC = () => {
   const theme = useTheme();
-  
+  const navigate = useNavigate();
+
   return (
     <Box
       className="box"
@@ -29,7 +30,7 @@ const Page404Content: React.FC = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        minHeight: "calc(100vh - 104px)", // Account for topbar and padding
+        minHeight: "calc(100vh - 104px)", // Account for top bar and padding
         width: "100%",
         borderRadius: "8px",
         position: "relative",
@@ -72,26 +73,18 @@ const Page404Content: React.FC = () => {
             It seems like we couldn't find the page you were looking for
           </div>
         </div>
-        <a
+        <Button
           href="/"
           className="box__button"
           style={{ color: theme.palette.text.primary }}
+          onClick={() => { navigate(-1); }}
         >
           Go back
-        </a>
+        </Button>
       </div>
-    </Box>
+    </Box >
   );
 };
 
-const Page404: React.FC = () => {
-  return (
-    <Routes>
-      <Route element={<Layout />}>
-        <Route path="*" element={<Page404Content />} />
-      </Route>
-    </Routes>
-  );
-};
 
 export default Page404;
