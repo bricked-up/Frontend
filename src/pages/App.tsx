@@ -10,7 +10,7 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewTeam";
+import ViewTeams from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 
