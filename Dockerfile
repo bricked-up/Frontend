@@ -1,5 +1,5 @@
 # Use the latest LTS version of Node.js on Alpine Linux
-FROM node:lts-alpine
+FROM node:alpine
 
 # Set the working directory inside the container
 WORKDIR /app
@@ -8,10 +8,12 @@ WORKDIR /app
 COPY . .
 
 # Install dependencies
-RUN npm install --force
-  
+RUN apk update && apk upgrade
+RUN apk add --no-cache git
+RUN npm install --legacy-peer-deps --force
+
 # Expose the port your app runs on
 EXPOSE 3000
-  
+
 # Define the command to run your app
 CMD ["npm", "start"]
