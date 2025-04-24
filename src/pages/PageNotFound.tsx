@@ -75,7 +75,13 @@ const Page404: React.FC = () => {
         <Button
           className="box__button"
           style={{ color: theme.palette.text.primary }}
-          onClick={() => { navigate(-1); }}
+          onClick={() => {
+            if (window.history.length > 1) {
+              navigate(-1);
+            } else {
+              navigate('/');
+            }
+          }}
         >
           Go back
         </Button>
