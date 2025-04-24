@@ -74,7 +74,3 @@ change the URL to /user/:usrId/about and so on
 
 if for example you are in /organization/:orgId/users and click on a user
 change the URL to /user/:usrId/about and so on
-
-# documentation of our internal APIs
-
-TODO:()
