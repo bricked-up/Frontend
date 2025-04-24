@@ -1,9 +1,8 @@
 import React from "react";
 import GhostMouse from "../Components/GhostMouse";
 import { useTheme } from "@mui/material/styles";
-import Layout from "../Components/Layout";
 import { Box, Button } from "@mui/material";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 /**
  * This component displays the 404 error message when the user navigates to a non-existing page.
