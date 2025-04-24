@@ -73,7 +73,6 @@ const Page404: React.FC = () => {
           </div>
         </div>
         <Button
-          href="/"
           className="box__button"
           style={{ color: theme.palette.text.primary }}
           onClick={() => { navigate(-1); }}
