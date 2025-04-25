@@ -55,8 +55,6 @@ const localizer = dateFnsLocalizer({
 });
 
 // Type-safe event structure for the calendar
-// Removed 'channel' as it's no longer derived from mock data
-// Changed 'id' to number to match Issue.id
 type CalendarEvent = {
   id: number;
   title: string;
@@ -126,7 +124,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
         alignItems: 'center',
         padding: theme.spacing(1, 2),
         marginBottom: theme.spacing(2),
-        backgroundColor: theme.palette.grey[800],
+        backgroundColor: theme.palette.background.paper, // Use theme paper background
         borderRadius: "8px",
         flexWrap: 'wrap', // Allow wrapping on smaller screens
         gap: theme.spacing(1), // Add gap between wrapped items
@@ -148,7 +146,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
           <IconButton
             size="small"
             onClick={() => navigate(Navigate.PREVIOUS)}
-            sx={{ color: theme.palette.common.white, bgcolor: theme.palette.grey[600], '&:hover': { bgcolor: theme.palette.grey[500] } }}
+            sx={{ color: theme.palette.text.primary, bgcolor: theme.palette.action.hover, '&:hover': { bgcolor: theme.palette.action.selected } }}
             aria-label="Go to previous period"
           >
             <ArrowBack />
@@ -158,7 +156,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
           <IconButton
             size="small"
             onClick={() => navigate(Navigate.NEXT)}
-            sx={{ color: theme.palette.common.white, bgcolor: theme.palette.grey[600], '&:hover': { bgcolor: theme.palette.grey[500] } }}
+            sx={{ color: theme.palette.text.primary, bgcolor: theme.palette.action.hover, '&:hover': { bgcolor: theme.palette.action.selected } }}
             aria-label="Go to next period"
           >
             <ArrowForward />
@@ -170,7 +168,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
       <Typography
         variant={isMobile ? "subtitle1" : "h6"}
         sx={{
-          color: theme.palette.common.white,
+          color: theme.palette.text.primary, // Use theme text color
           fontWeight: 600,
           textAlign: 'center',
           flexGrow: 1, // Allow label to take available space
@@ -193,11 +191,10 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
               key={view}
               value={view} // 'month', 'week', or 'day'
               sx={{
-                color: theme.palette.common.white,
-                borderColor: theme.palette.grey[600],
-                // Conditional background color based on selection
-                bgcolor: toolbar.view === view ? theme.palette.action.selected : theme.palette.grey[700],
-                '&:hover': { bgcolor: theme.palette.grey[600] },
+                color: theme.palette.text.secondary, // Use theme text color
+                borderColor: theme.palette.divider, // Use theme divider color
+                bgcolor: theme.palette.action.hover, // Use theme background
+                '&:hover': { bgcolor: theme.palette.action.selected },
                 '&.Mui-selected': { // Styles for the selected button
                     color: theme.palette.primary.contrastText,
                     backgroundColor: theme.palette.primary.main,
@@ -345,21 +342,18 @@ const CustomCalendar: React.FC = () => {
   return (
     // Main container Box
     <Box sx={{
-        paddingTop: { xs: "72px", sm: "80px" },
-        height: "100vh", // Consider if this should be less if inside another container
+        height: "100%", // Let height be controlled by parent container
         display: "flex",
         flexDirection: "column",
-        bgcolor: "#1a1a1a",
-        color: "#e0e0e0",
     }}>
       {/* Header Section */}
       <Box sx={{ px: { xs: 2, sm: 4 }, py: 2, flexShrink: 0 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
-          <Typography variant="h4" sx={{ color: "#fff", fontWeight: "600", letterSpacing: "1px" }}>
+          <Typography variant="h4" sx={{ color: theme.palette.text.primary, fontWeight: "600", letterSpacing: "1px" }}>
             Task Calendar
           </Typography>
           <Tooltip title={showSettings ? "Hide Settings" : "Show Color Settings"}>
-            <IconButton onClick={() => setShowSettings(!showSettings)} sx={{ color: '#fff' }}>
+            <IconButton onClick={() => setShowSettings(!showSettings)} sx={{ color: theme.palette.text.primary }}>
               <Settings />
             </IconButton>
           </Tooltip>
@@ -370,20 +364,20 @@ const CustomCalendar: React.FC = () => {
           <Paper sx={{
             p: { xs: 2, sm: 3 },
             borderRadius: "12px",
-            backgroundColor: theme.palette.grey[800],
+            backgroundColor: theme.palette.background.paper, // Use theme paper background
             boxShadow: theme.shadows[5],
             mb: 3,
            }}>
-            <Typography variant="h6" sx={{ textAlign: "center", mb: 3, fontWeight: "600", color: "#fff" }}>
+            <Typography variant="h6" sx={{ textAlign: "center", mb: 3, fontWeight: "600", color: theme.palette.text.primary }}>
               Customize Task Color Scheme
             </Typography>
             <Grid container spacing={3} justifyContent="center" alignItems="center">
               {settingConfig.map(({ label, threshold, color, helpText }) => (
                 <Grid item xs={12} sm={6} md={4} key={label}>
-                   <Paper elevation={1} sx={{ p: 2, bgcolor: theme.palette.grey[700], borderRadius: '8px' }}>
+                   <Paper elevation={1} sx={{ p: 2, bgcolor: theme.palette.action.hover, borderRadius: '8px' }}> {/* Use theme action background */}
                       <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
                          <Stack direction="row" spacing={1.5} alignItems="center" flexGrow={1} flexWrap="wrap">
-                            <Typography sx={{ fontWeight: "500", color: "#fff", minWidth: '70px' }}>
+                            <Typography sx={{ fontWeight: "500", color: theme.palette.text.primary, minWidth: '70px' }}>
                                {label}:
                             </Typography>
                             {threshold && (
@@ -394,10 +388,10 @@ const CustomCalendar: React.FC = () => {
                                     onChange={(e) => handleSettingChange(threshold, e.target.value)}
                                     sx={{
                                       width: 70,
-                                      bgcolor: theme.palette.grey[600],
+                                      bgcolor: theme.palette.background.default, // Use theme default background
                                       borderRadius: "4px",
                                       '& .MuiInputBase-input': {
-                                        color: "#fff",
+                                        color: theme.palette.text.primary, // Use theme text color
                                         textAlign: "center",
                                         padding: '8px 5px'
                                       }
@@ -408,7 +402,7 @@ const CustomCalendar: React.FC = () => {
                                   />
                                 </Tooltip>
                             )}
-                             <Typography sx={{ fontSize: 13, color: theme.palette.grey[400], fontStyle: 'italic' }}>
+                             <Typography sx={{ fontSize: 13, color: theme.palette.text.secondary, fontStyle: 'italic' }}> {/* Use theme secondary text */}
                                {helpText} {threshold ? settings[threshold] : ''} {threshold ? 'day(s)' : ''}
                             </Typography>
                           </Stack>
@@ -420,7 +414,7 @@ const CustomCalendar: React.FC = () => {
                                 style={{
                                    width: 35,
                                    height: 35,
-                                   border: `1px solid ${theme.palette.grey[500]}`,
+                                   border: `1px solid ${theme.palette.divider}`, // Use theme divider
                                    borderRadius: '4px',
                                    cursor: 'pointer',
                                    backgroundColor: 'transparent',
@@ -442,17 +436,17 @@ const CustomCalendar: React.FC = () => {
           height: "0", // Important for flexGrow with overflow
           px: { xs: 2, sm: 4 },
           pb: 3,
-          // --- Styling overrides ---
-          '& .rbc-calendar': { backgroundColor: theme.palette.grey[900], color: "#e0e0e0", borderRadius: "8px", border: `1px solid ${theme.palette.grey[700]}`, boxShadow: theme.shadows[3], height: "100% !important" },
-          '& .rbc-header': { backgroundColor: theme.palette.grey[800], color: "#fff", borderBottom: `1px solid ${theme.palette.grey[700]}`, padding: '8px 0', textAlign: 'center', fontWeight: 500 },
-          '& .rbc-day-bg': { borderColor: theme.palette.grey[700], '&:hover': { backgroundColor: alpha(theme.palette.action.hover, 0.04) } },
+          // --- Styling overrides --- Use theme colors ---
+          '& .rbc-calendar': { backgroundColor: theme.palette.background.paper, color: theme.palette.text.primary, borderRadius: "8px", border: `1px solid ${theme.palette.divider}`, boxShadow: theme.shadows[3], height: "100% !important" },
+          '& .rbc-header': { backgroundColor: theme.palette.action.hover, color: theme.palette.text.primary, borderBottom: `1px solid ${theme.palette.divider}`, padding: '8px 0', textAlign: 'center', fontWeight: 500 },
+          '& .rbc-day-bg': { borderColor: theme.palette.divider, '&:hover': { backgroundColor: alpha(theme.palette.action.hover, 0.08) } }, // Slightly darker hover
           '& .rbc-today': { backgroundColor: alpha(theme.palette.primary.dark, 0.2) },
           '& .rbc-event': { border: 'none', padding: '2px 5px', backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText, borderRadius: '4px' },
           '& .rbc-event.rbc-selected': { backgroundColor: theme.palette.secondary.main, boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`, opacity: 1 },
           '& .rbc-event:focus': { outline: `2px solid ${theme.palette.secondary.light}`, outlineOffset: '1px' },
-          '& .rbc-off-range-bg': { backgroundColor: theme.palette.grey[800], opacity: 0.7 },
-          '& .rbc-time-header, & .rbc-time-gutter': { backgroundColor: theme.palette.grey[800], color: '#fff', borderColor: theme.palette.grey[700] },
-          '& .rbc-time-slot': { borderColor: theme.palette.grey[700] },
+          '& .rbc-off-range-bg': { backgroundColor: alpha(theme.palette.action.disabledBackground, 0.5) }, // Use disabled background
+          '& .rbc-time-header, & .rbc-time-gutter': { backgroundColor: theme.palette.action.hover, color: theme.palette.text.primary, borderColor: theme.palette.divider },
+          '& .rbc-time-slot': { borderColor: theme.palette.divider },
           '& .rbc-current-time-indicator': { backgroundColor: theme.palette.error.main, height: '2px' },
           '& .rbc-show-more': { color: theme.palette.info.light, textDecoration: 'underline', fontSize: '0.8em' }
        }}>
@@ -471,15 +465,15 @@ const CustomCalendar: React.FC = () => {
             components={calendarComponents}
             views={[Views.MONTH, Views.WEEK, Views.DAY]}
             style={{ height: "100%" }}
-            formats={{
-                 monthHeaderFormat: 'MMMM yyyy',
-                 dayHeaderFormat: (date, culture, loc) => loc ? loc.format(date, 'EEEE dd MMM', culture) : '',
-                 dayRangeHeaderFormat: ({ start, end }, culture, loc) => loc ? loc.format(start, 'MMM dd', culture) + ' - ' + loc.format(end, loc.format(start, 'MMM') === loc.format(end, 'MMM') ? 'dd' : 'MMM dd', culture) : '',
+            formats={{ // FIX: Changed monthHeaderFormat
+                 monthHeaderFormat: 'MMM yyyy', // e.g., Apr 2025
+                 dayHeaderFormat: (date, culture, loc) => loc ? loc.format(date, 'EEEE dd MMM', culture) : '', // e.g., Tuesday 08 Apr
+                 dayRangeHeaderFormat: ({ start, end }, culture, loc) => loc ? loc.format(start, 'MMM dd', culture) + ' - ' + loc.format(end, loc.format(start, 'MMM') === loc.format(end, 'MMM') ? 'dd' : 'MMM dd', culture) : '', // e.g., Apr 07 - 13
             }}
             messages={{ /* Custom messages if needed */ }}
             popup
             selectable
-            tooltipAccessor={(event: CalendarEvent) => `${event.title}\n${format(event.start, 'p')}`}
+            tooltipAccessor={(event: CalendarEvent) => `${event.title}\n${format(event.start, 'p')}`} // Tooltip format
           />
       </Box>
     </Box>

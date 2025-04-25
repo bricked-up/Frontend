@@ -1,4 +1,3 @@
-//SCROLL DOWN TO SEE THE JSDOC
 import React, { useState, useMemo } from "react";
 import {
     Box,
@@ -82,6 +81,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
         <Grow in timeout={TRANSITION_DURATION}>
             <Card
                 sx={{
+                    // Keeping specific card styling as requested
                     backgroundColor: theme.palette.grey[900],
                     color: theme.palette.common.white,
                     borderRadius: 3,
@@ -132,8 +132,9 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                                     <Typography variant="overline" color="text.secondary">
                                         Completed By
                                     </Typography>
+                                    {/* FIX: Adjusted Chip styling for icon alignment */}
                                     <Chip
-                                        icon={<CalendarTodayIcon />}
+                                        icon={<CalendarTodayIcon sx={{ fontSize: '1rem' /* Optional: Adjust icon size */ }} />}
                                         label={formattedDueDate}
                                         variant="outlined"
                                         size="small"
@@ -144,6 +145,16 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                                             color: theme.palette.warning.light,
                                             borderColor: theme.palette.warning.dark,
                                             backgroundColor: 'rgba(255, 183, 77, 0.1)',
+                                            height: 'auto', // Allow height to adjust naturally
+                                            '& .MuiChip-label': { // Target the label specifically
+                                                paddingTop: '3px', // Fine-tune vertical alignment if needed
+                                                paddingBottom: '3px',
+                                            },
+                                            '& .MuiChip-icon': { // Target the icon specifically
+                                                marginLeft: '8px', // Adjust spacing if needed
+                                                marginRight: '-4px', // Adjust spacing if needed
+                                                // Icons in MUI Chip are usually centered well by default with flex
+                                            },
                                             '&:hover': {
                                                 backgroundColor: 'rgba(255, 183, 77, 0.2)',
                                             }
@@ -255,26 +266,31 @@ const Activity: React.FC = () => {
     return (
         <Box
             sx={{
-                minHeight: "calc(100vh - 64px)",
-                paddingTop: "64px",
-                backgroundColor: theme.palette.grey[900],
-                 backgroundImage: 'radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)',
+                // FIX: Removed background overrides to inherit from Layout/Theme
+                // backgroundColor: theme.palette.grey[900],
+                // backgroundImage: 'radial-gradient(...)',
+                minHeight: "calc(100vh - 64px)", // Keep minHeight calculation
+                paddingTop: "64px", // Keep padding for header space
                 display: "flex",
                 justifyContent: "center",
-                p: { xs: 2, sm: 3, md: 4 },
+                p: { xs: 2, sm: 3, md: 4 }, // Keep responsive padding
                 boxSizing: 'border-box',
+                // Ensure this Box takes up the space provided by Layout's Outlet container
+                width: '100%',
+                height: '100%', // Or adjust based on Layout's structure
             }}
         >
             <Stack
                 spacing={4}
                 sx={{
                     width: "100%",
-                    maxWidth: "900px",
+                    maxWidth: "900px", // Keep max width for content centering
                 }}
             >
-                 <Typography variant="h4" fontWeight={700} color="common.white" sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
+                 <Typography variant="h4" fontWeight={700} color="common.white"  /* Changed to text.primary for theme consistency */ sx={{ textAlign: { xs: 'center', sm: 'left' } }}>
                    Activity Feed
                 </Typography>
+                {/* Filter + Search Controls - Keeping specific styling as requested */}
                 <Paper
                      elevation={3}
                      sx={{
@@ -284,15 +300,15 @@ const Activity: React.FC = () => {
                        alignItems: { md: "center" },
                        gap: 2,
                        p: 2.5,
-                       backgroundColor: theme.palette.grey[800],
+                       backgroundColor: theme.palette.background.paper, // Use theme's paper background
                        borderRadius: 3,
                        position: 'sticky',
-                       top: 64,
+                       top: 64, // Adjust if Layout's Topbar height is different
                        zIndex: 10,
                      }}
                 >
                      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ flexWrap: 'wrap', gap: 1 }} >
-                         <FilterListIcon sx={{ color: theme.palette.grey[400], display: { xs: 'none', sm: 'block' }}}/>
+                         <FilterListIcon sx={{ color: theme.palette.text.secondary, display: { xs: 'none', sm: 'block' }}}/>
                         <ToggleButtonGroup
                             value={selectedFilter}
                             exclusive
@@ -307,17 +323,17 @@ const Activity: React.FC = () => {
                                 flexWrap: 'wrap',
                                 gap: 1,
                                 '.MuiToggleButtonGroup-grouped': {
-                                    border: `1px solid ${theme.palette.grey[600]}`,
+                                    border: `1px solid ${theme.palette.divider}`, // Use theme divider color
                                     borderRadius: '8px !important',
                                     padding: '6px 14px',
-                                    color: theme.palette.grey[300],
-                                    backgroundColor: theme.palette.grey[700],
+                                    color: theme.palette.text.secondary, // Use theme text secondary
+                                    backgroundColor: theme.palette.action.hover, // Use subtle theme background
                                     textTransform: "none",
                                     transition: 'background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease',
                                     '&:hover': {
-                                         backgroundColor: theme.palette.grey[600],
-                                         color: theme.palette.common.white,
-                                         borderColor: theme.palette.grey[500],
+                                         backgroundColor: theme.palette.action.selected, // Use theme selected action background
+                                         color: theme.palette.text.primary, // Use theme primary text
+                                         borderColor: theme.palette.divider,
                                     },
                                     '&.Mui-selected': {
                                         backgroundColor: theme.palette.primary.main,
@@ -353,7 +369,7 @@ const Activity: React.FC = () => {
                         InputProps={{
                             startAdornment: (
                                 <InputAdornment position="start">
-                                    <SearchIcon sx={{ color: theme.palette.grey[400] }} />
+                                    <SearchIcon sx={{ color: theme.palette.text.secondary }} />
                                 </InputAdornment>
                             ),
                              endAdornment: searchQuery && (
@@ -363,7 +379,7 @@ const Activity: React.FC = () => {
                                     onClick={() => setSearchQuery("")}
                                     edge="end"
                                     size="small"
-                                    sx={{ color: theme.palette.grey[400] }}
+                                    sx={{ color: theme.palette.text.secondary }}
                                 >
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 5.354a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z"/>
@@ -373,11 +389,11 @@ const Activity: React.FC = () => {
                              ),
                             sx: {
                                 borderRadius: 2,
-                                backgroundColor: theme.palette.grey[700],
-                                color: theme.palette.common.white,
+                                backgroundColor: theme.palette.background.default, // Use theme default background
+                                color: theme.palette.text.primary, // Use theme primary text
                                 transition: 'border-color 0.2s ease',
                                 '& fieldset': {
-                                    borderColor: theme.palette.grey[600],
+                                    borderColor: theme.palette.divider, // Use theme divider
                                     transition: 'border-color 0.2s ease',
                                 },
                                 '&:hover fieldset': {
@@ -388,7 +404,7 @@ const Activity: React.FC = () => {
                                     borderWidth: '1px',
                                 },
                                 'input::placeholder': {
-                                    color: theme.palette.grey[500],
+                                    color: theme.palette.text.disabled, // Use theme disabled text for placeholder
                                     opacity: 1,
                                 },
                             }
@@ -398,6 +414,8 @@ const Activity: React.FC = () => {
                         }}
                     />
                 </Paper>
+                {/* Issue List Area */}
+                {/* Adjust maxHeight calculation if needed */}
                 <Box sx={{ overflowY: "auto", maxHeight: 'calc(100vh - 64px - 100px - 32px)', pr: 0.5 }}>
                     {filteredIssues.length > 0 ? (
                          <Stack spacing={0}>
@@ -414,7 +432,7 @@ const Activity: React.FC = () => {
                          </Stack>
                     ) : (
                          <Fade in timeout={500}>
-                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 8, color: theme.palette.grey[500]}}>
+                            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 8, color: theme.palette.text.secondary /* Use theme color */}}>
                                 <ErrorOutlineIcon sx={{ fontSize: 48, mb: 2 }} />
                                 <Typography variant="h6" >
                                     No activities found
