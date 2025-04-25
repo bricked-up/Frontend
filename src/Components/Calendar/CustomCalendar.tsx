@@ -1,8 +1,8 @@
+// SCROLL TO SEE JSDOC
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import {
   Box,
   Typography,
-  // Button, // Removed as not directly used
   Stack,
   TextField,
   ToggleButton,
@@ -10,7 +10,6 @@ import {
   Tooltip,
   IconButton,
   Paper,
-  // Divider, // Removed as not directly used
   useTheme,
   useMediaQuery,
   Grid,
@@ -24,6 +23,7 @@ import {
   NavigateAction,
   ToolbarProps,
   Navigate,
+  EventProps, // Import EventProps for custom event component typing
 } from "react-big-calendar";
 import {
   format,
@@ -31,12 +31,15 @@ import {
   startOfWeek,
   getDay,
   differenceInDays,
+  isSameDay, // Import isSameDay for more accurate threshold checking
 } from "date-fns";
 import { enUS } from "date-fns/locale";
 import { useNavigate } from "react-router-dom";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../../css/CalendarStyles.css"; // Assuming you have custom styles here
 import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
+// Import Issue type and the corrected data
+import { Issue } from '../../utils/types'; // Adjust path if needed
 import { mockActivityData } from '../../utils/mock_Activity_Calendar_Data'; // Adjust path if needed
 
 // Setup localization using date-fns locales
@@ -51,24 +54,26 @@ const localizer = dateFnsLocalizer({
   locales,
 });
 
-// Type-safe event structure
+// Type-safe event structure for the calendar
+// Removed 'channel' as it's no longer derived from mock data
+// Changed 'id' to number to match Issue.id
 type CalendarEvent = {
-  id: string;
+  id: number;
   title: string;
   start: Date;
   end: Date;
-  channel: string;
-  resource?: any; // For potential future use
+  resource: Issue; // Keep the original Issue data
 };
 
-// Map mock data to events
-const events: CalendarEvent[] = mockActivityData.map((item, index) => ({
-  id: `${item.teamName}-${item.taskName}-${index}`, // Basic unique ID
-  title: `${item.teamName}: ${item.taskName}`,
-  start: new Date(item.dueDate),
-  end: new Date(item.dueDate), // Assuming tasks are single-day for now
-  channel: item.teamName.toLowerCase().replace(/ /g, "_"),
+// Map mock data (Issue[]) to CalendarEvent[]
+const events: CalendarEvent[] = mockActivityData.map((item: Issue): CalendarEvent => ({
+  id: item.id,       // Use Issue's numeric id
+  title: item.name,    // Use Issue's name
+  start: item.completed, // Use Issue's completed Date object
+  end: item.completed,   // Use Issue's completed Date object (assuming single-day events)
+  resource: item,      // Store the original Issue object
 }));
+
 
 // Type-safe keys for settings
 type ThresholdKey = "urgentThreshold" | "upcomingThreshold";
@@ -86,8 +91,8 @@ const SETTINGS_STORAGE_KEY = "calendarSettings_v1"; // Use a versioned key
 
 // Default Settings
 const defaultSettings: CalendarSettings = {
-  urgentThreshold: 1, // e.g., Urgent if due within less than 1 day (i.e., today)
-  upcomingThreshold: 3, // e.g., Upcoming if due within less than 3 days
+  urgentThreshold: 1, // Urgent if due today (diff < 1)
+  upcomingThreshold: 3, // Upcoming if due within 1 or 2 days (diff < 3)
   urgentColor: "#f28b82", // Reddish
   upcomingColor: "#fff475", // Yellowish
   defaultColor: "#ccff90", // Greenish
@@ -214,10 +219,29 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
   );
 };
 
-
-// Main Calendar Component
-const CustomCalendar = () => {
-  const navigate = useNavigate();
+/**
+ * A customizable calendar component using React Big Calendar.
+ *
+ * This component displays events based on the provided mock data (Issues).
+ * Key features include:
+ * - Uses `react-big-calendar` with `date-fns` for localization.
+ * - Displays events mapped from `mockActivityData` (Issue type).
+ * - Features a custom toolbar (`CustomToolbar`) for navigation and view switching (Month, Week, Day).
+ * - Allows customization of event colors based on proximity to the due date (Urgent, Upcoming, Default) via a settings panel.
+ * - Persists color settings in localStorage.
+ * - Styles events differently based on whether they are in the past, present, or future.
+ * - Includes basic event selection handling (currently logs to console).
+ * - Applies custom dark-theme styling overrides for the calendar elements.
+ *
+ * @component
+ * @example
+ * // Used within CalendarPage.tsx
+ * <CustomCalendar />
+ *
+ * @returns {JSX.Element} The CustomCalendar component.
+ */
+const CustomCalendar: React.FC = () => {
+  const navigate = useNavigate(); // Keep navigate if needed for event clicks eventually
   const theme = useTheme();
   const [currentView, setCurrentView] = useState<View>(Views.MONTH); // Default view
   const [currentDate, setCurrentDate] = useState(new Date()); // Default date (today)
@@ -257,30 +281,26 @@ const CustomCalendar = () => {
   // Function to determine event styling based on due date and settings
   const eventStyleGetter = useCallback((event: CalendarEvent): React.HTMLAttributes<HTMLDivElement> => {
     const now = new Date();
-    // Compare based on the start of the day for accurate day difference
     const startOfDayNow = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     const eventStartDay = new Date(event.start.getFullYear(), event.start.getMonth(), event.start.getDate());
 
-    const diff = differenceInDays(eventStartDay, startOfDayNow); // Days between event start and today
+    const diff = differenceInDays(eventStartDay, startOfDayNow);
     let backgroundColor = settings.defaultColor;
     let color = theme.palette.getContrastText(settings.defaultColor);
-    let opacity = 0.95; // Default opacity for future/current events
+    let opacity = 0.95;
 
-    // Apply urgent/upcoming colors only if the event is today or in the future
-    if (diff >= 0) {
-        if (diff < settings.urgentThreshold) {
-            backgroundColor = settings.urgentColor;
-            color = theme.palette.getContrastText(settings.urgentColor);
-        } else if (diff < settings.upcomingThreshold) {
-            backgroundColor = settings.upcomingColor;
-            color = theme.palette.getContrastText(settings.upcomingColor);
-        }
+    if (diff < 0) {
+      // Event is in the past
+      opacity = 0.7;
     } else {
-        // Event is in the past
-        opacity = 0.7; // Make past events slightly faded
-        // Optional: Use a specific color for past events instead of default
-        // backgroundColor = theme.palette.grey[600];
-        // color = theme.palette.getContrastText(theme.palette.grey[600]);
+      // Event is today or in the future
+      if (diff < settings.urgentThreshold) { // Urgent if due within less than X days (e.g., today if threshold is 1)
+        backgroundColor = settings.urgentColor;
+        color = theme.palette.getContrastText(settings.urgentColor);
+      } else if (diff < settings.upcomingThreshold) { // Upcoming if due within less than Y days
+        backgroundColor = settings.upcomingColor;
+        color = theme.palette.getContrastText(settings.upcomingColor);
+      }
     }
 
     return {
@@ -301,14 +321,14 @@ const CustomCalendar = () => {
   // Memoize the custom toolbar component to prevent unnecessary re-renders
   const calendarComponents = useMemo(() => ({
     toolbar: CustomToolbar,
-    // event: CustomEventComponent, // Example: Add custom event rendering if needed
-    // day: { header: CustomDayHeader }, // Example: Customize day headers
   }), []);
 
-  // Navigate to the specific channel when an event is clicked
+  // Placeholder: Log event details on click instead of navigating to a non-existent channel
   const handleSelectEvent = useCallback((event: CalendarEvent) => {
-    navigate(`/channels/${event.channel}`);
-  }, [navigate]);
+    console.log("Selected Event:", event);
+    // Potential future navigation: navigate(`/issues/${event.id}`) or similar
+    // navigate(`/channels/${event.channel}`); // Old navigation removed
+  }, []); // Removed navigate dependency for now
 
   // Configuration for the settings panel items
   const settingConfig: {
@@ -317,23 +337,23 @@ const CustomCalendar = () => {
     color: ColorKey;
     helpText?: string;
   }[] = useMemo(() => [
-    { label: "Urgent", threshold: "urgentThreshold", color: "urgentColor", helpText: "Task is due in <" },
-    { label: "Upcoming", threshold: "upcomingThreshold", color: "upcomingColor", helpText: "Task is due in <" },
-    { label: "Default", color: "defaultColor", helpText: "All other future tasks" },
+    { label: "Urgent", threshold: "urgentThreshold", color: "urgentColor", helpText: "Due <" },
+    { label: "Upcoming", threshold: "upcomingThreshold", color: "upcomingColor", helpText: "Due <" },
+    { label: "Default", color: "defaultColor", helpText: "Other future" },
   ], []);
 
   return (
-    // Main container Box - Full height, flex column layout
+    // Main container Box
     <Box sx={{
-        paddingTop: { xs: "72px", sm: "80px" }, // Responsive top padding below app bar
-        height: "100vh",
+        paddingTop: { xs: "72px", sm: "80px" },
+        height: "100vh", // Consider if this should be less if inside another container
         display: "flex",
         flexDirection: "column",
-        bgcolor: "#1a1a1a", // Dark background
-        color: "#e0e0e0", // Light default text
+        bgcolor: "#1a1a1a",
+        color: "#e0e0e0",
     }}>
-      {/* Header Section (Title and Settings Toggle) */}
-      <Box sx={{ px: { xs: 2, sm: 4 }, py: 2, flexShrink: 0 }}> {/* Prevent shrinking */}
+      {/* Header Section */}
+      <Box sx={{ px: { xs: 2, sm: 4 }, py: 2, flexShrink: 0 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 2 }}>
           <Typography variant="h4" sx={{ color: "#fff", fontWeight: "600", letterSpacing: "1px" }}>
             Task Calendar
@@ -345,29 +365,28 @@ const CustomCalendar = () => {
           </Tooltip>
         </Stack>
 
-        {/* Settings Panel - Conditionally rendered */}
+        {/* Settings Panel */}
         {showSettings && (
           <Paper sx={{
             p: { xs: 2, sm: 3 },
             borderRadius: "12px",
-            backgroundColor: theme.palette.grey[800], // Dark paper background
+            backgroundColor: theme.palette.grey[800],
             boxShadow: theme.shadows[5],
-            mb: 3, // Margin below settings panel
+            mb: 3,
            }}>
             <Typography variant="h6" sx={{ textAlign: "center", mb: 3, fontWeight: "600", color: "#fff" }}>
               Customize Task Color Scheme
             </Typography>
             <Grid container spacing={3} justifyContent="center" alignItems="center">
               {settingConfig.map(({ label, threshold, color, helpText }) => (
-                <Grid item xs={12} sm={6} md={4} key={label}> {/* Responsive grid layout */}
+                <Grid item xs={12} sm={6} md={4} key={label}>
                    <Paper elevation={1} sx={{ p: 2, bgcolor: theme.palette.grey[700], borderRadius: '8px' }}>
                       <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between">
-                         {/* Left side: Label, Input, Help Text */}
-                         <Stack direction="row" spacing={1.5} alignItems="center" flexGrow={1} flexWrap="wrap"> {/* Allow wrapping */}
+                         <Stack direction="row" spacing={1.5} alignItems="center" flexGrow={1} flexWrap="wrap">
                             <Typography sx={{ fontWeight: "500", color: "#fff", minWidth: '70px' }}>
                                {label}:
                             </Typography>
-                            {threshold && ( // Only show input for Urgent/Upcoming
+                            {threshold && (
                                 <Tooltip title={`${helpText} threshold value (days)`}>
                                   <TextField
                                     type="number"
@@ -375,26 +394,24 @@ const CustomCalendar = () => {
                                     onChange={(e) => handleSettingChange(threshold, e.target.value)}
                                     sx={{
                                       width: 70,
-                                      bgcolor: theme.palette.grey[600], // Input background
+                                      bgcolor: theme.palette.grey[600],
                                       borderRadius: "4px",
                                       '& .MuiInputBase-input': {
-                                        color: "#fff", // Input text color
+                                        color: "#fff",
                                         textAlign: "center",
-                                        padding: '8px 5px' // Adjust input padding
+                                        padding: '8px 5px'
                                       }
                                     }}
                                     variant="outlined"
                                     size="small"
-                                    InputProps={{ inputProps: { min: 0, step: 1 } }} // Basic HTML5 validation
+                                    InputProps={{ inputProps: { min: 0, step: 1 } }}
                                   />
                                 </Tooltip>
                             )}
                              <Typography sx={{ fontSize: 13, color: theme.palette.grey[400], fontStyle: 'italic' }}>
-                               {/* Display help text with current value */}
                                {helpText} {threshold ? settings[threshold] : ''} {threshold ? 'day(s)' : ''}
                             </Typography>
                           </Stack>
-                          {/* Right side: Color Picker */}
                           <Tooltip title={`Select ${label.toLowerCase()} color`}>
                              <input
                                 type="color"
@@ -406,7 +423,7 @@ const CustomCalendar = () => {
                                    border: `1px solid ${theme.palette.grey[500]}`,
                                    borderRadius: '4px',
                                    cursor: 'pointer',
-                                   backgroundColor: 'transparent', // Needed for type="color"
+                                   backgroundColor: 'transparent',
                                 }}
                               />
                            </Tooltip>
@@ -419,110 +436,50 @@ const CustomCalendar = () => {
         )}
       </Box>
 
-      {/* Calendar Area - Takes remaining vertical space */}
+      {/* Calendar Area */}
       <Box sx={{
-          flexGrow: 1, // Allow this box to fill available space
-          height: "0", // Crucial for flexGrow to work correctly with overflow
-          px: { xs: 2, sm: 4 }, // Horizontal padding
-          pb: 3, // Padding bottom
-          // --- Styling overrides for react-big-calendar elements ---
-          '& .rbc-calendar': {
-              backgroundColor: theme.palette.grey[900], // Darkest background for calendar grid
-              color: "#e0e0e0", // Text color within calendar
-              borderRadius: "8px",
-              border: `1px solid ${theme.palette.grey[700]}`,
-              boxShadow: theme.shadows[3],
-              height: "100% !important", // Force calendar to fill container height
-          },
-          '& .rbc-header': { // Headers for days (e.g., Mon, Tue)
-              backgroundColor: theme.palette.grey[800],
-              color: "#fff",
-              borderBottom: `1px solid ${theme.palette.grey[700]}`,
-              padding: '8px 0',
-              textAlign: 'center',
-              fontWeight: 500,
-          },
-          '& .rbc-day-bg': { // Background cells for each day
-             borderColor: theme.palette.grey[700], // Border color between day cells
-             '&:hover': { // Subtle hover effect on day cells
-                 backgroundColor: alpha(theme.palette.action.hover, 0.04)
-             }
-          },
-           '& .rbc-today': { // Highlight for today's date cell
-              backgroundColor: alpha(theme.palette.primary.dark, 0.2), // Use theme's primary color slightly transparent
-           },
-          '& .rbc-event': { // Base style for events (colors overridden by eventStyleGetter)
-             border: 'none',
-             padding: '2px 5px',
-             backgroundColor: theme.palette.primary.main, // Default color if getter fails
-             color: theme.palette.primary.contrastText,
-             borderRadius: '4px',
-             // Opacity is handled by eventStyleGetter now
-          },
-           '& .rbc-event.rbc-selected': { // Style for a clicked/selected event
-               backgroundColor: theme.palette.secondary.main, // Use secondary color for selection
-               boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`,
-               opacity: 1,
-           },
-            '& .rbc-event:focus': { // Style for focused event (keyboard nav)
-                outline: `2px solid ${theme.palette.secondary.light}`,
-                outlineOffset: '1px',
-            },
-           '& .rbc-off-range-bg': { // Background for days outside the current month view
-              backgroundColor: theme.palette.grey[800], // Make slightly different from main calendar bg
-              opacity: 0.7, // Fade them slightly
-           },
-           '& .rbc-time-header, & .rbc-time-gutter': { // Time column headers and gutter (Week/Day view)
-             backgroundColor: theme.palette.grey[800],
-             color: '#fff',
-             borderColor: theme.palette.grey[700],
-           },
-            '& .rbc-time-slot': { // Horizontal lines in time grid (Week/Day view)
-              borderColor: theme.palette.grey[700],
-            },
-            '& .rbc-current-time-indicator': { // Line showing current time (Week/Day view)
-              backgroundColor: theme.palette.error.main, // Bright color for visibility
-              height: '2px',
-            },
-            '& .rbc-show-more': { // Style for the "+X more" link
-                color: theme.palette.info.light,
-                textDecoration: 'underline',
-                fontSize: '0.8em',
-            }
+          flexGrow: 1,
+          height: "0", // Important for flexGrow with overflow
+          px: { xs: 2, sm: 4 },
+          pb: 3,
+          // --- Styling overrides ---
+          '& .rbc-calendar': { backgroundColor: theme.palette.grey[900], color: "#e0e0e0", borderRadius: "8px", border: `1px solid ${theme.palette.grey[700]}`, boxShadow: theme.shadows[3], height: "100% !important" },
+          '& .rbc-header': { backgroundColor: theme.palette.grey[800], color: "#fff", borderBottom: `1px solid ${theme.palette.grey[700]}`, padding: '8px 0', textAlign: 'center', fontWeight: 500 },
+          '& .rbc-day-bg': { borderColor: theme.palette.grey[700], '&:hover': { backgroundColor: alpha(theme.palette.action.hover, 0.04) } },
+          '& .rbc-today': { backgroundColor: alpha(theme.palette.primary.dark, 0.2) },
+          '& .rbc-event': { border: 'none', padding: '2px 5px', backgroundColor: theme.palette.primary.main, color: theme.palette.primary.contrastText, borderRadius: '4px' },
+          '& .rbc-event.rbc-selected': { backgroundColor: theme.palette.secondary.main, boxShadow: `0 0 0 2px ${theme.palette.secondary.dark}`, opacity: 1 },
+          '& .rbc-event:focus': { outline: `2px solid ${theme.palette.secondary.light}`, outlineOffset: '1px' },
+          '& .rbc-off-range-bg': { backgroundColor: theme.palette.grey[800], opacity: 0.7 },
+          '& .rbc-time-header, & .rbc-time-gutter': { backgroundColor: theme.palette.grey[800], color: '#fff', borderColor: theme.palette.grey[700] },
+          '& .rbc-time-slot': { borderColor: theme.palette.grey[700] },
+          '& .rbc-current-time-indicator': { backgroundColor: theme.palette.error.main, height: '2px' },
+          '& .rbc-show-more': { color: theme.palette.info.light, textDecoration: 'underline', fontSize: '0.8em' }
        }}>
           {/* The main Calendar component */}
           <Calendar<CalendarEvent>
             localizer={localizer}
-            events={events}
+            events={events} // Use the correctly mapped events
             startAccessor="start"
             endAccessor="end"
-            view={currentView} // Controlled view state
-            onView={setCurrentView} // Handler to update view state
-            date={currentDate} // Controlled date state
-            onNavigate={setCurrentDate} // Handler to update date state (RBC toolbar calls this)
-            onSelectEvent={handleSelectEvent} // Handler for clicking an event
-            eventPropGetter={eventStyleGetter} // Function to style each event
-            components={calendarComponents} // Use our custom toolbar
-            views={[Views.MONTH, Views.WEEK, Views.DAY]} // Explicitly define allowed views
-            style={{ height: "100%" }} // Ensure calendar takes full height of its container
-            formats={{ // Customize date formats displayed in headers/labels
-                 monthHeaderFormat: 'MMMM yyyy', // e.g., April 2025
-                 // Check localizer exists before formatting
-                 dayHeaderFormat: (date, culture, loc) =>
-                    loc ? loc.format(date, 'EEEE dd MMM', culture) : '', // e.g., Tuesday 08 Apr
-                 dayRangeHeaderFormat: ({ start, end }, culture, loc) => // Format for week view header
-                    loc ? loc.format(start, 'MMM dd', culture) +
-                          ' - ' +
-                          loc.format(end, loc.format(start, 'MMM') === loc.format(end, 'MMM') ? 'dd' : 'MMM dd', culture) // Show month only once if same
-                        : '', // e.g., Apr 07 - 13
+            view={currentView}
+            onView={setCurrentView}
+            date={currentDate}
+            onNavigate={setCurrentDate}
+            onSelectEvent={handleSelectEvent} // Use updated handler
+            eventPropGetter={eventStyleGetter}
+            components={calendarComponents}
+            views={[Views.MONTH, Views.WEEK, Views.DAY]}
+            style={{ height: "100%" }}
+            formats={{
+                 monthHeaderFormat: 'MMMM yyyy',
+                 dayHeaderFormat: (date, culture, loc) => loc ? loc.format(date, 'EEEE dd MMM', culture) : '',
+                 dayRangeHeaderFormat: ({ start, end }, culture, loc) => loc ? loc.format(start, 'MMM dd', culture) + ' - ' + loc.format(end, loc.format(start, 'MMM') === loc.format(end, 'MMM') ? 'dd' : 'MMM dd', culture) : '',
             }}
-            messages={{ // Optional: Customize button texts/labels if needed
-                 // today: 'Today!', previous: '<', next: '>', month: 'M', week: 'W', day: 'D'
-            }}
-            popup // Enable showing overflow events in a popup
-            selectable // Allow clicking/dragging on empty slots (optional)
-            // onSelectSlot={(slotInfo) => console.log('Selected slot:', slotInfo)} // Handler for selecting empty slots
-            tooltipAccessor={(event: CalendarEvent) => `${event.title}\n${format(event.start, 'p')}`} // Basic tooltip on event hover
+            messages={{ /* Custom messages if needed */ }}
+            popup
+            selectable
+            tooltipAccessor={(event: CalendarEvent) => `${event.title}\n${format(event.start, 'p')}`}
           />
       </Box>
     </Box>
