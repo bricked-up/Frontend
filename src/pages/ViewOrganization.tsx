@@ -4,7 +4,7 @@ import { Box, Paper, useTheme } from "@mui/material";
 import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../theme";
 import Header from "../Components/Header";
-import DropDown from "../Components/DropDown";
+import DropDown from "./DropDown";
 
 const columns: GridColDef[] = [
     { field: "id", headerName: "ID", flex: 0.5 },
