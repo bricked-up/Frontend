@@ -13,6 +13,8 @@ import AboutUser from "./AboutUser";
 import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import CustomCalendar from "../Components/Calendar/CustomCalendar";
+import ViewOrg from "./ViewOrganization";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -52,6 +54,18 @@ function App() {
                   </Route>
                 </Route>
               </Route>
+
+              {/* TO DELETE: Test routes cause I can't login / sign up :3 */}
+              <Route path="/" element={<LandingPage />} />
+              <Route element={<Layout />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/viewteam" element={<ViewTeam />} />
+                <Route path="/calendar" element={<CustomCalendar />} />
+                <Route path="/vieworg" element={<ViewOrg></ViewOrg>} />
+
+              </Route>
+
 
               {/* project related routes */}
               <Route path="/project">
