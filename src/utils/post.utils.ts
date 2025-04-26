@@ -2,6 +2,7 @@ import { StringDecoder } from "string_decoder";
 import { Issue } from "./types";
 import { Organization } from "./types";
 import { Project } from "./types";
+import { API_BASE } from "../config";
 
 export interface IssueParams {
     name: string;
@@ -80,7 +81,7 @@ export const fetchNewIssue = async (
     params.append("priority", paramsObj.priority.toString());
     params.append("cost", (paramsObj.cost ?? 0).toString());
 
-    const response = await fetch(`/${endpoint}`, {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -160,7 +161,7 @@ export const createOrganization = async (
       paramsObj.projects.forEach((proj) => params.append("projects", proj));
     }
 
-    const response = await fetch(`/${endpoint}`, {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
@@ -250,7 +251,7 @@ export const createProject = async (
       paramsObj.issues.forEach((i) => params.append("issues", i));
     }
 
-    const response = await fetch(`/${endpoint}`, {
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: {
         "Content-Type": "application/x-www-form-urlencoded",
