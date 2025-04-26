@@ -13,8 +13,8 @@ import AboutUser from "./AboutUser";
 import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
-import CustomCalendar from "../Components/Calendar/CustomCalendar";
-import ViewOrg from "./ViewOrganization";
+import Activity from '../pages/Activity';
+import CalendarPage from '../pages/Calendar';
 
 function App() {
   const [theme, colorMode] = useMode();
