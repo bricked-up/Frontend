@@ -55,18 +55,6 @@ function App() {
                 </Route>
               </Route>
 
-              {/* TO DELETE: Test routes cause I can't login / sign up :3 */}
-              <Route path="/" element={<LandingPage />} />
-              <Route element={<Layout />}>
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/about_user" element={<AboutUser />} />
-                <Route path="/viewteam" element={<ViewTeam />} />
-                <Route path="/calendar" element={<CustomCalendar />} />
-                <Route path="/vieworg" element={<ViewOrg></ViewOrg>} />
-
-              </Route>
-
-
               {/* project related routes */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -97,8 +85,8 @@ function App() {
 
                 <Route path="/view_team" element={<ViewTeam />} />
                 <Route path="/about_user" element={<AboutUser />} />
-                <Route path="/activity" element={<Activity />} />
-                <Route path="/calendar" element={<CalendarPage />} />
+                {/* <Route path="/activity" element={<Activity />} />
+                <Route path="/calendar" element={<CalendarPage />} /> */}
               </Route>
 
               {/* routes for 404 and server errors */}
