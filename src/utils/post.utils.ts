@@ -1,35 +1,37 @@
-import { Issue } from "./types";
-import { Organization } from "./types";
-import { Project } from "./types";
+import {
+  Issue,
+  RawIssue,
+  Organization,
+  RawOrganization,
+  Project,
+  rawProject,
+} from "./types";
 import { API_BASE } from "../config";
 
-/** Params for creating an issue */
 export interface IssueParams {
   name: string;
   description?: string | null;
   priority: number;
   cost?: number;
 }
-/** Result of fetchNewIssue, with possible error message */
+
 export interface Result {
   status: number;
   issue: Issue | null;
   error?: string;
 }
 
-/** Params for creating an organization */
 export interface NewOrganizationParams {
   name: string;
   projects?: string[];
 }
-/** Result of createOrganization, with possible error message */
+
 export interface CreateOrganizationResult {
   status: number;
   organization: Organization | null;
   error?: string;
 }
 
-/** Params for creating a project */
 export interface NewProjectParams {
   name: string;
   orgId: number;
@@ -40,7 +42,7 @@ export interface NewProjectParams {
   members?: string[];
   issues?: string[];
 }
-/** Result of createProject, with possible error message */
+
 export interface CreateProjectResult {
   status: number;
   project: Project | null;
@@ -49,7 +51,10 @@ export interface CreateProjectResult {
 
 /**
  * Try to extract an error message from the response body.
- * Falls back to text or statusText if JSON parsing fails.
+ * Falls back to raw text or response.statusText if parsing fails.
+ *
+ * @param {Response} response - The fetch response to parse
+ * @returns {Promise<string>} a human-readable error message
  */
 async function parseErrorResponse(response: Response): Promise<string> {
   const text = await response.text().catch(() => "");
@@ -63,31 +68,42 @@ async function parseErrorResponse(response: Response): Promise<string> {
 }
 
 /**
- * Creates a new issue on the server when the user submits an issue form.
- * Returns the HTTP status, the created Issue (if 2xx), and an error message (if any).
+ * Creates a new issue on the server.
+ * If successful, returns the HTTP status and the created Issue object.
  *
- * Usage:
- * ```ts
- * const { status, issue, error } = await fetchNewIssue(
+ * 201 – Created: issue was successfully created
+ * 400 – Bad Request: invalid input data
+ * 401 – Unauthorized: authentication required
+ * 403 – Forbidden: insufficient permissions
+ * 405 – Method Not Allowed: wrong HTTP method
+ * 500 – Internal Server Error: check response body for details
+ *
+ * @example
+ * const { status, issue, error } = await createNewIssue(
  *   { name: "Bug #123", description: "Crash on load", priority: 1, cost: 0 },
  *   "issues"
  * );
- * if (issue) { /* success *\/ }
- * else       { console.error(`Error ${status}: ${error}`); }
- * ```
+ * if (issue) {
+ *   console.log("Created:", issue.id);
+ * } else {
+ *   console.error(`Error ${status}: ${error}`);
+ * }
+ *
+ * @param {IssueParams} paramsObj - The data for the new issue
+ * @param {string} endpoint - The API endpoint (e.g. "issues")
+ * @returns {Promise<Result>} Promise resolving to status, Issue (or null), and optional error
  */
-export const fetchNewIssue = async (
+export const createNewIssue = async (
   paramsObj: IssueParams,
   endpoint: string
 ): Promise<Result> => {
   try {
     const params = new URLSearchParams();
-    params.append("name", paramsObj.name);
-    if (paramsObj.description != null) {
-      params.append("description", paramsObj.description);
-    }
-    params.append("priority", paramsObj.priority.toString());
-    params.append("cost", (paramsObj.cost ?? 0).toString());
+    Object.entries(paramsObj).forEach(([key, value]) => {
+      if (value != null) {
+        params.append(key, String(value));
+      }
+    });
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
@@ -96,40 +112,47 @@ export const fetchNewIssue = async (
     });
 
     if (!response.ok) {
-      const errMsg = await parseErrorResponse(response);
-      return { status: response.status, issue: null, error: errMsg };
+      const error = await parseErrorResponse(response);
+      return { status: response.status, issue: null, error };
     }
 
-    const raw = (await response.json()) as {
-      id: number;
-      name: string;
-      description?: string | null;
-      priority: number;
-      cost: number;
-      created: string;
-      completed: string;
-    };
-
+    const raw = (await response.json()) as RawIssue;
     const issue: Issue = {
-      id: raw.id,
-      name: raw.name,
-      description: raw.description ?? null,
-      priority: raw.priority,
-      cost: raw.cost,
+      ...raw,
       created: new Date(raw.created),
       completed: new Date(raw.completed),
     };
 
     return { status: response.status, issue };
   } catch (err: any) {
-    // Network error or unexpected exception
     return { status: 0, issue: null, error: err.message || "Unknown error" };
   }
 };
 
 /**
  * Creates a new organization, optionally linking existing project IDs.
- * Returns status, the created Organization (if 2xx), and an error message (if any).
+ *
+ * 201 – Created: organization was successfully created
+ * 400 – Bad Request: invalid organization data
+ * 401 – Unauthorized: authentication required
+ * 403 – Forbidden: insufficient permissions
+ * 405 – Method Not Allowed: wrong HTTP method
+ * 500 – Internal Server Error: check response body for details
+ *
+ * @example
+ * const { status, organization, error } = await createOrganization(
+ *   { name: "Acme Corp", projects: ["proj1", "proj2"] },
+ *   "organizations"
+ * );
+ * if (organization) {
+ *   console.log("Created org:", organization.id);
+ * } else {
+ *   console.error(`Error ${status}: ${error}`);
+ * }
+ *
+ * @param {NewOrganizationParams} paramsObj - The data for the new organization
+ * @param {string} endpoint - The API endpoint (e.g. "organizations")
+ * @returns {Promise<CreateOrganizationResult>} status, Organization (or null), and optional error
  */
 export const createOrganization = async (
   paramsObj: NewOrganizationParams,
@@ -137,8 +160,14 @@ export const createOrganization = async (
 ): Promise<CreateOrganizationResult> => {
   try {
     const params = new URLSearchParams();
-    params.append("name", paramsObj.name);
-    paramsObj.projects?.forEach((proj) => params.append("projects", proj));
+    Object.entries(paramsObj).forEach(([key, value]) => {
+      if (value == null) return;
+      if (Array.isArray(value)) {
+        value.forEach((v) => params.append(key, String(v)));
+      } else {
+        params.append(key, String(value));
+      }
+    });
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
@@ -147,16 +176,11 @@ export const createOrganization = async (
     });
 
     if (!response.ok) {
-      const errMsg = await parseErrorResponse(response);
-      return { status: response.status, organization: null, error: errMsg };
+      const error = await parseErrorResponse(response);
+      return { status: response.status, organization: null, error };
     }
 
-    const raw = (await response.json()) as {
-      id: number;
-      name: string;
-      projects?: string[];
-    };
-
+    const raw = (await response.json()) as RawOrganization;
     const organization: Organization = {
       id: raw.id,
       name: raw.name,
@@ -165,13 +189,47 @@ export const createOrganization = async (
 
     return { status: response.status, organization };
   } catch (err: any) {
-    return { status: 0, organization: null, error: err.message || "Unknown error" };
+    return {
+      status: 0,
+      organization: null,
+      error: err.message || "Unknown error",
+    };
   }
 };
 
 /**
  * Creates a new project within a given organization.
- * Returns status, the created Project (if 2xx), and an error message (if any).
+ *
+ * 201 – Created: project was successfully created
+ * 400 – Bad Request: invalid project data
+ * 401 – Unauthorized: authentication required
+ * 403 – Forbidden: insufficient permissions
+ * 405 – Method Not Allowed: wrong HTTP method
+ * 500 – Internal Server Error: check response body for details
+ *
+ * @example
+ * const { status, project, error } = await createProject(
+ *   {
+ *     name: "New App",
+ *     orgId: 1,
+ *     tag: "v1.0",
+ *     budget: 5000,
+ *     charter: "Initial build",
+ *     archived: false,
+ *     members: ["alice", "bob"],
+ *     issues: []
+ *   },
+ *   "projects"
+ * );
+ * if (project) {
+ *   console.log("Created project:", project.id);
+ * } else {
+ *   console.error(`Error ${status}: ${error}`);
+ * }
+ *
+ * @param {NewProjectParams} paramsObj - The data for the new project
+ * @param {string} endpoint - The API endpoint (e.g. "projects")
+ * @returns {Promise<CreateProjectResult>} status, Project (or null), and optional error
  */
 export const createProject = async (
   paramsObj: NewProjectParams,
@@ -179,14 +237,14 @@ export const createProject = async (
 ): Promise<CreateProjectResult> => {
   try {
     const params = new URLSearchParams();
-    params.append("name", paramsObj.name);
-    params.append("orgId", paramsObj.orgId.toString());
-    params.append("tag", paramsObj.tag);
-    params.append("budget", paramsObj.budget.toString());
-    params.append("charter", paramsObj.charter);
-    params.append("archived", paramsObj.archived ? "true" : "false");
-    paramsObj.members?.forEach((m) => params.append("members", m));
-    paramsObj.issues?.forEach((i) => params.append("issues", i));
+    Object.entries(paramsObj).forEach(([key, value]) => {
+      if (value == null) return;
+      if (Array.isArray(value)) {
+        value.forEach((v) => params.append(key, String(v)));
+      } else {
+        params.append(key, String(value));
+      }
+    });
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
@@ -195,22 +253,11 @@ export const createProject = async (
     });
 
     if (!response.ok) {
-      const errMsg = await parseErrorResponse(response);
-      return { status: response.status, project: null, error: errMsg };
+      const error = await parseErrorResponse(response);
+      return { status: response.status, project: null, error };
     }
 
-    const raw = (await response.json()) as {
-      id: number;
-      name: string;
-      orgId: number;
-      tag: string;
-      budget: number;
-      charter: string;
-      archived: boolean;
-      members?: string[];
-      issues?: string[];
-    };
-
+    const raw = (await response.json()) as rawProject;
     const project: Project = {
       id: raw.id,
       name: raw.name,
