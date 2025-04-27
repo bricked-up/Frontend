@@ -125,6 +125,58 @@ change the URL to /user/:usrId/about and so on
 if for example you are in /organization/:orgId/users and click on a user
 change the URL to /user/:usrId/about and so on
 
+
+# Application Routes
+
+This section details the frontend routes defined in `App.tsx`. Routes are grouped by their purpose or associated resource.
+
+### Public & Authentication Routes
+
+* `/`:
+    * Renders the `LandingPage` component if the user is not logged in.
+    * Renders the `Dashboard` component (within the main `Layout`) if the user *is* logged in.
+* `/login`: Renders the `Login` component for user sign-in and sign-up.
+* `/forgotPwd`: Renders the `ForgotPwd` component for password recovery.
+* `/testt`: Renders the `LandingPage` (Likely a temporary route for testing).
+
+### User-Specific Routes (Protected)
+
+These routes are nested under `/user/:userId/`. The `:userId` parameter represents the ID of the user whose information is being accessed.
+
+* `/user/:userId/about`: Renders the `AboutUser` component, displaying the user's profile information. Requires authentication.
+* `/user/:userId/organizations`: (Placeholder/Future Route) Intended to display organizations the user belongs to. Defined within the main `Layout`.
+* `/user/:userId/projects`: (Placeholder/Future Route) Intended to display projects the user is involved in. Defined within the main `Layout`.
+* `/user/:userId/issues`: (Placeholder/Future Route) Intended to display issues assigned to the user. Defined within the main `Layout`.
+
+### Project-Specific Routes
+
+These routes are nested under `/project/:projectId/`. The `:projectId` parameter represents the ID of the project.
+
+* `/project/:projectId/users`: (Placeholder/Future Route) Intended to display users associated with the project.
+* `/project/:projectId/issues`: (Placeholder/Future Route) Intended to display issues within the project.
+
+### Organization-Specific Routes
+
+These routes are nested under `/organization/:orgId/`. The `:orgId` parameter represents the ID of the organization.
+
+* `/organization/:orgId/users`: (Placeholder/Future Route) Intended to display users within the organization.
+* `/organization/:orgId/projects`: (Placeholder/Future Route) Intended to display projects belonging to the organization.
+* `/organization/:orgId/issues`: (Placeholder/Future Route) Intended to display issues associated with the organization.
+
+### General Protected Routes
+
+These routes require user authentication and are rendered within the main `Layout`.
+
+* `/dashboard`: Renders the main `Dashboard` component after successful login.
+* `/viewTeam`: Renders the `ViewTeam` component (Purpose might be viewing project/org teams).
+* `/aboutUser`: Renders the `AboutUser` component (Note: This seems duplicative of `/user/:userId/about`; clarification might be needed on its specific use case).
+* `/activity`: (Currently Commented Out) Intended to render the `Activity` page component, likely showing recent updates or a feed.
+* `/calendar`: (Currently Commented Out) Intended to render the `CalendarPage` component for viewing events or deadlines.
+
+### Error Handling Routes
+
+* `/500`: Renders the `Error500Page` component, displayed for internal server errors.
+* `*` (Catch-all): Renders the `Page404` component (within the main `Layout`) for any route not explicitly defined.
 # documentation of our internal APIs
 
 TODO:()
