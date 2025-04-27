@@ -12,7 +12,7 @@ to get started run the following commands if you are on Linux/MacOs.
 3.⁠ ⁠npm install
 ```
 
-# Running and all of that
+# Running and all of thats
 
 to run the code please use `npm start` or `npm run start` and it should open a localhost on port
 `3000`. The website will automatically update upon saving your files so you do not need to re type ever time.
@@ -21,6 +21,7 @@ to test run, `npm test` and it will test any files that have the .test in their 
 
 ## Coding style and commenting
 
+please refer to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
 please refer to the [requirements](https://github.com/bricked-up/requirements). This also goes for commenting and
 PR naming as anything that does not match the expected format will not be accepted. 
 

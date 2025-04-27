@@ -1,33 +1,40 @@
-/**
- * The layout component
- *
- * This component serves as the main layout wrapper for our app.
- * It includes:
- * - A `Sidebar` for navigation.
- * - A `Topbar` for theme toggle, settings and notifications (looking into 'Activity'
- * option in the sidebar instead!!).
- * - A dynamic content area (`Outlet`) where child routes are rendered.
- *
- *
- * @component
- * @example
- * // Usage in App.tsx or routing configuration
- * <Route path="/" element={<Layout />}>
- *   <Route path="dashboard" element={<Dashboard />} />
- * </Route>
- *
- * @returns {JSX.Element} The Layout component.
- */
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+import LogoutButton from './Navbar/LogoutButton'; // Keeping this import as it was in the provided code
 import "../css/dashboard.css";
 
+/**
+ * Provides the main structural layout for authenticated sections of the application.
+ *
+ * This component renders a persistent sidebar (`Sidebar`), a top navigation bar (`Topbar`),
+ * and a main content area where nested routes are rendered via the `<Outlet />` component
+ * from `react-router-dom`. It manages the collapsed/expanded state of the sidebar
+ * and adjusts the left margin of the main content area accordingly with a transition effect.
+ *
+ * @component
+ * @example
+ * // Used in App.tsx to wrap protected routes
+ * <Route element={<Layout />}>
+ * <Route path="/dashboard" element={<Dashboard />} />
+ * <Route path="/activity" element={<Activity />} />
+ * // ... other routes
+ * </Route>
+ *
+ * @returns {JSX.Element} The Layout component providing the app's structure.
+ */
 const Layout: React.FC = () => {
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
+
+  useEffect(() => {
+    const main = document.getElementById("main");
+    if (main) {
+      main.style.transition = "margin-left 0.5s ease";
+      main.style.marginLeft = isSidebar ? "250px" : "0";
+    }
+  }, [isSidebar]);
 
   return (
     <Box className="dashboard" sx={{ display: "flex", minHeight: "100vh" }}>
@@ -35,7 +42,14 @@ const Layout: React.FC = () => {
       <Sidebar isSidebar={isSidebar} setIsSidebar={setIsSidebar} />
 
       {/* Main Content */}
-      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+      <Box
+        id="main"
+        sx={{
+          flexGrow: 1,
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
         {/* Topbar */}
         <Box
           sx={{
