@@ -136,7 +136,7 @@ This section details the frontend routes defined in `App.tsx`. Routes are groupe
     * Renders the `LandingPage` component if the user is not logged in.
     * Renders the `Dashboard` component (within the main `Layout`) if the user *is* logged in.
 * `/login`: Renders the `Login` component for user sign-in and sign-up.
-* `/forgot_pwd`: Renders the `ForgotPwd` component for password recovery.
+* `/forgotPwd`: Renders the `ForgotPwd` component for password recovery.
 * `/testt`: Renders the `LandingPage` (Likely a temporary route for testing).
 
 ### User-Specific Routes (Protected)
@@ -168,8 +168,8 @@ These routes are nested under `/organization/:orgId/`. The `:orgId` parameter re
 These routes require user authentication and are rendered within the main `Layout`.
 
 * `/dashboard`: Renders the main `Dashboard` component after successful login.
-* `/view_team`: Renders the `ViewTeam` component (Purpose might be viewing project/org teams).
-* `/about_user`: Renders the `AboutUser` component (Note: This seems duplicative of `/user/:userId/about`; clarification might be needed on its specific use case).
+* `/viewTeam`: Renders the `ViewTeam` component (Purpose might be viewing project/org teams).
+* `/aboutUser`: Renders the `AboutUser` component (Note: This seems duplicative of `/user/:userId/about`; clarification might be needed on its specific use case).
 * `/activity`: (Currently Commented Out) Intended to render the `Activity` page component, likely showing recent updates or a feed.
 * `/calendar`: (Currently Commented Out) Intended to render the `CalendarPage` component for viewing events or deadlines.
 
@@ -177,8 +177,6 @@ These routes require user authentication and are rendered within the main `Layou
 
 * `/500`: Renders the `Error500Page` component, displayed for internal server errors.
 * `*` (Catch-all): Renders the `Page404` component (within the main `Layout`) for any route not explicitly defined.
-
-
 # documentation of our internal APIs
 
 TODO:()
