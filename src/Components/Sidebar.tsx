@@ -10,6 +10,7 @@ import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
+import AddTaskIcon from "@mui/icons-material/AddTask";
 import { tokens } from "../theme";
 
 interface ItemProps {
@@ -128,8 +129,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             setSelected={setSelected}
           />
           <Item
-            title="View Teams"
-            to="/viewteam"
+            title="Create Issue"
+            to="/createissue"
+            icon={<AddTaskIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
+          <Item
+            title="View Projects"
+            to="/viewproject"
             icon={<PeopleOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
