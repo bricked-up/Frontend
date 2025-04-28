@@ -11,6 +11,12 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../utils/account.utils";
 
+
+interface TopbarProps {
+  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
 /**
  * The topbar component
  *
@@ -30,11 +36,6 @@ import { logout } from "../utils/account.utils";
  *
  * @returns {JSX.Element} The Topbar component.
  */
-interface TopbarProps {
-  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
 const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
