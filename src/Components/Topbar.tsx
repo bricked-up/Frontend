@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box, IconButton, useTheme } from "@mui/material";
 import { ColorModeContext, tokens } from "../theme";
 import InputBase from "@mui/material/InputBase";
@@ -46,6 +46,10 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   // For redirecting the user after logout (if desired)
   const navigate = useNavigate();
 
+  // New states for search functionality
+  const [searchQuery, setSearchQuery] = useState("");
+  const [userSuggestions, setUserSuggestions] = useState<any[]>([]);
+
   /**
    * Calls the `logout()` function to remove user data (e.g., from localStorage/cookies),
    * then navigates the user back to the home page ("/").
@@ -57,6 +61,26 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
     navigate("/user/:'userId/aboutUser");
   };
 
+  // Debounced search effect
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      if (searchQuery.trim() !== "") {
+        try {
+          const response = await fetch(`/api/users/search?q=${searchQuery}`);
+          const data = await response.json();
+          setUserSuggestions(data.users || []);
+        } catch (error) {
+          console.error("Search failed:", error);
+          setUserSuggestions([]);
+        }
+      } else {
+        setUserSuggestions([]);
+      }
+    }, 300); // 300ms delay after typing
+
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery]);
+
   return (
     <Box
       display="flex"
@@ -67,7 +91,9 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
     >
       {/* SEARCH BAR */}
       <Box
+        position="relative"
         display="flex"
+        flexDirection="column"
         sx={{
           backgroundColor:
             theme.palette.mode === "light"
@@ -79,10 +105,55 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           paddingX: 1,
         }}
       >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
-        <IconButton type="button" sx={{ p: 1 }}>
-          <SearchIcon />
-        </IconButton>
+        <Box display="flex">
+          <InputBase
+            sx={{ ml: 2, flex: 1 }}
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+          <IconButton type="button" sx={{ p: 1 }}>
+            <SearchIcon />
+          </IconButton>
+        </Box>
+
+        {/* Suggestions dropdown */}
+        {userSuggestions.length > 0 && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: "48px",
+              left: 0,
+              width: "100%",
+              bgcolor: "background.paper",
+              borderRadius: "0 0 4px 4px",
+              boxShadow: 3,
+              zIndex: 5,
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            {userSuggestions.map((user) => (
+              <Box
+                key={user.username}
+                sx={{
+                  padding: "8px",
+                  cursor: "pointer",
+                  "&:hover": {
+                    backgroundColor: colors.primary[300],
+                  },
+                }}
+                onClick={() => {
+                  setSearchQuery("");
+                  setUserSuggestions([]);
+                  navigate(`/about-user/${user.username}`);
+                }}
+              >
+                {user.username}
+              </Box>
+            ))}
+          </Box>
+        )}
       </Box>
 
       {/* ICONS */}
