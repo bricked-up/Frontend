@@ -75,8 +75,6 @@
     "@types/date-fns": "^2.5.3",
     "@types/react-big-calendar": "^1.16.1",
     "@types/react-router-dom": "^5.3.3",
-    "jsdoc": "^4.0.4",
-    "typedoc": "^0.28.3"
   },
   "proxy": "http://clabsql.clamv.constructor.university:3100"
 }
