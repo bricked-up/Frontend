@@ -1,4 +1,4 @@
-import { Board } from './types';
+import { Board } from '../../utils/types';
 
 const boardsStoreName = 'boards';
 

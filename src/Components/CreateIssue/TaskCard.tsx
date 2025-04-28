@@ -15,7 +15,7 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { Task } from "./types";
+import { Task } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
 
 interface TaskCardProps {
@@ -25,6 +25,20 @@ interface TaskCardProps {
   onComplete: (taskId: string) => void;
   onEdit: (task: Task) => void; // <-- Added for opening the edit modal
 }
+
+/**
+ * TaskCard.tsx
+ *
+ * Card component to display individual task/issue.
+ * Supports delete, complete/incomplete toggle, and edit on click.
+ *
+ * Props:
+ *  - task (Task): Task data
+ *  - boardId (number): ID of the board
+ *  - onDelete (function): Callback to delete task
+ *  - onComplete (function): Callback to complete/un-complete task
+ *  - onEdit (function): Callback to edit task
+ */
 
 export const TaskCard: React.FC<TaskCardProps> = ({
   task,
@@ -133,14 +147,40 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           </Box>
         )}
 
-        {!task.completed && (
+        {task.completed ? (
+          <Box display="flex" justifyContent="center" mt={1.5}>
+            <Button
+              variant="outlined"
+              size="small"
+              onClick={(e) => {
+                e.stopPropagation();
+                onComplete(task.id);
+              }}
+              sx={{
+                color: "#f59e0b",
+                borderColor: "#f59e0b",
+                fontWeight: "bold",
+                borderRadius: "999px",
+                paddingX: 3,
+                paddingY: 1,
+                fontSize: "0.85rem",
+                textTransform: "none",
+                "&:hover": {
+                  backgroundColor: "#f59e0b33",
+                },
+              }}
+            >
+              Mark Incomplete
+            </Button>
+          </Box>
+        ) : (
           <Box display="flex" justifyContent="center" mt={1.5}>
             <Button
               variant="contained"
               size="small"
               startIcon={<CheckCircleRoundedIcon />}
               onClick={(e) => {
-                e.stopPropagation(); // prevent edit click
+                e.stopPropagation();
                 onComplete(task.id);
               }}
               sx={{

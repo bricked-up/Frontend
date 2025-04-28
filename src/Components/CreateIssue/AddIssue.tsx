@@ -1,4 +1,11 @@
-//// AddIssue form component for creating new issues and submitting them
+/**
+ * AddIssue.tsx
+ *
+ * This file defines the AddIssue component which provides a form inside a Dialog
+ * for creating a new issue or editing an existing issue.
+ * It handles form fields like title, description, priority, tag, and cost.
+ * Used in the CreateIssue page.
+ */
 
 import React, { useState, useEffect } from "react";
 import {
@@ -10,7 +17,8 @@ import {
   Button,
   Grid,
 } from "@mui/material";
-import { Task } from "./types";
+import SaveIcon from "@mui/icons-material/Save";
+import { Task } from "../../utils/types";
 
 export interface AddIssueProps {
   show: boolean;
@@ -19,6 +27,13 @@ export interface AddIssueProps {
   onAdd: (task: Task) => void;
   initialData?: Task; // optional: if passed = editing
 }
+
+/**
+ * AddIssue Component
+ *
+ * Renders a modal (Dialog) that allows users to create a new issue
+ * or edit an existing one. Handles all form input states and submission.
+ */
 
 export const AddIssue: React.FC<AddIssueProps> = ({
   show,
@@ -33,7 +48,6 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   const [tagid, setTagid] = useState(1);
   const [cost, setCost] = useState(0);
 
-  // 🛠️ When initialData changes (i.e. user clicked on a card), populate fields
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || "");
@@ -50,9 +64,17 @@ export const AddIssue: React.FC<AddIssueProps> = ({
     }
   }, [initialData]);
 
+  /**
+   * Handles the form submission.
+   * Constructs a Task object and calls onAdd.
+   */
   const handleSubmit = () => {
+    if (!title.trim()) {
+      alert("Title is missing :p");
+      return;
+    }
     const newTask: Task = {
-      ...(initialData || {}), // <-- reuse ID if editing
+      ...(initialData || {}),
       id: initialData
         ? initialData.id
         : Math.random().toString(36).substr(2, 9),
@@ -63,7 +85,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       cost,
       created: initialData?.created || new Date(),
       createdBy: initialData?.createdBy || "You",
-      completed: initialData?.completed, // preserve completed if editing
+      completed: initialData?.completed,
     };
 
     onAdd(newTask);
@@ -126,7 +148,13 @@ export const AddIssue: React.FC<AddIssueProps> = ({
         <Button onClick={onClose} variant="outlined">
           Cancel
         </Button>
-        <Button onClick={handleSubmit} variant="contained" color="secondary">
+
+        <Button
+          onClick={handleSubmit}
+          variant="contained"
+          color="secondary"
+          startIcon={<SaveIcon />}
+        >
           {initialData ? "Save Changes" : "Add Issue"}
         </Button>
       </DialogActions>
