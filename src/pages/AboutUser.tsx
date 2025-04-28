@@ -1,92 +1,154 @@
-import React, { useState, useMemo, useCallback, useContext, useEffect } from "react";
-import { useUser } from "../hooks/UserContext";
-import Style from "../Components/AccountPage/AboutUser.module.css";
-import Form from "../Components/AccountPage/Form";
+import React, { useState, useEffect } from "react";
+import { Box, Typography, Button, Paper, useTheme } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
+import { useUser } from "../hooks/UserContext";
 import { fetchUserData } from "../utils/account.utils";
-import { User } from "../utils/types";
 import LoadingPage from "./LoadingPage";
+import Form from "../Components/AccountPage/Form";
+import { motion } from "framer-motion";
+import { ImagePlus } from "lucide-react";
 
-/**
- * AboutUser Component
- *
- * This component represents the profile settings page where users can:
- * - View and change their profile picture.
- * - Modify account details through a form.
- *
- * @component
- * @example
- * <AboutUser />
- *
- * @returns {JSX.Element} The AboutUser profile settings component.
- *
- * TODO: Definitely change some design / ask about adding more things/too simple??
- */
-const AboutUser = () => {
-  const userId = useParams().userId as string; // obtained from the URL
+const AboutUser: React.FC = () => {
   const { user, setUser } = useUser();
+  const { userId } = useParams();
+  const [viewedUser, setViewedUser] = useState<typeof user | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  // if the page our user is visiting is their own account page. Used to be able to modify 
-  const [isCurrentViewed, setIsCurrentViewed] = useState(false);
+  const [isOwnProfile, setIsOwnProfile] = useState(false);
   const navigate = useNavigate();
+  const theme = useTheme();
+  const isDark = theme.palette.mode === "dark";
 
   useEffect(() => {
     const fetchAndSetUser = async () => {
+      if (!userId) return;
+
       const fetchedUser = await fetchUserData(userId, "update");
 
-      if (fetchedUser === null) {
+      if (!fetchedUser) {
         window.alert("User does not exist");
         navigate("/login");
         return;
       }
 
-      if (fetchedUser.email === user.email) {
-        setIsCurrentViewed(true);
-      }
-
+      setViewedUser(fetchedUser);
+      setIsOwnProfile(fetchedUser.email === user.email);
       setIsLoaded(true);
     };
 
     fetchAndSetUser();
-  }, [user]);
+  }, [userId, user, navigate]);
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!isOwnProfile) return; // only allow for own profile
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setUser({ ...user, avatar: imageUrl });
+      setUser({ ...user, avatar: imageUrl }); 
     }
   };
+  
 
   if (!isLoaded) {
-    return <LoadingPage />
+    return <LoadingPage />;
+  }
+
+  if (!viewedUser) {
+    return null;
   }
 
   return (
-    <div className={Style.account}>
-      <div className={Style.account_info}>
-        <h1> Profile Settings</h1>
-      </div>
-
-      <div className={Style.account_box}>
-        <div className={Style.account_box_img}>
-          <img src={user.avatar || "https://via.placeholder.com/150"} />
-          <img src={user.avatar || "https://v]ia.placeholder.com/150"} />
-          <label className={Style.account_box_img_para}>
-            Change Profile
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileUpload}
-              hidden
+    <Box
+      sx={{
+        minHeight: "100vh",
+        background: isDark
+          ? "linear-gradient(135deg, #0f172a, #1e293b, #334155)"
+          : "linear-gradient(135deg, #e0f2fe, #f1f5f9, #f8fafc)",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        py: 8,
+      }}
+    >
+      <Paper
+        elevation={8}
+        sx={{
+          width: { xs: "90%", md: "60%" },
+          p: 6,
+          borderRadius: 6,
+          backdropFilter: "blur(16px)",
+          background: isDark
+            ? "rgba(30, 41, 59, 0.7)"
+            : "rgba(255, 255, 255, 0.8)",
+          border: `1px solid ${theme.palette.divider}`,
+          boxShadow: isDark
+            ? "0 12px 32px rgba(0,0,0,0.3)"
+            : "0 8px 20px rgba(0,194,255,0.15)",
+          textAlign: "center",
+          transition: "all 0.4s ease-in-out",
+        }}
+      >
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Box sx={{ mb: 4 }}>
+            <img
+              src={viewedUser.avatar || "https://via.placeholder.com/150"}
+              alt="Profile"
+              style={{
+                width: 120,
+                height: 120,
+                borderRadius: "50%",
+                objectFit: "cover",
+                marginBottom: "1rem",
+                border: `3px solid ${isDark ? "#38bdf8" : "#6366f1"}`,
+              }}
             />
-          </label>{" "}
-        </div>
+            {isOwnProfile && (
+              <Box>
+                <Button
+                  component="label"
+                  variant="outlined"
+                  startIcon={<ImagePlus />}
+                  sx={{
+                    mt: 2,
+                    borderRadius: 6,
+                    borderColor: theme.palette.primary.main,
+                    color: theme.palette.primary.main,
+                    textTransform: "none",
+                    fontWeight: "bold",
+                    '&:hover': {
+                      background: isDark ? "#1e293b" : "#e0f2fe"
+                    }
+                  }}
+                >
+                  Change Avatar
+                  <input
+                    type="file"
+                    accept="image/*"
+                    hidden
+                    onChange={handleFileUpload}
+                  />
+                </Button>
+              </Box>
+            )}
+          </Box>
 
-        <div className={Style.account_box_form}>
-          <Form />
-        </div>
-      </div>
-    </div>
+          <Typography variant="h4" fontWeight="bold" sx={{ color: isDark ? "#f1f5f9" : "#0f172a" }}>
+            {viewedUser.displayName}
+          </Typography>
+          <Typography variant="subtitle1" sx={{ color: isDark ? "#cbd5e1" : "#334155", mt: 1 }}>
+            {viewedUser.email}
+          </Typography>
+
+          {isOwnProfile && (
+            <Box mt={6}>
+              <Form />
+            </Box>
+          )}
+        </motion.div>
+      </Paper>
+    </Box>
   );
 };
 

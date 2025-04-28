@@ -1,68 +1,42 @@
-import React, { useState } from "react";
+import React from "react";
 import { Box, Button } from "@mui/material";
 import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import "../../css/ProfileButton.css";
 import { useUser } from "../../hooks/UserContext";
-import { logout } from "../../utils/account.utils";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
-
+import { motion } from "framer-motion";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined"; // <-- using your original icon
 
 const ProfileButton: React.FC = () => {
-  const [isHovered, setIsHovered] = useState(false);
-  const theme = useTheme();
   const { user } = useUser();
   const navigate = useNavigate();
+  const theme = useTheme();
 
   return (
-    <Box>
+    <motion.div
+      whileHover={{ scale: 1.05 }}
+      transition={{ type: "spring", stiffness: 300 }}
+    >
       <Button
         variant="contained"
+        onClick={() => navigate(`/user/${user.email}/about`)} // fixed your routing pattern
+        startIcon={<PersonOutlinedIcon />}
         sx={{
-          backgroundColor: theme.palette.secondary.main,
-          "&:hover": {
-            backgroundColor: theme.palette.primary.dark,
-          },
+          px: 3,
+          py: 1,
+          borderRadius: 6,
+          background: "linear-gradient(to right, #0ea5e9, #6366f1)",
+          color: "#fff",
+          fontWeight: "bold",
+          textTransform: "none",
+          boxShadow: "0 6px 16px rgba(14, 165, 233, 0.4)",
+          '&:hover': {
+            background: "linear-gradient(to right, #6366f1, #0ea5e9)",
+          }
         }}
       >
-        <Button
-          variant="contained"
-          sx={{
-            backgroundColor: theme.palette.primary.main,
-            "&:hover": {
-              backgroundColor: theme.palette.primary.dark,
-            },
-          }}
-          onClick={() => navigate(`/users/${user.email}`)}
-        />
-        <PersonOutlinedIcon />
+        My Profile
       </Button>
-
-      {isHovered && (
-        <Box
-          sx={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            mt: 1,
-            zIndex: 10,
-          }}
-        >
-          <Button
-            onMouseLeave={() => setIsHovered(false)}
-            variant="contained"
-            color="error"
-            onClick={() => {
-              logout();
-              window.location.href = "/";
-            }
-            }
-          >
-            Logout
-          </Button>
-        </Box>
-      )}
-    </Box>
+    </motion.div>
   );
 };
 
