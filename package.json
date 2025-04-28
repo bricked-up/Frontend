@@ -43,7 +43,6 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "docs": "typedoc --entryPoints src --out docs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
