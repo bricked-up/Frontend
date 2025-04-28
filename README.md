@@ -179,4 +179,10 @@ These routes require user authentication and are rendered within the main `Layou
 * `*` (Catch-all): Renders the `Page404` component (within the main `Layout`) for any route not explicitly defined.
 # documentation of our internal APIs
 
-TODO:()
+run the following command:
+
+`npm run docs`
+
+this will produce all of the documentation and put it in a new folder named *docs*. Then you can just
+open the index.html page in your browser and you have access to all of the public functions, types
+components and pages!
