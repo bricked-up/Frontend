@@ -107,31 +107,31 @@ const Error500Page: React.FC = () => {
           />
         </defs>
         <g fill="none" fillRule="evenodd">
-          <path fill="#FFF" d="M0 0H1366V800H0z" transform="translate(-448 -158)" />
+          <path fill="#131b2d" d="M0 0H1366V800H0z" transform="translate(-448 -158)" />
           <g>
             <g transform="translate(-448 -158) translate(448 157) translate(0 .61)">
-              <mask id="prefix__b" fill="#fff">
+              <mask id="prefix__b" fill="#131b2d">
                 <use xlinkHref="#prefix__a" />
               </mask>
               <path
-                fill="#F6F6F7"
+                fill="#131b2d"
                 d="M-5.995 296.763L475.995 296.763 475.995 -5.213 -5.995 -5.213z"
                 mask="url(#prefix__b)"
               />
             </g>
             <g transform="translate(-448 -158) translate(448 157) translate(0 193.645)">
-              <mask id="prefix__d" fill="#fff">
+              <mask id="prefix__d" fill="#131b2d">
                 <use xlinkHref="#prefix__c" />
               </mask>
               <path
-                fill="#EDEDF0"
+                fill="#131b2d"
                 d="M-20.194 115.101L487.354 115.101 487.354 36.101 -20.194 36.101z"
                 mask="url(#prefix__d)"
               />
             </g>
             <path
               className="fio-500"
-              stroke="#2D3F5B"
+              stroke="#fff"
               strokeLinecap="round"
               strokeWidth="4"
               d="M42.92 106.015c1.69-.15 3.386-.39 5.08-.454 1.496-.056 3.045.109 4.354.832 2.559 1.415 3.61 4.459 6.173 5.892 3.643 1.945 7.237 2.323 11.14 2.395 4.592.085 9.185.091 13.777.069 9.192-.045 18.386-.2 27.579.004 1.455.032 2.97.052 4.292-.562 2.606-1.208 2.6-4.556-.086-5.63-1.088-.434-2.291-.441-3.463-.441l-32.929-.022c-2.27-.001-5.629.548-5.724 3.443-.215 6.553.078 15.199.713 21.722.17 1.76.492 3.722 1.92 4.769.896.657 2.057.81 3.166.904 6.696.573 13.43-.22 20.15-.185 6.721.034 13.7.992 19.326 4.657 10.875 7.087 11.581 26.256-1.336 31.914-6.591 2.887-14.242 2.35-21.267 2.257-7.79-.103-12.714.024-20.504-.132-1.647-.034-3.648-.288-4.304-1.797-.574-1.324.355-2.913 1.64-3.573 1.285-.663 2.802-.642 4.248-.603 32.437.865 62.03 4.399 94.49 2.362 15.62-.979 26.11-9.971 29.058-25.472 2.41-12.67-.035-28.363-10.01-37.409-1.853-1.68-3.952-3.08-6.24-4.098-9.326-4.147-21.037-3.107-28.714 3.924-3.952 3.619-6.283 8.75-7.291 14.006-1.948 10.149-2.077 21.397 1.549 31.197 4.503 12.17 15.295 17.937 27.852 19.106 22.936 2.138 46.167 2.247 68.908-1.419 6.817-1.1 14.77-3.416 19.496-8.795 11.362-12.935 9.584-40.905-1.435-53.582-9.245-10.635-26.641-9.576-36.17.345-4.034 4.198-6.308 9.85-7.244 15.591-2.07 12.71-.474 27.655 8.267 37.863 5.498 6.42 14.934 9.316 22.9 11.018 5.7 1.217 11.59 1.935 17.404 1.17 5.668-.749 11.264-3.322 17.003-1.433 3.896 1.282 7.194 5.378 6.09 9.328-1.146 4.102-6.015 5.773-10.238 6.335-17.139 2.28-34.126-2.651-51.125 1.61-3.002.753-5.983 1.835-8.431 3.728-2.449 1.894-4.32 4.697-4.543 7.785-.835 11.582 23.435 6.912 30.629 10.509"
@@ -140,7 +140,7 @@ const Error500Page: React.FC = () => {
             <g 
               transform="translate(-448 -158) translate(448 157) translate(389.862 231.813)"
             >
-              <mask id="prefix__n" fill="#fff">
+              <mask id="prefix__n" fill="#131b2d">
                 <use xlinkHref="#prefix__m" />
               </mask>
               <path
@@ -161,7 +161,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(332.51 262.987)"
               >
-                <mask id="prefix__f" fill="#fff">
+                <mask id="prefix__f" fill="#131b2d">
                   <use xlinkHref="#prefix__e" />
                 </mask>
                 <path
@@ -173,7 +173,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(384.066 262.987)"
               >
-                <mask id="prefix__h" fill="#fff">
+                <mask id="prefix__h" fill="#131b2d">
                   <use xlinkHref="#prefix__g" />
                 </mask>
                 <path
@@ -185,7 +185,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(396.056 247.4)"
               >
-                <mask id="prefix__j" fill="#fff">
+                <mask id="prefix__j" fill="#131b2d">
                   <use xlinkHref="#prefix__i" />
                 </mask>
                 <path
@@ -197,7 +197,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(396.056 254.793)"
               >
-                <mask id="prefix__l" fill="#fff">
+                <mask id="prefix__l" fill="#131b2d">
                   <use xlinkHref="#prefix__k" />
                 </mask>
                 <path
@@ -211,7 +211,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(340.903 169.665)"
               >
-                <mask id="prefix__p" fill="#fff">
+                <mask id="prefix__p" fill="#131b2d">
                   <use xlinkHref="#prefix__o" />
                 </mask>
                 <path
@@ -223,7 +223,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(340.903 168.466)"
               >
-                <mask id="prefix__r" fill="#fff">
+                <mask id="prefix__r" fill="#131b2d">
                   <use xlinkHref="#prefix__q" />
                 </mask>
                 <path
@@ -237,7 +237,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(326.515 182.854)"
               >
-                <mask id="prefix__t" fill="#fff">
+                <mask id="prefix__t" fill="#131b2d">
                   <use xlinkHref="#prefix__s" />
                 </mask>
                 <path
@@ -249,7 +249,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(325.316 181.655)"
               >
-                <mask id="prefix__v" fill="#fff">
+                <mask id="prefix__v" fill="#131b2d">
                   <use xlinkHref="#prefix__u" />
                 </mask>
                 <path
@@ -261,7 +261,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(344.301 197.242)"
               >
-                <mask id="prefix__z" fill="#fff">
+                <mask id="prefix__z" fill="#131b2d">
                   <use xlinkHref="#prefix__y" />
                 </mask>
                 <path
@@ -274,7 +274,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(361.087 197.242)"
               >
-                <mask id="prefix__B" fill="#fff">
+                <mask id="prefix__B" fill="#131b2d">
                   <use xlinkHref="#prefix__A" />
                 </mask>
                 <path
@@ -287,7 +287,7 @@ const Error500Page: React.FC = () => {
               <g
                 transform="translate(-448 -158) translate(448 157) translate(350.495 206.834)"
               >
-                <mask id="prefix__D" fill="#fff">
+                <mask id="prefix__D" fill="#131b2d">
                   <use xlinkHref="#prefix__C" />
                 </mask>
                 <path
@@ -302,7 +302,7 @@ const Error500Page: React.FC = () => {
               className="torradeira"
               transform="translate(-448 -158) translate(448 157) translate(325.316 218.624)"
             >
-              <mask id="prefix__x" fill="#fff">
+              <mask id="prefix__x" fill="#131b2d">
                 <use xlinkHref="#prefix__w" />
               </mask>
               <path
@@ -326,7 +326,7 @@ const Error500Page: React.FC = () => {
           <g
             transform="translate(-448 -158) translate(448 157) translate(272.561 215.226)"
           >
-            <mask id="prefix__F" fill="#fff">
+            <mask id="prefix__F" fill="#131b2d">
               <use xlinkHref="#prefix__E" />
             </mask>
             <path className="tomada"
@@ -338,7 +338,7 @@ const Error500Page: React.FC = () => {
           <g
             transform="translate(-448 -158) translate(448 157) translate(246.184 208.033)"
           >
-            <mask id="prefix__H" fill="#fff">
+            <mask id="prefix__H" fill="#131b2d">
               <use xlinkHref="#prefix__G" />
             </mask>
             <path className="tomada"
