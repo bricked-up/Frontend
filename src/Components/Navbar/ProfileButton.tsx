@@ -4,8 +4,7 @@ import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../../hooks/UserContext";
 import { motion } from "framer-motion";
-import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined"; // <-- using your original icon
-
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 const ProfileButton: React.FC = () => {
   const { user } = useUser();
   const navigate = useNavigate();
@@ -18,7 +17,7 @@ const ProfileButton: React.FC = () => {
     >
       <Button
         variant="contained"
-        onClick={() => navigate(`/user/${user.email}/about`)} // fixed your routing pattern
+        onClick={() => navigate(`/user/${user.email}/about`)} 
         startIcon={<PersonOutlinedIcon />}
         sx={{
           px: 3,
