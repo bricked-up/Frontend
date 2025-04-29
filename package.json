@@ -22,6 +22,8 @@
     "ajv-keywords": "^3.5.2",
     "bcrypt-ts": "^6.0.0",
     "date-fns": "^4.1.0",
+    "eslint": "^8.57.1",
+    "eslint-config-react-app": "^7.0.1",
     "framer-motion": "^12.6.3",
     "jest": "^29.7.0",
     "lucide-react": "^0.487.0",
@@ -46,11 +48,11 @@
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "extends": [
+    "react-app",
+    "react-app/jest" 
+  ]
+},
   "browserslist": {
     "production": [
       ">0.2%",

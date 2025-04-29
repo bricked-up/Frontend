@@ -13,6 +13,7 @@ import AboutUser from "./AboutUser";
 import ViewTeams from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import EditProjectForm from "../Components/EditProjectForm";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -24,25 +25,31 @@ function App() {
         <CssBaseline />
         <Router>
           <div className="App">
-            {/*set up Routes */}
             <Routes>
-              {user ?
+              {user ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
-                :
+              ) : (
                 <Route path="/" element={<LandingPage />} />
-              }
+              )}
 
-              {/*route for login and signup */}
+              {/* Auth */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
 
-              {/* user related routes */}
-              <Route path="/user" >
-                {/* all of these routes are subroutes of :userId*/}
+              {/* User */}
+              <Route path="/user">
                 <Route path=":userId">
-                  <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
+                  <Route
+                    index
+                    path="about"
+                    element={
+                      <ProtectedRoute>
+                        <AboutUser />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route element={<Layout />}>
                     <Route path="organizations" />
                     <Route path="projects" />
@@ -51,7 +58,7 @@ function App() {
                 </Route>
               </Route>
 
-              {/* project related routes */}
+              {/* Project */}
               <Route path="/project">
                 <Route path=":projectId">
                   <Route path="users" />
@@ -59,7 +66,7 @@ function App() {
                 </Route>
               </Route>
 
-              {/* organization related routes */}
+              {/* Organization */}
               <Route path="/organization">
                 <Route path=":orgId">
                   <Route path="users" />
@@ -78,15 +85,15 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 <Route path="/view_team" element={<ViewTeams />} />
                 <Route path="/about_user" element={<AboutUser />} />
+                {/* ✅ TEMP ROUTE FOR EDIT PROJECT FORM */}
+                <Route path="/projects/:projectId/edit" element={<EditProjectForm />} />
               </Route>
 
-              {/* routes for 404 and server errors */}
+              {/* Errors */}
               <Route path="*" element={<Page404 />} />
               <Route path="/500" element={<Error500Page />} />
-
             </Routes>
           </div>
         </Router>

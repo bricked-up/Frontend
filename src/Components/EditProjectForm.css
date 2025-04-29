@@ -1,0 +1,30 @@
+/* EditProjectForm.css */
+.edit-project-container {
+  max-width: 600px;
+  margin: 1rem auto;
+  padding: 0 1rem;
+}
+
+.edit-project-paper {
+  padding: 1.5rem;
+  border-radius: 8px;
+  background-color: var(--mui-palette-background-paper);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.edit-project-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .edit-project-container {
+    padding: 0;
+  }
+  
+  .edit-project-paper {
+    border-radius: 0;
+    box-shadow: none;
+  }
+}
