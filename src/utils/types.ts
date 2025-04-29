@@ -1,58 +1,118 @@
 export type Project = {
-  id: number;
-  name: string;
-  orgId: number;
-  tag: string;
-  budget: number;
-  charter: string;
-  archived: boolean;
-  members?: string[];
-  issues?: string[];
-};
-
-export type rawProject = Omit<Project, "members" | "issues"> & {
-  members?: string[];
-  issues?: string[];
-};
-
-export type Organization = {
-  id?: number;
-  name: string;
-  projects?: string[];
-};
-
-export type RawOrganization = Omit<Organization, "projects"> & {
-  projects?: string[];
-};
-
-/**
- * User is the way we will model users for the profile page.
- * All of the data will be fetched by the db based apart from the email.
- * When the user successfully logs in a new instance should be created
- */
-export type User = {
-  email: string;
-  displayName: string;
-  password: string;
-  avatar?: string | null;
-  verified: boolean;
-  verifyId?: number | null;
-  organizations?: string[];
-  projects?: string[];
-  issues?: string[];
-};
-
-export type Issue = {
-  id: number;
-  name: string;
-  description?: string | null;
-  priority: number;
-  created: Date;
-  completed: Date;
-  cost: number | 0;
-};
-
-export type RawIssue = Omit<Issue, "created" | "completed"> & {
-  created: string;
-  completed: string;
-};
+    id: number;
+    name: string;
+    orgId: number;
+    budget: number;
+    charter: string;
+    archived: boolean;
+    members?: ProjectMember[];
+    issues?: Issue[];
+    tags?: Tag[];
+  }
+  
+  export type Organization = {
+    id?: number;
+    name: string;
+    projects?: Project[];
+    members?: OrgMember[];
+    roles?: OrgRole[];
+  }
+  
+  export type User = {
+    displayName: string;
+    id: number;
+    email: string;
+    name: string;
+    password: string;
+    avatar?: string | null;
+    verified: boolean;
+    verifyId?: number | null;
+    organizations?: OrgMember[];
+    projects?: ProjectMember[];
+    issues?: Issue[];
+    sessions?: Session[];
+  }
+  
+  export type Issue = {
+    id: number;
+    title: string;
+    desc?: string | null;
+    tagId?: number | null;
+    priority?: number | null;
+    created: Date;
+    completed?: Date | null;
+    cost: number;
+    dependencies?: Dependency[];
+    reminders?: Reminder[];
+  }
+  
+  export type OrgMember = {
+    id: number;
+    userId: number;
+    orgId: number;
+    roles?: OrgRole[];
+  }
+  
+  export type OrgRole = {
+    id: number;
+    orgId: number;
+    name: string;
+    canRead: boolean;
+    canWrite: boolean;
+    canExec: boolean;
+  }
+  
+  export type ProjectMember = {
+    id: number;
+    userId: number;
+    projectId: number;
+    roles?: ProjectRole[];
+  }
+  
+  export type ProjectRole = {
+    id: number;
+    projectId: number;
+    name: string;
+    canRead: boolean;
+    canWrite: boolean;
+    canExec: boolean;
+  }
+  
+  export type Tag = {
+    id: number;
+    projectId: number;
+    name: string;
+    color: string;
+  }
+  
+  export type Dependency = {
+    id: number;
+    issueId: number;
+    dependency: number;
+  }
+  
+  export type Reminder = {
+    id: number;
+    issueId: number;
+    userId: number;
+  }
+  
+  export type Session = {
+    id: number;
+    userId: number;
+    expires: Date;
+  }
+  
+  export type VerifyUser = {
+    id: number;
+    code: number;
+    expires: Date;
+  }
+  
+  export type ForgotPassword = {
+    id: number;
+    userId: number;
+    code: number;
+    expirationDate: Date;
+  }
+  
