@@ -49,11 +49,7 @@ function App() {
                   <Route
                     index
                     path="about"
-                    element={
-                      <ProtectedRoute>
-                        <AboutUser />
-                      </ProtectedRoute>
-                    }
+                    element={<AboutUser />}
                   />
                   <Route element={<Layout />}>
                     <Route path="organizations" />
