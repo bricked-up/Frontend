@@ -70,21 +70,18 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
 
   const handleDueDateClick = (e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent card expansion toggle
-    if (issue.completed) {
-      onNavigateToCalendar(issue.completed);
-    } // Pass the Date object
+    onNavigateToCalendar(issue.completed); // Pass the Date object
   };
 
   // Mock "unread" status for visual demonstration
   const isUnread = issue.id === 1 || issue.id === 3;
 
   // Format the date for display
-  const formattedDueDate =
-    issue.completed?.toLocaleDateString(undefined, {
-      year: "numeric",
-      month: "short",
-      day: "numeric",
-    }) ?? "No due date";
+  const formattedDueDate = issue.completed.toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+  });
 
   return (
     <Grow in timeout={TRANSITION_DURATION}>
@@ -95,6 +92,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
             theme.palette.mode === "light"
               ? theme.palette.grey[700]
               : theme.palette.grey[900],
+
           color: theme.palette.common.white,
           borderRadius: 3,
           mb: 2,
@@ -122,7 +120,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
           >
             <Stack spacing={0.5}>
               <Typography variant="h6" fontWeight={600} component="div">
-                {issue.title}
+                {issue.name}
               </Typography>
             </Stack>
             <Stack direction="row" alignItems="center" spacing={1}>
@@ -197,7 +195,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
               </Stack>
               <Stack spacing={1}>
                 <Typography variant="overline" color="text.secondary">
-                  desc
+                  Description
                 </Typography>
                 <Paper
                   elevation={0}
@@ -210,13 +208,13 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                     fontSize: "0.9rem",
                   }}
                 >
-                  {issue.desc || (
+                  {issue.description || (
                     <Typography
                       variant="body2"
                       fontStyle="italic"
                       color="text.secondary"
                     >
-                      No desc provided.
+                      No description provided.
                     </Typography>
                   )}
                 </Paper>
@@ -290,7 +288,7 @@ const Activity: React.FC = () => {
       // Compare numbers correctly
       issues = issues.filter((issue) => issue.id === 1 || issue.id === 3);
     } else if (selectedFilter === "@Mentions") {
-      issues = issues.filter((issue) => issue.desc?.includes("@"));
+      issues = issues.filter((issue) => issue.description?.includes("@"));
     } else if (selectedFilter === "Tags") {
       // Compare numbers correctly
       issues = issues.filter((issue) => issue.id === 2);
@@ -303,8 +301,9 @@ const Activity: React.FC = () => {
         (
           issue // issue should be correctly typed now
         ) =>
-          issue.title.toLowerCase().includes(lowerCaseQuery) ||
-          (issue.desc && issue.desc.toLowerCase().includes(lowerCaseQuery))
+          issue.name.toLowerCase().includes(lowerCaseQuery) ||
+          (issue.description &&
+            issue.description.toLowerCase().includes(lowerCaseQuery))
       );
     }
 
