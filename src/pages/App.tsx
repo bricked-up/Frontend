@@ -10,10 +10,13 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewProject";
+import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 import EditProjectForm from "../Components/EditProjectForm";
+import Activity from "../pages/Activity";
+import CalendarPage from "../pages/Calendar";
+import ViewOrg from "./ViewOrganization";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -37,9 +40,11 @@ function App() {
               {/* Auth */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
+              <Route path="/testt" element={<LandingPage />} />
 
-              {/* User */}
+              {/* user related routes */}
               <Route path="/user">
+                {/* all of these routes are subroutes of :userId*/}
                 <Route path=":userId">
                   <Route
                     index
@@ -85,14 +90,19 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-                <Route path="/view_team" element={<ViewTeams />} />
+
+                <Route path="/view_team" element={<ViewTeam />} />
                 <Route path="/about_user" element={<AboutUser />} />
-                {/* ✅ TEMP ROUTE FOR EDIT PROJECT FORM */}
-                <Route path="/projects/:projectId/edit" element={<EditProjectForm />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/vieworg" element={<ViewOrg />} />
               </Route>
 
-              {/* Errors */}
-              <Route path="*" element={<Page404 />} />
+              {/* routes for 404 and server errors */}
+              <Route element={<Layout />}>
+                {" "}
+                <Route path="*" element={<Page404 />} />{" "}
+              </Route>
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
