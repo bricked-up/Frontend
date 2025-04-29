@@ -34,7 +34,6 @@ export interface AddIssueProps {
  * Renders a modal (Dialog) that allows users to create a new issue
  * or edit an existing one. Handles all form input states and submission.
  */
-
 export const AddIssue: React.FC<AddIssueProps> = ({
   show,
   onClose,
