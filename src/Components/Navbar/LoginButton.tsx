@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@mui/material";
-import { useTheme } from "@mui/material/styles";
+
 import { useNavigate } from "react-router-dom";
 import "../../css/LoginButton.css";
 
@@ -13,21 +13,29 @@ import "../../css/LoginButton.css";
  * <LoginButton />
  */
 const LoginButton: React.FC = () => {
-  const theme = useTheme();
   const navigate = useNavigate(); // initialize the navigation hook
 
   return (
     <Button
       variant="contained"
+      size="large"
+      onClick={() => navigate("/login")}
       sx={{
-        backgroundColor: theme.palette.secondary.main,
-        "&:hover": {
-          backgroundColor: theme.palette.primary.dark,
-        },
+        px: 2,
+        py: 1,
+        borderRadius: 2,
+        fontWeight: "bold",
+        textTransform: "none",
+        background: "linear-gradient(to right, #0ea5e9, #6366f1)",
+        color: "#fff",
+        boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)",
+        filter: "drop-shadow(0 0 0.75rem rgba(99, 102, 241, 0.5))",
+        '&:hover': {
+          background: "linear-gradient(to right, #6366f1, #0ea5e9)"
+        }
       }}
-      onClick={() => navigate("/login")} // navigate to the login page when clicked
     >
-      Log In
+      Login
     </Button>
   );
 };

@@ -5,7 +5,11 @@
   width: auto;
   max-width: 560px;
   display: flex;
+<<<<<<< HEAD
   align-items: center;
+=======
+  align-items: ceanter;
+>>>>>>> origin/dev
   justify-content: center;
   flex-direction: column;
 }
@@ -63,8 +67,12 @@ svg {
   transform-origin: center;
 }
 .raios {
+<<<<<<< HEAD
   -webkit-animation: flicker-4 4s linear infinite both;
   animation: flicker-4 4s linear infinite both;
+=======
+
+>>>>>>> origin/dev
 }
 .tomada,
 .fio-500,
@@ -78,6 +86,7 @@ svg {
   to { transform: scale(1); }
 }
 
+<<<<<<< HEAD
 @-webkit-keyframes flicker-4 {
   0%, 100% { opacity: 1; }
   31.98% { opacity: 1; }
@@ -110,6 +119,8 @@ svg {
   99%, 99.6% { opacity: 0; }
   99.62% { opacity: 1; }
 }
+=======
+>>>>>>> origin/dev
 
 @-webkit-keyframes vibrate-1 {
   0% { transform: translate(0); }
