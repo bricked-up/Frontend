@@ -1,3 +1,11 @@
+/**
+ * AboutUser.tsx
+ *
+ * This component displays user profile information.
+ * If the logged-in user is viewing their own profile, they can edit their avatar and account details.
+ * Fetches user data based on the userId from the URL. If loading exceeds 5 seconds, the user is redirected.
+ */
+
 import React, { useState, useEffect } from "react";
 import { Box, Typography, Button, Paper, useTheme } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
@@ -8,6 +16,11 @@ import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
 
+/**
+ * Renders the user profile page.
+ * Allows avatar update and access to the account form if viewing own profile.
+ * Redirects on timeout or error.
+ */
 const AboutUser: React.FC = () => {
   const { user, setUser } = useUser();
   const { userId } = useParams();
@@ -19,33 +32,54 @@ const AboutUser: React.FC = () => {
   const isDark = theme.palette.mode === "dark";
 
   useEffect(() => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => {
+      controller.abort();
+      window.alert("Request timed out. Please try again later.");
+      navigate("/");
+    }, 5000);
+
     const fetchAndSetUser = async () => {
       if (!userId) return;
 
-      const fetchedUser = await fetchUserData(userId, "update");
+      try {
+        const fetchedUser = await fetchUserData(userId, "update");
 
-      if (!fetchedUser) {
-        window.alert("User does not exist");
-        navigate("/login");
-        return;
+        if (!fetchedUser) {
+          window.alert("User does not exist");
+          navigate("/login");
+          return;
+        }
+
+        setViewedUser(fetchedUser);
+        setIsOwnProfile(fetchedUser.email === user.email);
+        setIsLoaded(true);
+        clearTimeout(timeout);
+      } catch (error: unknown) {
+        if (error instanceof Error && error.name !== "AbortError") {
+          console.error("Fetch error:", error);
+          window.alert("Failed to fetch user. Redirecting...");
+          navigate("/");
+        }
       }
-
-      setViewedUser(fetchedUser);
-      setIsOwnProfile(fetchedUser.email === user.email);
-      setIsLoaded(true);
     };
 
     fetchAndSetUser();
+
+    return () => clearTimeout(timeout);
   }, [userId, user, navigate]);
 
+  /**
+   * Handles avatar file upload for the user's own profile.
+   * @param e - The change event triggered by file input
+   */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile) return; // only allow for own profile
     if (e.target.files && e.target.files[0]) {
       const imageUrl = URL.createObjectURL(e.target.files[0]);
-      setUser({ ...user, avatar: imageUrl }); 
+      setUser({ ...user, avatar: imageUrl });
     }
   };
-  
 
   if (!isLoaded) {
     return <LoadingPage />;
