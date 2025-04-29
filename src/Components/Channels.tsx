@@ -124,9 +124,10 @@ function Channels() {
       sx={{
         backgroundColor:
           theme.palette.mode === "light"
-            ? colors.primary[900]
+            ? colors.primary[700]
             : colors.primary[400],
-        color: colors.grey[100],
+        borderRadius: 6,
+        margin: 2,
       }}
       paddingTop={4}
     >
