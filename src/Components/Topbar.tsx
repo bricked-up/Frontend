@@ -92,27 +92,29 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
     >
       {/* SEARCH BAR */}
       <Box
-        position="relative"
+         position="relative"
         display="flex"
         flexDirection="column"
         sx={{
-          backgroundColor:
-            theme.palette.mode === "light"
-              ? colors.primary[900]
-              : colors.primary[400],
-          color: colors.grey[100],
+          backgroundColor: colors.primary[400],
+          color: theme.palette.text.primary, 
           borderRadius: "3px",
           ml: 5,
           paddingX: 1,
         }}
-      >
+>
         <Box display="flex">
-          <InputBase
-            sx={{ ml: 2, flex: 1 }}
-            placeholder="Search users..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-          />
+        <InputBase
+          sx={{
+          ml: 2,
+          flex: 1,
+          color: theme.palette.text.primary, 
+         }}
+        placeholder="Search users..."
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+        />
+
           <IconButton type="button" sx={{ p: 1 }}>
             <SearchIcon />
           </IconButton>
