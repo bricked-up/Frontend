@@ -3,6 +3,8 @@ import { Box, Paper, useTheme, Typography } from "@mui/material";
 import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../theme";
 import Header from "../Components/Header";
+import react from "react";
+
 import DropDown from "../Components/DropDown";
 import { getOrganizationsFromStore } from "../Components/CreateOrganization/OrganizationStore";
 import { Organization } from "../Components/CreateOrganization/Organization";
@@ -59,7 +61,9 @@ const ViewOrg = () => {
             sx={{
                 minHeight: "calc(100vh - 64px)",
                 paddingTop: "64px",
-                backgroundColor: colors.primary[500],
+                backgroundColor: theme.palette.mode === "light"
+                ? colors.primary[900]
+                : colors.primary[500],
                 backgroundImage:
                     "radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)",
                 boxSizing: "border-box",
@@ -72,7 +76,8 @@ const ViewOrg = () => {
                 //p: { xs: 2, sm: 3, md: 4 },
             }}
         >
-            <Header title="Organizations" subtitle="" />
+            <Header 
+                title="Organizations" subtitle={""}            />
 
             <Paper
                 sx={{
@@ -89,12 +94,12 @@ const ViewOrg = () => {
                 <Box sx={{ p: 2, display: 'flex', justifyContent: 'left' }}>
                     <DropDown value={selectedOrg} onSelect={setSelectedOrg} options={orgs.map(o => o.name)} />
 
-                    
+
                 </Box>
 
 
                 <Box sx={{ display: 'flex', flex: 1, gap: 2, padding: 2 }}>
-                   
+
 
 
                     <Box sx={{ flex: 1 }}>
@@ -111,122 +116,122 @@ const ViewOrg = () => {
                                 border: "none",
                                 color: colors.grey[100],
 
-                // -- Headers --
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: colors.blueAccent[700],
-                  color: colors.grey[100],
-                  borderBottom: `1px solid ${colors.primary[300]}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
-                  fontSize: "0.85rem",
-                },
-                "& .MuiDataGrid-columnHeaderTitle": {
-                  fontWeight: 600,
-                },
+                                // -- Headers --
+                                "& .MuiDataGrid-columnHeaders": {
+                                    backgroundColor: colors.blueAccent[700],
+                                    color: colors.grey[100],
+                                    borderBottom: `1px solid ${colors.primary[300]}`,
+                                    textTransform: "uppercase",
+                                    letterSpacing: "0.5px",
+                                    fontSize: "0.85rem",
+                                },
+                                "& .MuiDataGrid-columnHeaderTitle": {
+                                    fontWeight: 600,
+                                },
 
-                // -- Cells --
-                "& .MuiDataGrid-cell": {
-                  borderBottom: `1px solid ${colors.primary[300]}`,
-                  padding: "10px 15px",
-                  fontSize: "0.9rem",
-                  "&:focus, &:focus-within": {
-                    // Remove default blue outline on cell focus
-                    outline: "none",
-                  },
-                },
+                                // -- Cells --
+                                "& .MuiDataGrid-cell": {
+                                    borderBottom: `1px solid ${colors.primary[300]}`,
+                                    padding: "10px 15px",
+                                    fontSize: "0.9rem",
+                                    "&:focus, &:focus-within": {
+                                        // Remove default blue outline on cell focus
+                                        outline: "none",
+                                    },
+                                },
 
-                // -- Rows --
-                "& .MuiDataGrid-row": {
-                  transition: "background-color 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: colors.primary[500],
-                    cursor: "default",
-                  },
-                  "&.Mui-selected": {
-                    backgroundColor: colors.blueAccent[800],
-                    "&:hover": {
-                      backgroundColor: colors.blueAccent[900],
-                    },
-                  },
-                },
+                                // -- Rows --
+                                "& .MuiDataGrid-row": {
+                                    transition: "background-color 0.2s ease",
+                                    "&:hover": {
+                                        backgroundColor: colors.primary[500],
+                                        cursor: "default",
+                                    },
+                                    "&.Mui-selected": {
+                                        backgroundColor: colors.blueAccent[800],
+                                        "&:hover": {
+                                            backgroundColor: colors.blueAccent[900],
+                                        },
+                                    },
+                                },
 
-                // -- Virtual Scroller (contains the rows) --
-                "& .MuiDataGrid-virtualScroller": {
-                  backgroundColor: colors.primary[400], // Base background for rows area
-                },
-                // Scrollbar Styling (Webkit browsers)
-                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
-                  width: "8px",
-                  height: "8px",
-                },
-                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-track": {
-                  background: colors.primary[300],
-                  borderRadius: "4px",
-                },
-                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-                  backgroundColor: colors.grey[600],
-                  borderRadius: "4px",
-                  border: `1px solid ${colors.primary[300]}`,
-                },
-                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover":
-                  {
-                    background: colors.grey[500],
-                  },
+                                // -- Virtual Scroller (contains the rows) --
+                                "& .MuiDataGrid-virtualScroller": {
+                                    backgroundColor: colors.primary[400], // Base background for rows area
+                                },
+                                // Scrollbar Styling (Webkit browsers)
+                                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
+                                    width: "8px",
+                                    height: "8px",
+                                },
+                                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-track": {
+                                    background: colors.primary[300],
+                                    borderRadius: "4px",
+                                },
+                                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
+                                    backgroundColor: colors.grey[600],
+                                    borderRadius: "4px",
+                                    border: `1px solid ${colors.primary[300]}`,
+                                },
+                                "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover":
+                                {
+                                    background: colors.grey[500],
+                                },
 
-                // -- Footer --
-                "& .MuiDataGrid-footerContainer": {
-                  borderTop: `1px solid ${colors.primary[300]}`,
-                  backgroundColor: colors.blueAccent[700],
-                  color: colors.grey[100],
-                },
-                "& .MuiTablePagination-root, & .MuiIconButton-root, & .MuiSvgIcon-root":
-                  {
-                    color: colors.grey[100], // Ensure footer elements are visible
-                  },
-                "& .MuiIconButton-root:hover": {
-                  backgroundColor: colors.primary[500],
-                },
+                                // -- Footer --
+                                "& .MuiDataGrid-footerContainer": {
+                                    borderTop: `1px solid ${colors.primary[300]}`,
+                                    backgroundColor: colors.blueAccent[700],
+                                    color: colors.grey[100],
+                                },
+                                "& .MuiTablePagination-root, & .MuiIconButton-root, & .MuiSvgIcon-root":
+                                {
+                                    color: colors.grey[100], // Ensure footer elements are visible
+                                },
+                                "& .MuiIconButton-root:hover": {
+                                    backgroundColor: colors.primary[500],
+                                },
 
-                // -- Toolbar --
-                "& .MuiDataGrid-toolbarContainer": {
-                  padding: "10px 15px",
-                  "& .MuiButton-text": {
-                    color: colors.grey[100],
-                    "&:hover": { backgroundColor: colors.primary[500] },
-                  },
-                  "& .MuiInputBase-root": {
-                    // Style the search input in toolbar
-                    color: colors.grey[100],
-                    "& .MuiInputBase-input": { color: colors.grey[100] },
-                    "& fieldset": { borderColor: colors.grey[700] },
-                    "&:hover fieldset": { borderColor: colors.grey[500] },
-                  },
-                  "& .MuiSvgIcon-root": {
-                    // Ensure toolbar icons are visible
-                    color: colors.grey[300],
-                  },
-                },
+                                // -- Toolbar --
+                                "& .MuiDataGrid-toolbarContainer": {
+                                    padding: "10px 15px",
+                                    "& .MuiButton-text": {
+                                        color: colors.grey[100],
+                                        "&:hover": { backgroundColor: colors.primary[500] },
+                                    },
+                                    "& .MuiInputBase-root": {
+                                        // Style the search input in toolbar
+                                        color: colors.grey[100],
+                                        "& .MuiInputBase-input": { color: colors.grey[100] },
+                                        "& fieldset": { borderColor: colors.grey[700] },
+                                        "&:hover fieldset": { borderColor: colors.grey[500] },
+                                    },
+                                    "& .MuiSvgIcon-root": {
+                                        // Ensure toolbar icons are visible
+                                        color: colors.grey[300],
+                                    },
+                                },
 
-                // -- Checkbox --
-                "& .MuiCheckbox-root": {
-                  color: `${colors.greenAccent[400]} !important`,
-                  "&.Mui-checked": {
-                    color: `${colors.greenAccent[300]} !important`,
-                  },
-                },
+                                // -- Checkbox --
+                                "& .MuiCheckbox-root": {
+                                    color: `${colors.greenAccent[400]} !important`,
+                                    "&.Mui-checked": {
+                                        color: `${colors.greenAccent[300]} !important`,
+                                    },
+                                },
 
-                // -- No Rows Overlay --
-                "& .MuiDataGrid-overlay": {
-                  backgroundColor: "rgba(0, 0, 0, 0.3)",
-                },
-                "& .MuiDataGrid-columnSeparator": { display: "none" },
-              }}
-            />
-          </Box>
+                                // -- No Rows Overlay --
+                                "& .MuiDataGrid-overlay": {
+                                    backgroundColor: "rgba(0, 0, 0, 0.3)",
+                                },
+                                "& .MuiDataGrid-columnSeparator": { display: "none" },
+                            }}
+                        />
+                    </Box>
+                </Box>
+            </Paper>
         </Box>
-      </Paper>
-    </Box>
-  );
+    );
 };
 
 export default ViewOrg;

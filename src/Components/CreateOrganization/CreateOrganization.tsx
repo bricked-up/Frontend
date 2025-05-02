@@ -18,7 +18,7 @@ import {
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
-
+import { useTheme } from "@mui/material/styles";
 import {
   getAllOrganizations,
   createOrganization,
@@ -27,6 +27,7 @@ import {
 } from "./Organizations";
 import { Organization } from "./Organization";
 import OrganizationCard from "./OrganizationCard";
+import { tokens } from "../../theme";
 
 const CreateOrganization: React.FC = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -40,6 +41,8 @@ const CreateOrganization: React.FC = () => {
   const [projects, setProjects] = useState<string[]>([]);
   const [newProject, setNewProject] = useState("");
 
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   useEffect(() => {
     setOrganizations(getAllOrganizations());
   }, []);
@@ -108,7 +111,7 @@ const CreateOrganization: React.FC = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" textAlign="center" gutterBottom>
+        <Typography variant="h4" textAlign="center" sx={{color: colors.primary[500]}} gutterBottom>
           Organization Manager
         </Typography>
         <Grid container spacing={4} justifyContent="flex-start">
@@ -152,7 +155,7 @@ const CreateOrganization: React.FC = () => {
             label="Description"
             multiline
             rows={3}
-            sx={{ input: { color: 'white' } }}
+            sx={{ input: { color: colors.primary[0] } }}
             value={description}
             onChange={e => setDescription(e.target.value)}
           />
