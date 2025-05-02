@@ -16,7 +16,8 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-
+import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import ViewProject from "../Components/ViewProject";
 function App() {
   const [theme, colorMode] = useMode();
   const { user } = useUser();
@@ -97,6 +98,8 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
               </Route>
+              <Route path="/cc" element={<CreateTask board={mockBoard} />} />
+              <Route path="/vp" element={<ViewProject />} />
 
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
