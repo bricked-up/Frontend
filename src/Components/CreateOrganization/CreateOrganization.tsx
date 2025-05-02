@@ -1,4 +1,12 @@
-// src/CreateOrganization.tsx
+/**
+ * React component for creating, editing, and listing organizations.
+ * 
+ * Provides UI for viewing all organizations, opening a dialog to add or edit an organization,
+ * and managing organization details including name, description, members, and projects.
+ * Uses Material-UI components for styling and layout.
+ *
+ * @component
+ */
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -24,29 +32,48 @@ import {
   createOrganization,
   updateOrganization,
   deleteOrganization,
-} from "../../utils/Organizations";
+} from "./Organizations";
 import { Organization } from "../../utils/Organization";
 import OrganizationCard from "./OrganizationCard";
 import { tokens } from "../../theme";
 
 const CreateOrganization: React.FC = () => {
+  /** State for the list of organizations. */
   const [organizations, setOrganizations] = useState<Organization[]>([]);
+  /** State controlling dialog visibility. */
   const [dialogOpen, setDialogOpen] = useState(false);
+  /** Currently editing organization, or null when creating a new one. */
   const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
 
+  /** Form state: organization name. */
   const [orgName, setOrgName] = useState("");
+  /** Form state: organization description. */
   const [description, setDescription] = useState("");
+  /** Form state: list of member names. */
   const [members, setMembers] = useState<string[]>([]);
+  /** Form state: temporary new member input. */
   const [newMember, setNewMember] = useState("");
+  /** Form state: list of project titles. */
   const [projects, setProjects] = useState<string[]>([]);
+  /** Form state: temporary new project input. */
   const [newProject, setNewProject] = useState("");
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  /**
+   * Load all organizations when the component mounts.
+   */
   useEffect(() => {
     setOrganizations(getAllOrganizations());
   }, []);
 
+  /**
+   * Open the dialog for creating or editing an organization.
+   * If an organization is provided, pre-fill the form with its data.
+   *
+   * @param {Organization} [org] - Optional organization to edit.
+   */
   const openDialog = (org?: Organization) => {
     if (org) {
       setEditingOrg(org);
@@ -58,6 +85,9 @@ const CreateOrganization: React.FC = () => {
     setDialogOpen(true);
   };
 
+  /**
+   * Close the dialog and reset all form state.
+   */
   const closeDialog = () => {
     setEditingOrg(null);
     setOrgName("");
@@ -69,6 +99,9 @@ const CreateOrganization: React.FC = () => {
     setDialogOpen(false);
   };
 
+  /**
+   * Add the current newMember to the members list and clear the input.
+   */
   const handleAddMember = () => {
     const name = newMember.trim();
     if (!name) return;
@@ -76,10 +109,18 @@ const CreateOrganization: React.FC = () => {
     setNewMember("");
   };
 
+  /**
+   * Remove a member by index from the members list.
+   *
+   * @param {number} index - Index of the member to remove.
+   */
   const handleRemoveMember = (index: number) => {
     setMembers(prev => prev.filter((_, i) => i !== index));
   };
 
+  /**
+   * Add the current newProject to the projects list and clear the input.
+   */
   const handleAddProject = () => {
     const title = newProject.trim();
     if (!title) return;
@@ -87,10 +128,19 @@ const CreateOrganization: React.FC = () => {
     setNewProject("");
   };
 
+  /**
+   * Remove a project by index from the projects list.
+   *
+   * @param {number} index - Index of the project to remove.
+   */
   const handleRemoveProject = (index: number) => {
     setProjects(prev => prev.filter((_, i) => i !== index));
   };
 
+  /**
+   * Submit the form: create a new organization or update existing one,
+   * then refresh the list and close the dialog.
+   */
   const handleSubmit = () => {
     if (!orgName) return;
     if (editingOrg) {
@@ -103,6 +153,11 @@ const CreateOrganization: React.FC = () => {
     closeDialog();
   };
 
+  /**
+   * Delete an organization by ID and update the list.
+   *
+   * @param {string} id - ID of the organization to delete.
+   */
   const handleDelete = (id: string) => {
     deleteOrganization(id);
     setOrganizations(prev => prev.filter(o => o.id !== id));

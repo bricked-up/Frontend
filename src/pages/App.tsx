@@ -13,10 +13,10 @@ import AboutUser from "./AboutUser";
 import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
-import Activity from '../pages/Activity';
-import CalendarPage from '../pages/Calendar';
+import Activity from "../pages/Activity";
+import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
+import Create from "../Components/CreateOrganization/CreateOrganization";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -86,9 +86,9 @@ function App() {
                 <Route
                   path="/dashboard"
                   element={
-                    
+                    <ProtectedRoute>
                       <Dashboard />
-                    
+                    </ProtectedRoute>
                   }
                 />
 
@@ -97,6 +97,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+                <Route path="/createorg" element={<Create/>} />
               </Route>
 
               {/* routes for 404 and server errors */}
