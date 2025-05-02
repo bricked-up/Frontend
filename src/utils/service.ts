@@ -1,6 +1,6 @@
 // Helper services for task operations (e.g., add, delete, update)
 
-import { Task } from '../../utils/types';
+import { Task } from './types';
 import { getBoard, updateBoard } from './boards';
 
 export const addTask = (task: Task, boardId: number) => {

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Outlet } from "react-router-dom";
+import { useTheme } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import LogoutButton from './Navbar/LogoutButton'; // Keeping this import as it was in the provided code
+import LogoutButton from "./Navbar/LogoutButton"; // Keeping this import as it was in the provided code
 import "../css/dashboard.css";
 
 /**
@@ -27,6 +28,7 @@ import "../css/dashboard.css";
  */
 const Layout: React.FC = () => {
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
+  const theme = useTheme();
 
   useEffect(() => {
     const main = document.getElementById("main");
@@ -37,7 +39,14 @@ const Layout: React.FC = () => {
   }, [isSidebar]);
 
   return (
-    <Box className="dashboard" sx={{ display: "flex", minHeight: "100vh" }}>
+    <Box
+      className="dashboard"
+      sx={{
+        display: "flex",
+        minHeight: "100vh",
+        bgcolor: theme.palette.background.default,
+      }}
+    >
       {/* Sidebar */}
       <Sidebar isSidebar={isSidebar} setIsSidebar={setIsSidebar} />
 

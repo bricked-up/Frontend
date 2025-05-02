@@ -1,4 +1,4 @@
-import{
+import {
   Box,
   Paper,
   Typography,
@@ -303,7 +303,15 @@ const ProjectDetails = ({ project }: { project: any }) => {
   if (!project) {
     return (
       <Box sx={{ p: 3, textAlign: "center" }}>
-        <Typography variant="h6" color={colors.grey[300]}>
+        <Typography
+          variant="h6"
+          sx={{
+            color:
+              theme.palette.mode === "light"
+                ? colors.grey[700]
+                : colors.grey[100],
+          }}
+        >
           Select a project to view details
         </Typography>
       </Box>
@@ -316,6 +324,10 @@ const ProjectDetails = ({ project }: { project: any }) => {
         opacity: fadeIn ? 1 : 0,
         transform: fadeIn ? "translateY(0)" : "translateY(20px)",
         transition: "opacity 0.5s ease, transform 0.5s ease",
+        backgroundColor:
+          theme.palette.mode === "light"
+            ? colors.primary[900]
+            : colors.primary[400],
       }}
     >
       <Box
@@ -816,16 +828,17 @@ const ViewProject = () => {
   };
 
   const projectOptions = getUniqueProjects();
-
   return (
     <Box
       sx={{
-        height: "calc(100vh - 64px)", // full height minus navbar
+        height: "calc(100vh - 64px)",
         overflowY: "auto",
         p: { xs: 2, sm: 3, md: 4 },
-        backgroundColor: colors.primary[500],
-        backgroundImage:
-          "radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)",
+        backgroundColor:
+          theme.palette.mode === "light"
+            ? colors.primary[400]
+            : colors.primary[500],
+        color: colors.grey[100],
       }}
     >
       <Box
@@ -833,9 +846,10 @@ const ViewProject = () => {
           minHeight: "100%",
           overflowY: "auto",
           paddingTop: "64px",
-          backgroundColor: colors.primary[500],
-          backgroundImage:
-            "radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)",
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? "colors.primary[900]"
+              : colors.primary[400],
           p: { xs: 2, sm: 3, md: 4 },
           boxSizing: "border-box",
         }}
@@ -853,7 +867,11 @@ const ViewProject = () => {
             width: "100%",
             display: "flex",
             flexDirection: "column",
-            backgroundColor: colors.primary[400],
+            backgroundColor:
+              theme.palette.mode === "light"
+                ? colors.primary[900]
+                : colors.primary[400],
+            color: colors.grey[100],
             borderRadius: "8px",
             overflow: "hidden",
           }}
@@ -942,7 +960,10 @@ const ViewProject = () => {
                 border: "none",
                 color: colors.grey[100],
                 "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor: colors.blueAccent[700],
+                  backgroundColor:
+                    theme.palette.mode === "light"
+                      ? colors.primary[300]
+                      : colors.primary[500],
                   color: colors.grey[100],
                   borderBottom: `1px solid ${colors.primary[300]}`,
                   textTransform: "uppercase",
@@ -957,11 +978,15 @@ const ViewProject = () => {
                 },
                 "& .MuiDataGrid-row": {
                   transition: "background-color 0.2s ease",
-                  "&:hover": {
-                    backgroundColor: colors.primary[500],
-                    cursor: "default",
-                  },
+                  cursor: "default",
                 },
+                "& .MuiDataGrid-root": {
+                  "--DataGrid-row-hoveredBackground":
+                    theme.palette.mode === "light"
+                      ? colors.primary[100]
+                      : colors.primary[800],
+                },
+
                 "& .MuiDataGrid-virtualScroller": {
                   backgroundColor: colors.primary[400],
                 },
@@ -989,7 +1014,11 @@ const ViewProject = () => {
             mt: 4,
             mb: 4,
             p: 3,
-            backgroundColor: colors.primary[400],
+            backgroundColor:
+              theme.palette.mode === "light"
+                ? colors.primary[900]
+                : colors.primary[400],
+            color: colors.grey[100],
             borderRadius: "8px",
             display: "flex",
             flexDirection: "column",

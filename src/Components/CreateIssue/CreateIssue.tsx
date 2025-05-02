@@ -17,6 +17,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AssignmentLateIcon from "@mui/icons-material/AssignmentLate";
 import AddIcon from "@mui/icons-material/Add";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import { useTheme } from "@mui/material/styles";
+import { tokens } from "../../theme";
 
 interface CreateTaskPageProps {
   board: Board;
@@ -24,7 +26,7 @@ interface CreateTaskPageProps {
 
 export const mockBoard: Board = {
   id: 1,
-  name: "Test Project Board",
+  name: "Project Board",
   createdBy: "Kejsi",
   createdById: "user-1",
   createdAt: new Date(),
@@ -95,10 +97,15 @@ export const mockBoard: Board = {
  * - Supports switching tasks between 'In Progress' and 'Completed' states.
  */
 const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
+  // Import necessary components
+  const { Grid } = require("@mui/material");
   const [showAddTask, setShowAddTask] = useState(false);
   const [tasks, setTasks] = useState<Task[]>(board.tasks);
   const [editingTask, setEditingTask] = useState<Task | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const handleAddTask = (task: Task) => {
     setTasks((prev) => [...prev, task]);
@@ -136,12 +143,18 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
   const inProgressTasks = tasks.filter((task) => !task.completed);
   const completedTasks = tasks.filter((task) => task.completed);
 
+  //        bgcolor: theme.palette.background.default,
+
   return (
     <Box
       sx={{
         height: "100vh",
         overflowY: "auto",
         paddingBottom: 4,
+        bgcolor: theme.palette.background.default,
+        color:
+          theme.palette.mode === "light" ? colors.grey[800] : colors.grey[100],
+        transition: "background-color 0.3s ease",
       }}
     >
       <Box display="flex" justifyContent="center" paddingX={4} paddingTop={3}>
@@ -149,7 +162,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
           display="flex"
           justifyContent="space-between"
           width="100%"
-          maxWidth="900px"
+          maxWidth="1200px"
         >
           <Typography variant="h5">{board.name}</Typography>
           <Button
@@ -174,100 +187,86 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
           <Box
             sx={{
               width: "100%",
-              maxWidth: "900px",
+              maxWidth: "1200px",
               mb: 3,
             }}
           >
-            <Paper
-              elevation={0}
+            <Box
               sx={{
-                borderRadius: "28px",
-                overflow: "hidden",
-                backgroundColor: "rgba(0,0,0,0.04)",
-                p: 0.8,
+                width: "100%",
+                backgroundColor: "transparent",
+                mb: 2,
               }}
             >
               <Tabs
                 value={activeTab}
                 onChange={handleChangeTab}
                 variant="fullWidth"
-                TabIndicatorProps={{
-                  style: {
-                    height: "100%",
-                    borderRadius: "24px",
-                    zIndex: 0,
-                    backgroundColor: "white",
-                    boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
-                    transition: "transform 0.3s cubic-bezier(0.65, 0, 0.35, 1)",
-                  },
-                }}
                 sx={{
-                  minHeight: "56px",
-                  position: "relative",
-                  "& .MuiTabs-flexContainer": {
-                    height: "100%",
+                  minHeight: "60px",
+                  borderBottom: 1,
+                  borderColor: "divider",
+                  "& .MuiTab-root": {
+                    minHeight: "60px",
+                    fontWeight: 600,
+                    fontSize: "1rem",
+                    transition: "all 0.3s ease",
+                    position: "relative",
+                    overflow: "visible",
+                    textTransform: "none",
+                    color: "text.secondary",
+                    "&::after": {
+                      content: '""',
+                      position: "absolute",
+                      bottom: 0,
+                      left: "50%",
+                      width: 0,
+                      height: "3px",
+                      backgroundColor: "primary.main",
+                      transition: "all 0.3s ease",
+                      transform: "translateX(-50%)",
+                      borderRadius: "3px 3px 0 0",
+                    },
+                  },
+                  "& .MuiTab-root.Mui-selected": {
+                    color: "text.secondary",
+                    "&::after": {
+                      width: "100%",
+                    },
+                  },
+                  "& .MuiTabs-indicator": {
+                    display: "none",
                   },
                 }}
               >
                 <Tab
-                  label={
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      sx={{ fontWeight: 600, zIndex: 1 }}
-                    >
-                      <AssignmentIcon sx={{ mr: 1, fontSize: "20px" }} />
-                      In Progress ({inProgressTasks.length})
-                    </Box>
-                  }
+                  icon={<AssignmentIcon />}
+                  iconPosition="start"
+                  label={`In Progress (${inProgressTasks.length})`}
                   sx={{
-                    textTransform: "none",
-                    fontWeight: "medium",
-                    transition: "all 0.3s ease",
-                    color: activeTab === 0 ? "primary.main" : "text.secondary",
-                    zIndex: 1,
-                    borderRadius: "24px",
-                    py: 1.5,
-                    "&:hover": {
-                      opacity: 0.8,
+                    "&:first-of-type::after": {
+                      width: activeTab === 0 ? "100%" : 0,
                     },
                   }}
                 />
                 <Tab
-                  label={
-                    <Box
-                      display="flex"
-                      alignItems="center"
-                      sx={{ fontWeight: 600, zIndex: 1 }}
-                    >
-                      <CheckCircleIcon sx={{ mr: 1, fontSize: "20px" }} />
-                      Completed ({completedTasks.length})
-                    </Box>
-                  }
+                  icon={<CheckCircleIcon />}
+                  iconPosition="start"
+                  label={`Completed (${completedTasks.length})`}
                   sx={{
-                    textTransform: "none",
-                    fontWeight: "medium",
-                    transition: "all 0.3s ease",
-                    color: activeTab === 1 ? "primary.main" : "text.secondary",
-                    zIndex: 1,
-                    borderRadius: "24px",
-                    py: 1.5,
-                    "&:hover": {
-                      opacity: 0.8,
+                    "&:nth-of-type(2)::after": {
+                      width: activeTab === 1 ? "100%" : 0,
                     },
                   }}
                 />
               </Tabs>
-            </Paper>
+            </Box>
           </Box>
 
           <Box
             sx={{
               width: "100%",
-              maxWidth: "900px",
-              display: "flex",
-              flexDirection: "column",
-              gap: 2,
+              maxWidth: "1200px",
               transition: "opacity 0.3s ease",
               minHeight: "200px",
               maxHeight: "calc(100vh - 240px)",
@@ -278,19 +277,23 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
           >
             <TabPanel value={activeTab} index={0}>
               {inProgressTasks.length > 0 ? (
-                inProgressTasks.map((task) => (
-                  <Grow key={task.id} in={true} timeout={300}>
-                    <Box>
-                      <TaskCard
-                        task={task}
-                        boardId={board.id}
-                        onDelete={handleDeleteTask}
-                        onComplete={handleCompleteTask}
-                        onEdit={handleEditTask}
-                      />
-                    </Box>
-                  </Grow>
-                ))
+                <Grid container spacing={3}>
+                  {inProgressTasks.map((task) => (
+                    <Grid item xs={12} sm={6} md={4} key={task.id}>
+                      <Grow in={true} timeout={300}>
+                        <Box>
+                          <TaskCard
+                            task={task}
+                            boardId={board.id}
+                            onDelete={handleDeleteTask}
+                            onComplete={handleCompleteTask}
+                            onEdit={handleEditTask}
+                          />
+                        </Box>
+                      </Grow>
+                    </Grid>
+                  ))}
+                </Grid>
               ) : (
                 <Paper
                   elevation={0}
@@ -335,19 +338,23 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
 
             <TabPanel value={activeTab} index={1}>
               {completedTasks.length > 0 ? (
-                completedTasks.map((task) => (
-                  <Grow key={task.id} in={true} timeout={300}>
-                    <Box>
-                      <TaskCard
-                        task={task}
-                        boardId={board.id}
-                        onDelete={handleDeleteTask}
-                        onComplete={handleCompleteTask}
-                        onEdit={handleEditTask}
-                      />
-                    </Box>
-                  </Grow>
-                ))
+                <Grid container spacing={3}>
+                  {completedTasks.map((task) => (
+                    <Grid item xs={12} sm={6} md={4} key={task.id}>
+                      <Grow key={task.id} in={true} timeout={300}>
+                        <Box>
+                          <TaskCard
+                            task={task}
+                            boardId={board.id}
+                            onDelete={handleDeleteTask}
+                            onComplete={handleCompleteTask}
+                            onEdit={handleEditTask}
+                          />
+                        </Box>
+                      </Grow>
+                    </Grid>
+                  ))}
+                </Grid>
               ) : (
                 <Paper
                   elevation={0}

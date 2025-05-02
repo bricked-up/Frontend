@@ -2,11 +2,11 @@
 
 import { ulid } from 'ulid';
 import {
-  addBoardToStore,
-  getBoardFromStore,
-  getBoardsFromStore,
-  updateBoardDataInStore,
-} from './boardsStore';
+    addBoardToStore,
+    getBoardFromStore,
+    getBoardsFromStore,
+    updateBoardDataInStore,
+  } from "./boardsStore";
 
 export const getBoard = (id: number) => {
   return getBoardFromStore(id);
