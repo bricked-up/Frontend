@@ -88,7 +88,10 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
       <Card
         sx={{
           // Keeping specific card styling as requested
-          backgroundColor: theme.palette.grey[900],
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? theme.palette.grey[700]
+              : theme.palette.grey[900],
           color: theme.palette.common.white,
           borderRadius: 3,
           mb: 2,

@@ -41,6 +41,8 @@ import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
 // Import Issue type and the corrected data
 import { Issue } from "../../utils/types"; // Adjust path if needed
 import { mockActivityData } from "../../utils/mock_Activity_Calendar_Data"; // Adjust path if needed
+import { tokens } from "../../theme";
+
 
 // Setup localization using date-fns locales
 const locales = {
@@ -262,6 +264,7 @@ const CustomCalendar: React.FC = () => {
   const [currentView, setCurrentView] = useState<View>(Views.MONTH); // Default view
   const [currentDate, setCurrentDate] = useState(new Date()); // Default date (today)
   const [showSettings, setShowSettings] = useState(false); // State for settings panel visibility
+  const colors = tokens(theme.palette.mode);
 
   // Load settings from localStorage or use defaults
   const [settings, setSettings] = useState<CalendarSettings>(() => {
@@ -413,7 +416,10 @@ const CustomCalendar: React.FC = () => {
           <Typography
             variant="h4"
             sx={{
-              color: theme.palette.text.primary,
+              color:
+                theme.palette.mode === "dark"
+                  ? theme.palette.text.secondary
+                  : colors.grey[600],
               fontWeight: "600",
               letterSpacing: "1px",
             }}
@@ -449,7 +455,10 @@ const CustomCalendar: React.FC = () => {
                 textAlign: "center",
                 mb: 3,
                 fontWeight: "600",
-                color: theme.palette.text.primary,
+                color:
+                  theme.palette.mode === "dark"
+                    ? theme.palette.text.secondary
+                    : colors.grey[600],
               }}
             >
               Customize Task Color Scheme
