@@ -1,118 +1,90 @@
 export type Project = {
+  id: number;
+  name: string;
+  orgId: number;
+  tag: string;
+  budget: number;
+  charter: string;
+  archived: boolean;
+  members?: string[];
+  issues?: string[];
+};
+
+export type rawProject = Omit<Project, "members" | "issues"> & {
+  members?: string[];
+  issues?: string[];
+};
+
+export type Organization = {
+  id?: number;
+  name: string;
+  projects?: string[];
+};
+
+export type RawOrganization = Omit<Organization, "projects"> & {
+  projects?: string[];
+};
+
+/**
+ * User is the way we will model users for the profile page.
+ * All of the data will be fetched by the db based apart from the email.
+ * When the user successfully logs in a new instance should be created
+ */
+export type User = {
+  email: string;
+  displayName: string;
+  password: string;
+  avatar?: string | null;
+  verified: boolean;
+  verifyId?: number | null;
+  organizations?: string[];
+  projects?: string[];
+  issues?: string[];
+};
+
+export type Issue = {
+    id: number,
+    name: string,
+    description?: string | null,
+    priority: number,
+    created: Date,
+    completed: Date
+    cost: number | 0
+}
+
+// Type definitions (Task, Board, etc.) used in CreateIssue components
+
+export interface Board {
     id: number;
     name: string;
-    orgId: number;
-    budget: number;
-    charter: string;
-    archived: boolean;
-    members?: ProjectMember[];
-    issues?: Issue[];
-    tags?: Tag[];
+    createdBy: string;
+    createdById: string;
+    createdAt: Date;
+    tasks: Task[];
   }
   
-  export type Organization = {
-    id?: number;
-    name: string;
-    projects?: Project[];
-    members?: OrgMember[];
-    roles?: OrgRole[];
-  }
-  
-  export type User = {
-    displayName: string;
-    id: number;
-    email: string;
-    name: string;
-    password: string;
-    avatar?: string | null;
-    verified: boolean;
-    verifyId?: number | null;
-    organizations?: OrgMember[];
-    projects?: ProjectMember[];
-    issues?: Issue[];
-    sessions?: Session[];
-  }
-  
-  export type Issue = {
-    id: number;
+  export interface Task {
+    id: string;
     title: string;
-    desc?: string | null;
-    tagId?: number | null;
-    priority?: number | null;
-    created: Date;
-    completed?: Date | null;
+    desc: string;
+    tagid: number;
+    priority: number;
     cost: number;
-    dependencies?: Dependency[];
-    reminders?: Reminder[];
+    created: Date;
+    createdBy: string;
+    completed?: Date;
   }
   
-  export type OrgMember = {
-    id: number;
-    userId: number;
-    orgId: number;
-    roles?: OrgRole[];
-  }
   
-  export type OrgRole = {
-    id: number;
-    orgId: number;
+  export interface NewBoard {
     name: string;
-    canRead: boolean;
-    canWrite: boolean;
-    canExec: boolean;
+    createdBy: string;
+    createdAt: Date;
   }
-  
-  export type ProjectMember = {
-    id: number;
-    userId: number;
-    projectId: number;
-    roles?: ProjectRole[];
-  }
-  
-  export type ProjectRole = {
-    id: number;
-    projectId: number;
-    name: string;
-    canRead: boolean;
-    canWrite: boolean;
-    canExec: boolean;
-  }
-  
-  export type Tag = {
-    id: number;
-    projectId: number;
-    name: string;
-    color: string;
-  }
-  
-  export type Dependency = {
-    id: number;
-    issueId: number;
-    dependency: number;
-  }
-  
-  export type Reminder = {
-    id: number;
-    issueId: number;
-    userId: number;
-  }
-  
-  export type Session = {
-    id: number;
-    userId: number;
-    expires: Date;
-  }
-  
-  export type VerifyUser = {
-    id: number;
-    code: number;
-    expires: Date;
-  }
-  
-  export type ForgotPassword = {
-    id: number;
-    userId: number;
-    code: number;
-    expirationDate: Date;
+
+  export interface RawIssue{
+    completed: string | number | Date;
+    created: string | number | Date;
+
   }
   
