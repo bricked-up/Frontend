@@ -1,10 +1,8 @@
 // src/Organizations.ts
 import { Organization } from "./Organization";
-
 const STORAGE_KEY = "organizations";
 
- 
-
+// Load and rehydrate everything
 function loadOrgs(): Organization[] {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return [];
@@ -12,12 +10,12 @@ function loadOrgs(): Organization[] {
     const parsed = JSON.parse(raw);
     return Array.isArray(parsed)
       ? parsed.map(o => ({
-          id: o.id,
-          name: o.name,
-          description: o.description,
-          members: Array.isArray(o.members) ? o.members : [],
-          projects: [],
-        }))
+        id: o.id,
+        name: o.name,
+        description: o.description || "",
+        members: Array.isArray(o.members) ? o.members : [],
+        projects: Array.isArray(o.projects) ? o.projects : [],
+      }))
       : [];
   } catch {
     return [];
@@ -32,21 +30,6 @@ export function getAllOrganizations(): Organization[] {
   return loadOrgs();
 }
 
-/**
- * Returns a function that, when called repeatedly, yields:
- *  • the initial ID (as string) on the first call
- *  • then (initial + 1), (initial + 2), … thereafter
- */
-const makeTimestampId = (() => {
-  let counter = 0;
-  return () => {
-    const ts = Date.now();
-    counter = (counter + 1) % Number.MAX_SAFE_INTEGER;
-    return `${ts}-${counter}`;
-  };
-})();
-
-
 export function createOrganization(
   name: string,
   description: string,
@@ -55,7 +38,7 @@ export function createOrganization(
 ): Organization {
   const orgs = loadOrgs();
   const newOrg: Organization = {
-    id: makeTimestampId(),
+    id: `${Date.now()}-${Math.random()}`, // or your makeTimestampId()
     name,
     description,
     members,

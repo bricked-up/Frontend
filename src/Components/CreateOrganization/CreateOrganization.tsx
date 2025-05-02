@@ -24,8 +24,8 @@ import {
   createOrganization,
   updateOrganization,
   deleteOrganization,
-} from "./Organizations";
-import { Organization } from "./Organization";
+} from "../../utils/Organizations";
+import { Organization } from "../../utils/Organization";
 import OrganizationCard from "./OrganizationCard";
 import { tokens } from "../../theme";
 
@@ -111,7 +111,7 @@ const CreateOrganization: React.FC = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" textAlign="center" sx={{color: colors.primary[500]}} gutterBottom>
+        <Typography variant="h4" textAlign="center" sx={{ color: colors.primary[500] }} gutterBottom>
           Organization Manager
         </Typography>
         <Grid container spacing={4} justifyContent="flex-start">

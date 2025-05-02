@@ -6,8 +6,8 @@ import Header from "../Components/Header";
 import react from "react";
 
 import DropDown from "../Components/DropDown";
-import { getOrganizationsFromStore } from "../Components/CreateOrganization/OrganizationStore";
-import { Organization } from "../Components/CreateOrganization/Organization";
+import { getOrganizationsFromStore } from "../utils/OrganizationStore";
+import { Organization } from "../utils/Organization";
 
 // User table columns
 const userColumns: GridColDef[] = [
@@ -62,8 +62,8 @@ const ViewOrg = () => {
                 minHeight: "calc(100vh - 64px)",
                 paddingTop: "64px",
                 backgroundColor: theme.palette.mode === "light"
-                ? colors.primary[900]
-                : colors.primary[500],
+                    ? colors.primary[900]
+                    : colors.primary[500],
                 backgroundImage:
                     "radial-gradient(circle at top left, rgba(50, 50, 90, 0.3), transparent 40%), radial-gradient(circle at bottom right, rgba(70, 30, 50, 0.2), transparent 50%)",
                 boxSizing: "border-box",
@@ -76,8 +76,8 @@ const ViewOrg = () => {
                 //p: { xs: 2, sm: 3, md: 4 },
             }}
         >
-            <Header 
-                title="Organizations" subtitle={""}            />
+            <Header
+                title="Organizations" subtitle={""} />
 
             <Paper
                 sx={{
