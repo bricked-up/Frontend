@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { CircularProgress, Box } from "@mui/material";
+import LoadingPage from "../../pages/LoadingPage";
 
 interface RequireAuthProps {
   children: React.ReactNode;
@@ -31,20 +31,7 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
     verifyUser();
   }, [navigate]);
 
-  if (isLoading) {
-    return (
-      <Box
-        sx={{
-          minHeight: "100vh",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <CircularProgress />
-      </Box>
-    );
-  }
+  if (isLoading) return <LoadingPage />;
 
   return isVerified ? <>{children}</> : null;
 };

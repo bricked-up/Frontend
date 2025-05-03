@@ -1,6 +1,8 @@
 import { Navigate, useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import { JSX } from "react";
+import RequireAuth from "./auth/requireauth";
+import Dashboard from "../pages/DashBoard";
 
 /**
  * This checks if the user is logged in, if he/she is not connected
