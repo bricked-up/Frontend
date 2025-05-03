@@ -40,6 +40,7 @@ export type User = {
   organizations?: string[];
   projects?: string[];
   issues?: string[];
+  role: string;  
 };
 
 export type Issue = {
