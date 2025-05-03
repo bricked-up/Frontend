@@ -226,7 +226,3 @@ const ViewOrg = () => {
 };
 
 export default ViewOrg;
-
-
-
-

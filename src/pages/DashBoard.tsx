@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Box } from "@mui/material";
+import { Box, useTheme } from "@mui/material";
 import Channels from "../Components/Channels";
 
 /**
@@ -20,6 +20,8 @@ import Channels from "../Components/Channels";
  * @returns {JSX.Element} The Dashboard component.
  */
 function Dashboard() {
+  const theme = useTheme();
+
   return (
     <Box
       display="flex"
@@ -28,6 +30,9 @@ function Dashboard() {
       alignItems="center"
       paddingTop={"650px"}
       width="100%"
+      sx={{
+        backgroundColor: theme.palette.background.default, // <-- fix is here
+      }}
     >
       <Box width="90%" mt={-50}>
         <Channels />

@@ -125,4 +125,3 @@ export type ForgotPassword = {
   code: number;
   expirationDate: Date;
 };
-
