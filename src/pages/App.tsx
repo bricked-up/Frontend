@@ -10,9 +10,12 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewProject";
+import ViewTeam from "../Components/ViewTeams";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import Activity from "../pages/Activity";
+import CalendarPage from "../pages/Calendar";
+import ViewOrg from "./ViewOrganization";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -26,23 +29,32 @@ function App() {
           <div className="App">
             {/*set up Routes */}
             <Routes>
-              {user ?
+              {user ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
-                :
+              ) : (
                 <Route path="/" element={<LandingPage />} />
-              }
+              )}
 
               {/*route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
+              <Route path="/testt" element={<LandingPage />} />
 
               {/* user related routes */}
-              <Route path="/user" >
+              <Route path="/user">
                 {/* all of these routes are subroutes of :userId*/}
                 <Route path=":userId">
-                  <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
+                  <Route
+                    index
+                    path="about"
+                    element={
+                      <ProtectedRoute>
+                        <AboutUser />
+                      </ProtectedRoute>
+                    }
+                  />
                   <Route element={<Layout />}>
                     <Route path="organizations" />
                     <Route path="projects" />
@@ -79,14 +91,19 @@ function App() {
                   }
                 />
 
-                <Route path="/view_team" element={<ViewTeams />} />
+                <Route path="/view_team" element={<ViewTeam />} />
                 <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/vieworg" element={<ViewOrg />} />
               </Route>
 
               {/* routes for 404 and server errors */}
-              <Route element={<Layout />}> <Route path="*" element={<Page404 />} /> </Route>
+              <Route element={<Layout />}>
+                {" "}
+                <Route path="*" element={<Page404 />} />{" "}
+              </Route>
               <Route path="/500" element={<Error500Page />} />
-
             </Routes>
           </div>
         </Router>
