@@ -18,7 +18,7 @@ const usePasswordValidation = ({
   specialChar = true 
 }) => {
   const [isValid, setIsValid] = useState(false);
-  const [errors, setErrors] = useState([]);
+  const [errors, setErrors] = useState<string[]>([]);
 
   useEffect(() => {
     const validationErrors = [];
@@ -103,7 +103,7 @@ const Login = () => {
       fontSize: "2rem",
       margin: "2rem 0"
     },
-    tabButton: (active) => ({
+    tabButton: (active: any): React.CSSProperties => ({
       flex: 1,
       padding: "1rem",
       background: "transparent",
@@ -123,12 +123,12 @@ const Login = () => {
       height: "2px",
       background: isDark ? "#38bdf8" : "#0ea5e9"
     },
-    formWrapper: (active) => ({
+    formWrapper: (active: any): React.CSSProperties => ({
       padding: "2rem",
       transition: "opacity 0.3s ease, transform 0.3s ease",
       opacity: active ? 1 : 0,
       transform: active ? "translateY(0)" : "translateY(10px)",
-      pointerEvents: active ? "all" : "none",
+      pointerEvents: active ? "auto" : "none",
       position: "relative",
       zIndex: active ? 1 : 0
     }),
@@ -151,7 +151,7 @@ const Login = () => {
       left: "12px",
       color: isDark ? "#94a3b8" : "#64748b"
     },
-    input: (hasError) => ({
+    input: (hasError: any) => ({
       width: "100%",
       padding: "0.75rem 0.75rem 0.75rem 2.5rem",
       border: `1px solid ${hasError ? "#ef4444" : (isDark ? "#475569" : "#cbd5e1")}`,
@@ -202,12 +202,12 @@ const Login = () => {
     setIsFormTouched(false);
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const handleEmailChange = (e) => {
+  const handleEmailChange = (e: { target: { value: any; }; }) => {
     const value = e.target.value;
     setAccount(value);
     setIsFormTouched(true);
@@ -219,7 +219,7 @@ const Login = () => {
     }
   };
 
-  const handleForgotPwd = (e) => {
+  const handleForgotPwd = (e: { preventDefault: () => void; }) => {
     if (!account) {
       e.preventDefault();
       setError("No account registered!");
@@ -232,7 +232,7 @@ const Login = () => {
   };
 
   // Auth handler
-  const handleAuth = async (type) => {
+  const handleAuth = async (type: string) => {
     setIsFormTouched(true);
     const isSignup = type === "signup";
     
@@ -277,7 +277,7 @@ const Login = () => {
     </svg>
   );
 
-  const EyeIcon = ({visible}) => visible ? (
+  const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => visible ? (
     <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
       <path d="M9.88 9.88a3 3 0 1 0 4.24 4.24" />
       <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" />
@@ -292,9 +292,21 @@ const Login = () => {
   );
 
   // Input field component
-  const InputField = ({ id, type, value, onChange, icon, hasError, placeholder, toggleVisibility, showPassword }) => (
-    <div style={styles.inputWrapper}>
-      <span style={styles.icon}>{icon}</span>
+  interface InputFieldProps {
+    id: string;
+    type: string;
+    value: string;
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    icon: React.ReactNode;
+    hasError: boolean;
+    placeholder?: string;
+    toggleVisibility?: () => void;
+    showPassword?: boolean;
+  }
+
+  const InputField: React.FC<InputFieldProps> = ({ id, type, value, onChange, icon, hasError, placeholder, toggleVisibility, showPassword }) => (
+    <div style={styles.inputWrapper as React.CSSProperties}>
+      <span style={styles.icon as React.CSSProperties}>{icon}</span>
       <input
         id={id}
         type={type}
@@ -319,18 +331,18 @@ const Login = () => {
           }}
           aria-label={showPassword ? "Hide password" : "Show password"}
         >
-          <EyeIcon visible={showPassword} />
+          <EyeIcon visible={!!showPassword} />
         </button>
       )}
     </div>
   );
 
   return (
-    <div style={styles.container}>
+    <div style={styles.container as React.CSSProperties}>
       <NavBar />
       
       <section className="forms-section">
-        <h1 style={styles.title}>Welcome to Bricked Up!</h1>
+        <h1 style={styles.title as React.CSSProperties}>Welcome to Bricked Up!</h1>
         
         <div style={styles.formContainer}>
           {/* Tab buttons */}
@@ -338,10 +350,10 @@ const Login = () => {
             <button 
               type="button" 
               onClick={toggle} 
-              style={styles.tabButton(isLoginActive)}
+              style={styles.tabButton(isLoginActive) as React.CSSProperties}
             >
               Login
-              {isLoginActive && <span style={styles.tabIndicator}></span>}
+              {isLoginActive && <span style={styles.tabIndicator as React.CSSProperties}></span>}
             </button>
             <button 
               type="button" 
@@ -349,7 +361,7 @@ const Login = () => {
               style={styles.tabButton(!isLoginActive)}
             >
               Sign Up
-              {!isLoginActive && <span style={styles.tabIndicator}></span>}
+              {!isLoginActive && <span style={styles.tabIndicator as React.CSSProperties}></span>}
             </button>
           </div>
 
@@ -367,7 +379,7 @@ const Login = () => {
                   value={account}
                   onChange={handleEmailChange}
                   icon={<EmailIcon />}
-                  hasError={isFormTouched && emailError}
+                  hasError={isFormTouched && !!emailError}
                   placeholder="Enter your email"
                 />
                 {isFormTouched && emailError && <p style={styles.errorText}>{emailError}</p>}
@@ -379,16 +391,15 @@ const Login = () => {
                   id="login-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => setPassword(e.target.value)}
                   icon={<LockIcon />}
                   toggleVisibility={() => setShowPassword(!showPassword)}
                   showPassword={showPassword}
-                  placeholder="Enter your password"
-                />
+                  placeholder="Enter your password" hasError={false}                />
               </div>
 
               <div style={{ marginBottom: "1.5rem" }}>
-                <a href="/forgot_pwd" style={styles.forgotPasswordLink} onClick={handleForgotPwd}>
+                <a href="/forgot_pwd" style={styles.forgotPasswordLink as React.CSSProperties} onClick={handleForgotPwd}>
                   Forgot password?
                 </a>
                 {error && <p style={{ ...styles.errorText, textAlign: "right" }}>{error}</p>}
@@ -417,7 +428,7 @@ const Login = () => {
                   value={account}
                   onChange={handleEmailChange}
                   icon={<EmailIcon />}
-                  hasError={isFormTouched && emailError}
+                  hasError={isFormTouched && !!emailError}
                   placeholder="Enter your email"
                 />
                 {isFormTouched && emailError && <p style={styles.errorText}>{emailError}</p>}
@@ -429,12 +440,12 @@ const Login = () => {
                   id="signup-password"
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  onChange={(e) => {
+                  onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => {
                     setPassword(e.target.value);
                     setIsFormTouched(true);
                   }}
                   icon={<LockIcon />}
-                  hasError={isFormTouched && !isValid && password}
+                  hasError={!!(isFormTouched && !isValid && password)}
                   placeholder="Enter your password"
                   toggleVisibility={() => setShowPassword(!showPassword)}
                   showPassword={showPassword}
@@ -454,12 +465,12 @@ const Login = () => {
                   id="signup-password-confirm"
                   type={showConfirmPassword ? "text" : "password"}
                   value={confirmpwd}
-                  onChange={(e) => {
+                  onChange={(e: { target: { value: React.SetStateAction<string>; }; }) => {
                     setConfirmpwd(e.target.value);
                     setIsFormTouched(true);
                   }}
                   icon={<LockIcon />}
-                  hasError={isFormTouched && confirmpwd && password !== confirmpwd}
+                  hasError={isFormTouched && !!confirmpwd && password !== confirmpwd}
                   placeholder="Confirm your password"
                   toggleVisibility={() => setShowConfirmPassword(!showConfirmPassword)}
                   showPassword={showConfirmPassword}
