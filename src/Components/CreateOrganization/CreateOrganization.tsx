@@ -166,7 +166,12 @@ const CreateOrganization: React.FC = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" textAlign="center" sx={{ color: colors.primary[500] }} gutterBottom>
+        <Typography variant="h4" textAlign="center" sx={{
+          color:
+            theme.palette.mode === "dark"
+              ? colors.greenAccent[400]
+              : colors.blueAccent[600],
+        }} gutterBottom>
           Organization Manager
         </Typography>
         <Grid container spacing={4} justifyContent="flex-start">
