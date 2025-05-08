@@ -102,6 +102,12 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               fullWidth
               value={title}
               onChange={(e) => setTitle(e.target.value)}
+              InputProps={{
+                style: { color: "white" },
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
             />
           </Grid>
           <Grid item xs={12}>
@@ -112,6 +118,12 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               rows={4}
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
+              InputProps={{
+                style: { color: "white" },
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -121,6 +133,12 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               fullWidth
               value={priority}
               onChange={(e) => setPriority(Number(e.target.value))}
+              InputProps={{
+                style: { color: "white" },
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -130,6 +148,12 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               fullWidth
               value={tagid}
               onChange={(e) => setTagid(Number(e.target.value))}
+              InputProps={{
+                style: { color: "white" },
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
             />
           </Grid>
           <Grid item xs={6}>
@@ -139,6 +163,12 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               fullWidth
               value={cost}
               onChange={(e) => setCost(Number(e.target.value))}
+              InputProps={{
+                style: { color: "white" },
+              }}
+              InputLabelProps={{
+                style: { color: "white" },
+              }}
             />
           </Grid>
         </Grid>
