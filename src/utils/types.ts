@@ -1,7 +1,7 @@
 /**
  * @fileoverview Defines the core data structures and type aliases used throughout the application.
  * This includes types for primary entities like Projects, Organizations, Users, and Issues,
- * as well as supporting types for roles, memberships, and API call results.
+ * as well as supporting types for roles, memberships, API call results, and newer entities like Boards and Tasks.
  */
 
 /**
@@ -244,16 +244,76 @@ export type ForgotPassword = {
   expirationDate: Date;
 }
 
+/**
+ * @description Represents a board, which can contain multiple tasks.
+ * @property {number} id - The unique identifier for the board.
+ * @property {string} name - The name of the board.
+ * @property {string} createdBy - The name or identifier of the user who created the board.
+ * @property {string} createdById - The ID of the user who created the board.
+ * @property {Date} createdAt - The date and time when the board was created.
+ * @property {Task[]} tasks - An array of tasks belonging to this board.
+ */
+export interface Board {
+  id: number;
+  name: string;
+  createdBy: string;
+  createdById: string;
+  createdAt: Date;
+  tasks: Task[];
+}
+
+/**
+ * @description Represents a task within a board.
+ * @property {string} id - The unique identifier for the task (note: type is string).
+ * @property {string} title - The title of the task.
+ * @property {string} desc - A description of the task.
+ * @property {number} tagid - The ID of an associated tag (note: lowercase 'i' in 'tagid').
+ * @property {number} priority - The priority level of the task.
+ * @property {number} cost - The estimated or actual cost associated with the task.
+ * @property {Date} created - The date and time when the task was created.
+ * @property {string} createdBy - The name or identifier of the user who created the task.
+ * @property {Date} [completed] - Optional date and time when the task was completed.
+ */
+export interface Task {
+  id: string;
+  title: string;
+  desc: string;
+  tagid: number;
+  priority: number;
+  cost: number;
+  created: Date;
+  createdBy: string;
+  completed?: Date;
+}
+
+/**
+ * @description Represents the data structure for creating a new board.
+ * Typically used in POST requests.
+ * @property {string} name - The name for the new board.
+ * @property {string} createdBy - The name or identifier of the user creating the board.
+ * @property {Date} createdAt - The creation date for the new board.
+ */
+export interface NewBoard {
+  name: string;
+  createdBy: string;
+  createdAt: Date;
+}
+
 // --- Getter Result Types ---
 
 /**
-* Generic interface for the result of a getter function.
+* @interface GetResult
+* @template T The type of the data payload.
+* @description Generic interface for the result of a getter function.
 * Contains the HTTP status, the data payload (or null), and an optional error message.
+* @property {number} status - The HTTP status code of the response (or a client-side error code, e.g., 0).
+* @property {T | null} data - The data payload of type T if the request was successful, otherwise null.
+* @property {string} [error] - An optional error message if the request failed or an error occurred.
 */
 export interface GetResult<T> {
-  status: number;
-  data: T | null;
-  error?: string;
+status: number;
+data: T | null;
+error?: string;
 }
 
 /**
@@ -269,9 +329,9 @@ export type GetUserResult = GetResult<User>;
 export type GetIssueResult = GetResult<Issue>;
 
 /**
-* Result type for fetching project members.
-* Currently defined as string[] based on the hypothetical endpoint's expectation.
-* This might change to GetResult<ProjectMember[]> or GetResult<User[]> if the
+* @description Result type for fetching project members.
+* Currently defined as `string[]` based on the hypothetical endpoint's expectation.
+* This might change to `GetResult<ProjectMember[]>` or `GetResult<User[]>` if the
 * endpoint is implemented to return richer member objects.
 */
 export type GetProjectMembersResult = GetResult<string[]>;
@@ -289,11 +349,40 @@ export type GetProjectIssuesResult = GetResult<Issue[]>;
 export type GetOrgIssuesResult = GetResult<Issue[]>;
 
 /**
-* Optional: If you have a raw structure for Go's sql.NullTime from the backend
-* and want a shared type for it before parsing.
-* Not strictly necessary if parsing happens immediately within getter functions.
+* @interface SQLNullTime
+* @description Represents the raw structure of a nullable time value often returned
+* by Go backends when using `sql.NullTime`. This interface is useful for parsing
+* such data before converting it to a JavaScript `Date` object or `null`.
+* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
+* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
 */
 export interface SQLNullTime {
-  Time: string;
-  Valid: boolean;
+Time: string;
+Valid: boolean;
 }
+
+// --- New Getter Result Types for Board and Task ---
+
+/**
+ * @description Result type for fetching a single Board.
+ * Wraps the Board type within the generic GetResult structure.
+ */
+export type GetBoardResult = GetResult<Board>;
+
+/**
+ * @description Result type for fetching multiple Boards.
+ * Wraps an array of Board types within the generic GetResult structure.
+ */
+export type GetBoardsResult = GetResult<Board[]>;
+
+/**
+ * @description Result type for fetching a single Task.
+ * Wraps the Task type within the generic GetResult structure.
+ */
+export type GetTaskResult = GetResult<Task>;
+
+/**
+ * @description Result type for fetching multiple Tasks.
+ * Wraps an array of Task types within the generic GetResult structure.
+ */
+export type GetTasksResult = GetResult<Task[]>;
