@@ -83,23 +83,18 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                <Route path="/view_team" element={<ViewTeam />} />
+                <Route path="/viewteam" element={<ViewProject />} />
                 <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+                <Route
+                  path="/createissue"
+                  element={<CreateTask board={mockBoard} />}
+                />
               </Route>
-              <Route path="/cc" element={<CreateTask board={mockBoard} />} />
-              <Route path="/vp" element={<ViewProject />} />
 
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
