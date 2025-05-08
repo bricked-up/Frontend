@@ -112,13 +112,16 @@ export const createNewIssue = async (
     const rawJson: any = await response.json();
 
     const issue: Issue = {
-      ...raw,
-      created: new Date(raw.created),
-      completed: new Date(raw.completed),
-      id: 0,
-      name: "",
-      priority: 0,
-      cost: 0
+      id: rawJson.id,
+      title: rawJson.title,
+      desc: rawJson.desc ?? null,
+      tagId: rawJson.tagId ?? null,
+      priority: rawJson.priority ?? null,
+      cost: rawJson.cost,
+      created: new Date(rawJson.created),
+      completed: rawJson.completed ? new Date(rawJson.completed) : null,
+      dependencies: rawJson.dependencies ?? [],
+      reminders: rawJson.reminders ?? [],
     };
 
     return { status: response.status, issue };
