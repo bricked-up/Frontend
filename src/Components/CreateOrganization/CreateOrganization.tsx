@@ -88,7 +88,7 @@ const CreateOrganization: React.FC = () => {
   const handleAddProject = () => {
     const title = newProject.trim();
     if (!title.trim()) {
-      alert("Please enter a project name"); 
+      alert("Please enter a project name");
       return;
     }
     setProjects(prev => [...prev, title]);
@@ -101,7 +101,7 @@ const CreateOrganization: React.FC = () => {
 
   const handleSubmit = () => {
     if (!orgName) {
-      alert("Please enter a org name"); 
+      alert("Please enter a org name");
       return;
     }
     if (editingOrg) {
@@ -166,7 +166,7 @@ const CreateOrganization: React.FC = () => {
       </Box>
 
       <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
-        <DialogTitle>
+        <DialogTitle sx={{ color: theme.palette.mode === "dark" ? colors.greenAccent[400] : colors.blueAccent[600] }}>
           {editingOrg ? 'Edit Organization' : 'New Organization'}
         </DialogTitle>
         <DialogContent dividers>
@@ -174,7 +174,14 @@ const CreateOrganization: React.FC = () => {
             fullWidth
             margin="normal"
             label="Name"
-            sx={{ input: { color: 'white' } }}
+            sx={{
+              input: {
+                color:
+                  theme.palette.mode === "dark"
+                    ? colors.greenAccent[400]
+                    : colors.blueAccent[600],
+              }
+            }}
             value={orgName}
             onChange={e => setOrgName(e.target.value)}
           />
@@ -192,25 +199,25 @@ const CreateOrganization: React.FC = () => {
 
             }}
 
-            InputLabelProps={{
-              style: {
-                color: descriptionTouched
-                  ? colors.greenAccent[500]
-                  : colors.primary[700],
-              },
 
-            }}
             sx={{
               input: { color: 'white' },
 
               textarea: {
-                color: "white",
+                
+                color:
+                  theme.palette.mode === "dark"
+                    ? colors.greenAccent[400]
+                    : colors.blueAccent[600],
               },
               transition: 'color 0.3s ease-in-out',
             }}
           />
 
-          <Typography variant="h6" sx={{ mt: 2 }}>
+          <Typography variant="h6" sx={{ mt: 2, color:
+              theme.palette.mode === "dark"
+                ? colors.greenAccent[400]
+                : colors.blueAccent[600], }}>
             Team Members
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
@@ -218,7 +225,10 @@ const CreateOrganization: React.FC = () => {
               label="Add member"
               value={newMember}
               onChange={e => setNewMember(e.target.value)}
-              sx={{ input: { color: 'white' } }}
+              sx={{ input: { color:
+                theme.palette.mode === "dark"
+                  ? colors.greenAccent[400]
+                  : colors.blueAccent[600], } }}
             />
             <IconButton onClick={handleAddMember}><AddIcon /></IconButton>
           </Box>
@@ -237,7 +247,10 @@ const CreateOrganization: React.FC = () => {
             ))}
           </List>
 
-          <Typography variant="h6" sx={{ mt: 2 }}>
+          <Typography variant="h6" sx={{ mt: 2, color:
+              theme.palette.mode === "dark"
+                ? colors.greenAccent[400]
+                : colors.blueAccent[600], }}>
             Projects
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
@@ -245,7 +258,10 @@ const CreateOrganization: React.FC = () => {
               label="Add project"
               value={newProject}
               onChange={e => setNewProject(e.target.value)}
-              sx={{ input: { color: 'white' } }}
+              sx={{ input: { color:
+                theme.palette.mode === "dark"
+                  ? colors.greenAccent[400]
+                  : colors.blueAccent[600], } }}
             />
             <IconButton onClick={handleAddProject}><AddIcon /></IconButton>
           </Box>

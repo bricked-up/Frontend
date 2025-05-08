@@ -115,7 +115,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
 
         {isSidebar && (
           <Box>
-
+            <Item
+              title="Create Organization"
+              to="/createOrg"
+              icon={<CorporateFareIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
             <Item
               title="Create Issue"
               to="/createIssue"

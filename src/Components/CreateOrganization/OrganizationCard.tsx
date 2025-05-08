@@ -20,6 +20,7 @@ import GroupRoundedIcon from '@mui/icons-material/GroupRounded';             // 
 import FormatListBulletedRoundedIcon from '@mui/icons-material/FormatListBulletedRounded'; // Icon for project list
 import { Organization } from '../../utils/Organization'; // Type definition for organization data
 import { useTheme } from '@mui/material/styles'; // Hook to access theme settings
+import { tokens } from '../../theme'; // Utility to get theme tokens
 
 /**
  * Props for OrganizationCard component.
@@ -52,8 +53,10 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
   onEdit,
 }) => {
   // Determine if theme is dark mode for styling
+  
   const theme = useTheme();
   const isDark = theme.palette.mode === 'dark';
+  const colors = tokens(theme.palette.mode);
   // Background colors adapt to theme
   const cardBg = isDark ? 'rgba(50, 63, 83, 0.73)' : 'rgba(255, 255, 255, 0.84)';
   const textColor = isDark ? '#e2e8f0' : '#1e293b';
@@ -132,7 +135,10 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
 
         {/* Action buttons: edit */}
         <CardActions sx={{ justifyContent: 'flex-end', pt: 1 }}>
-          <Tooltip title="Edit Organization">
+          <Tooltip title="Edit Organization" sx={{color:
+              theme.palette.mode === "dark"
+                ? colors.greenAccent[400]
+                : colors.blueAccent[600],}}>
             <IconButton
               size="small"
               onClick={e => {
