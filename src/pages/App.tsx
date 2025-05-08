@@ -16,6 +16,7 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
+import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -96,6 +97,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+                <Route path="/createorg" element={<CreateOrg />} />
               </Route>
 
               {/* routes for 404 and server errors */}
