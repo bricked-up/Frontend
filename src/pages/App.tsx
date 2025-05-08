@@ -92,12 +92,13 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+				<Route path="/createOrg" element={<CreateOrg />} />
                 <Route
                   path="/createIssue"
                   element={<CreateTask board={mockBoard} />}
                 />
               </Route>
-			  <Route path="/createorg" element={<CreateOrg />} />
+			  
 
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
