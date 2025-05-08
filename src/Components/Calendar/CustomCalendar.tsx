@@ -65,15 +65,17 @@ type CalendarEvent = {
 };
 
 // Map mock data (Issue[]) to CalendarEvent[]
-const events: CalendarEvent[] = mockActivityData.map(
-  (item: Issue): CalendarEvent => ({
-    id: item.id, // Use Issue's numeric id
-    title: item.name, // Use Issue's name
-    start: item.completed, // Use Issue's completed Date object
-    end: item.completed, // Use Issue's completed Date object (assuming single-day events)
-    resource: item, // Store the original Issue object
-  })
-);
+const events: CalendarEvent[] = mockActivityData
+  .filter((item): item is Issue & { completed: Date } => !!item.completed)
+  .map(
+    (item): CalendarEvent => ({
+      id: item.id,
+      title: item.title,
+      start: item.completed,
+      end: item.completed,
+      resource: item,
+    })
+  );
 
 // Type-safe keys for settings
 type ThresholdKey = "urgentThreshold" | "upcomingThreshold";

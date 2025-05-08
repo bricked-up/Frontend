@@ -1,11 +1,4 @@
-import {
-  Issue,
-  RawIssue,
-  Organization,
-  RawOrganization,
-  Project,
-  rawProject,
-} from "./types";
+import { Issue, Organization, Project } from "./types";
 import { API_BASE } from "../config";
 
 export interface IssueParams {
@@ -116,11 +109,19 @@ export const createNewIssue = async (
       return { status: response.status, issue: null, error };
     }
 
-    const raw = (await response.json()) as RawIssue;
+    const rawJson: any = await response.json();
+
     const issue: Issue = {
-      ...raw,
-      created: new Date(raw.created),
-      completed: new Date(raw.completed),
+      id: rawJson.id,
+      title: rawJson.title,
+      desc: rawJson.desc ?? null,
+      tagId: rawJson.tagId ?? null,
+      priority: rawJson.priority ?? null,
+      cost: rawJson.cost,
+      created: new Date(rawJson.created),
+      completed: rawJson.completed ? new Date(rawJson.completed) : null,
+      dependencies: rawJson.dependencies ?? [],
+      reminders: rawJson.reminders ?? [],
     };
 
     return { status: response.status, issue };
@@ -180,11 +181,14 @@ export const createOrganization = async (
       return { status: response.status, organization: null, error };
     }
 
-    const raw = (await response.json()) as RawOrganization;
+    const rawJson: any = await response.json();
+
     const organization: Organization = {
-      id: raw.id,
-      name: raw.name,
-      projects: raw.projects ?? [],
+      id: rawJson.id,
+      name: rawJson.name,
+      projects: rawJson.projects ?? [],
+      members: rawJson.members ?? [],
+      roles: rawJson.roles ?? [],
     };
 
     return { status: response.status, organization };
@@ -257,17 +261,18 @@ export const createProject = async (
       return { status: response.status, project: null, error };
     }
 
-    const raw = (await response.json()) as rawProject;
+    const rawJson: any = await response.json();
+
     const project: Project = {
-      id: raw.id,
-      name: raw.name,
-      orgId: raw.orgId,
-      tag: raw.tag,
-      budget: raw.budget,
-      charter: raw.charter,
-      archived: raw.archived,
-      members: raw.members ?? [],
-      issues: raw.issues ?? [],
+      id: rawJson.id,
+      name: rawJson.name,
+      orgId: rawJson.orgId,
+      budget: rawJson.budget,
+      charter: rawJson.charter,
+      archived: rawJson.archived,
+      members: rawJson.members ?? [],
+      issues: rawJson.issues ?? [],
+      tags: rawJson.tags ?? [],
     };
 
     return { status: response.status, project };

@@ -20,14 +20,14 @@ import ViewOrg from "./ViewOrganization";
 function App() {
   const [theme, colorMode] = useMode();
   const { user } = useUser();
-
+  
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <Router>
           <div className="App">
-            {/*set up Routes */}
+            {/* set up Routes */}
             <Routes>
               {user ? (
                 <Route element={<Layout />}>
@@ -36,21 +36,17 @@ function App() {
               ) : (
                 <Route path="/" element={<LandingPage />} />
               )}
-
-              {/*route for login and signup */}
+              
+              {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
-
+              
               {/* user related routes */}
               <Route path="/user">
-                {/* all of these routes are subroutes of :userId*/}
                 <Route path=":userId">
-                  <Route
-                    index
-                    path="about"
-                    element={<AboutUser />}
-                  />
+                  <Route path="aboutuser" element={<AboutUser />} />
+                  
                   <Route element={<Layout />}>
                     <Route path="organizations" />
                     <Route path="projects" />
@@ -58,7 +54,7 @@ function App() {
                   </Route>
                 </Route>
               </Route>
-
+              
               {/* project related routes */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -66,7 +62,7 @@ function App() {
                   <Route path="issues" />
                 </Route>
               </Route>
-
+              
               {/* organization related routes */}
               <Route path="/organization">
                 <Route path=":orgId">
@@ -75,7 +71,7 @@ function App() {
                   <Route path="issues" />
                 </Route>
               </Route>
-
+              
               {/* Protected Routes */}
               <Route element={<Layout />}>
                 <Route
@@ -86,18 +82,16 @@ function App() {
                     </ProtectedRoute>
                   }
                 />
-
                 <Route path="/view_team" element={<ViewTeam />} />
                 <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
               </Route>
-
+              
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
-                {" "}
-                <Route path="*" element={<Page404 />} />{" "}
+                <Route path="*" element={<Page404 />} />
               </Route>
               <Route path="/500" element={<Error500Page />} />
             </Routes>
