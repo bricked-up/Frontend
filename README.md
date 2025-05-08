@@ -45,8 +45,8 @@ be added **manually** to the package.json. Any changes to the package-lock.json 
 /project/:projectId
 /users - all the users in the project
 /issues - all issues for the given project
-/createissue - create a new issue for the project + view issues + edit issues
-/viewteam - view the members and details assigned to the project
+/createIssue - create a new issue for the project + view issues + edit issues
+/viewProject - view the members and details assigned to the project
 
 ### All org related
 

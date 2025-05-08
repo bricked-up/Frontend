@@ -19,6 +19,7 @@ import {
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
 import { Task } from "../../utils/types";
+import { useTheme } from "@mui/material/styles";
 
 export interface AddIssueProps {
   show: boolean;
@@ -91,6 +92,8 @@ export const AddIssue: React.FC<AddIssueProps> = ({
     onClose();
   };
 
+  const theme = useTheme();
+  const textColor = theme.palette.mode === "light" ? "black" : "white";
   return (
     <Dialog open={show} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{initialData ? "Edit Issue" : "Add New Issue"}</DialogTitle>
@@ -103,10 +106,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               value={title}
               onChange={(e) => setTitle(e.target.value)}
               InputProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
               InputLabelProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
             />
           </Grid>
@@ -119,10 +122,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               InputProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
               InputLabelProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
             />
           </Grid>
@@ -134,10 +137,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               value={priority}
               onChange={(e) => setPriority(Number(e.target.value))}
               InputProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
               InputLabelProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
             />
           </Grid>
@@ -149,10 +152,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               value={tagid}
               onChange={(e) => setTagid(Number(e.target.value))}
               InputProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
               InputLabelProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
             />
           </Grid>
@@ -164,10 +167,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               value={cost}
               onChange={(e) => setCost(Number(e.target.value))}
               InputProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
               InputLabelProps={{
-                style: { color: "white" },
+                style: { color: textColor },
               }}
             />
           </Grid>
