@@ -115,21 +115,62 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         {isSidebar && (
           <Box>
             <Item
-            title="Create Issue"
-            to="/createissue"
-            icon={<AddTaskIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
+              title="Create Issue"
+              to="/createIssue"
+              icon={<AddTaskIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
 
-            <Item title="View Organizations" to="/vieworg" icon={<CorporateFareIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="View Projects" to="/viewteam" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Create Projects" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Change Profile" to="/about_user" icon={<PersonOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Activity" to="/activity" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
-            <Item title="FAQ Page" to="/faq" icon={<HelpOutlineOutlinedIcon />} selected={selected} setSelected={setSelected} />
-
+            <Item
+              title="View Organizations"
+              to="/vieworg"
+              icon={<CorporateFareIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="View Projects"
+              to="/viewProject"
+              icon={<PeopleOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Create Projects"
+              to="/contacts"
+              icon={<ContactsOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Change Profile"
+              to="/about_user"
+              icon={<PersonOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Activity"
+              to="/activity"
+              icon={<ReceiptOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="Calendar"
+              to="/calendar"
+              icon={<CalendarTodayOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item
+              title="FAQ Page"
+              to="/faq"
+              icon={<HelpOutlineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Box>
         )}
       </Box>
