@@ -9,6 +9,7 @@ export const mockActivityData: Issue[] = [
     id: 1, // Changed to number
     title: "Design Instagram Teasers", // Was taskName
     desc  : "Oversee the design of a series of Instagram teasers to create visual appeal for the upcoming product launch. Ensure that the branding and tone align with the company's guidelines.", // Kept description
+
     priority: 1, // Added priority (defaulted to 1)
     created: new Date(), // Added created date (defaulted to now)
     completed: new Date("2025-04-10"), // Was dueDate, converted to Date
@@ -16,7 +17,7 @@ export const mockActivityData: Issue[] = [
   },
   {
     id: 2,
-   title : "Setup Kubernetes Cluster",
+    title: "Setup Kubernetes Cluster",
     desc: "Install and configure a Kubernetes cluster to manage our infrastructure. Ensure all pods are correctly deployed and the system is fully scalable.",
     priority: 1,
     created: new Date(),
