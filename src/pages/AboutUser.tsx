@@ -9,7 +9,7 @@ import { ImagePlus } from "lucide-react";
 
 import mockUsers from "../utils/mockUserData";
 import { User, OrgMember, ProjectMember } from "../utils/types";
-import NavBar from "../Components/Navbar/NavBar";
+import NavBar from "../Components/Navbar/NavBar"; // Import NavBar
 
 const AboutUser: React.FC = () => {
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ const AboutUser: React.FC = () => {
   // }, [userId, user, navigate]);
   /** Real Backend UseEffect End */
 
- 
+  /** File Upload Handler Start */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile) return; // Ensure only own profile can update avatar
     if (e.target.files && e.target.files[0]) {
@@ -86,6 +86,7 @@ const AboutUser: React.FC = () => {
       }
     }
   };
+  /** File Upload Handler End */
 
   if (!isLoaded) return <LoadingPage />;
   if (!viewedUser) return null;
