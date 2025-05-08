@@ -1,12 +1,3 @@
-/**
- * React component for creating, editing, and listing organizations.
- * 
- * Provides UI for viewing all organizations, opening a dialog to add or edit an organization,
- * and managing organization details including name, description, members, and projects.
- * Uses Material-UI components for styling and layout.
- *
- * @component
- */
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -38,42 +29,25 @@ import OrganizationCard from "./OrganizationCard";
 import { tokens } from "../../theme";
 
 const CreateOrganization: React.FC = () => {
-  /** State for the list of organizations. */
   const [organizations, setOrganizations] = useState<Organization[]>([]);
-  /** State controlling dialog visibility. */
   const [dialogOpen, setDialogOpen] = useState(false);
-  /** Currently editing organization, or null when creating a new one. */
   const [editingOrg, setEditingOrg] = useState<Organization | null>(null);
 
-  /** Form state: organization name. */
   const [orgName, setOrgName] = useState("");
-  /** Form state: organization description. */
   const [description, setDescription] = useState("");
-  /** Form state: list of member names. */
   const [members, setMembers] = useState<string[]>([]);
-  /** Form state: temporary new member input. */
   const [newMember, setNewMember] = useState("");
-  /** Form state: list of project titles. */
   const [projects, setProjects] = useState<string[]>([]);
-  /** Form state: temporary new project input. */
   const [newProject, setNewProject] = useState("");
+  const [descriptionTouched, setDescriptionTouched] = useState(false);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  /**
-   * Load all organizations when the component mounts.
-   */
   useEffect(() => {
     setOrganizations(getAllOrganizations());
   }, []);
 
-  /**
-   * Open the dialog for creating or editing an organization.
-   * If an organization is provided, pre-fill the form with its data.
-   *
-   * @param {Organization} [org] - Optional organization to edit.
-   */
   const openDialog = (org?: Organization) => {
     if (org) {
       setEditingOrg(org);
@@ -85,9 +59,6 @@ const CreateOrganization: React.FC = () => {
     setDialogOpen(true);
   };
 
-  /**
-   * Close the dialog and reset all form state.
-   */
   const closeDialog = () => {
     setEditingOrg(null);
     setOrgName("");
@@ -97,54 +68,49 @@ const CreateOrganization: React.FC = () => {
     setProjects([]);
     setNewProject("");
     setDialogOpen(false);
+    setDescriptionTouched(false);
   };
 
-  /**
-   * Add the current newMember to the members list and clear the input.
-   */
   const handleAddMember = () => {
     const name = newMember.trim();
-    if (!name) return;
+    if (!name) {
+      alert("Please enter a member name");
+      return;
+    }
     setMembers(prev => [...prev, name]);
     setNewMember("");
   };
 
-  /**
-   * Remove a member by index from the members list.
-   *
-   * @param {number} index - Index of the member to remove.
-   */
   const handleRemoveMember = (index: number) => {
     setMembers(prev => prev.filter((_, i) => i !== index));
   };
 
-  /**
-   * Add the current newProject to the projects list and clear the input.
-   */
   const handleAddProject = () => {
     const title = newProject.trim();
-    if (!title) return;
+    if (!title.trim()) {
+      alert("Please enter a project name"); 
+      return;
+    }
     setProjects(prev => [...prev, title]);
     setNewProject("");
   };
 
-  /**
-   * Remove a project by index from the projects list.
-   *
-   * @param {number} index - Index of the project to remove.
-   */
   const handleRemoveProject = (index: number) => {
     setProjects(prev => prev.filter((_, i) => i !== index));
   };
 
-  /**
-   * Submit the form: create a new organization or update existing one,
-   * then refresh the list and close the dialog.
-   */
   const handleSubmit = () => {
-    if (!orgName) return;
+    if (!orgName) {
+      alert("Please enter a org name"); 
+      return;
+    }
     if (editingOrg) {
-      const updated = updateOrganization(editingOrg.id, { name: orgName, description, members, projects });
+      const updated = updateOrganization(editingOrg.id, {
+        name: orgName,
+        description,
+        members,
+        projects,
+      });
       setOrganizations(prev => prev.map(o => o.id === updated.id ? updated : o));
     } else {
       const created = createOrganization(orgName, description, members, projects);
@@ -153,11 +119,6 @@ const CreateOrganization: React.FC = () => {
     closeDialog();
   };
 
-  /**
-   * Delete an organization by ID and update the list.
-   *
-   * @param {string} id - ID of the organization to delete.
-   */
   const handleDelete = (id: string) => {
     deleteOrganization(id);
     setOrganizations(prev => prev.filter(o => o.id !== id));
@@ -166,14 +127,20 @@ const CreateOrganization: React.FC = () => {
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography variant="h4" textAlign="center" sx={{
-          color:
-            theme.palette.mode === "dark"
-              ? colors.greenAccent[400]
-              : colors.blueAccent[600],
-        }} gutterBottom>
+        <Typography
+          variant="h4"
+          textAlign="center"
+          sx={{
+            color:
+              theme.palette.mode === "dark"
+                ? colors.greenAccent[400]
+                : colors.blueAccent[600],
+          }}
+          gutterBottom
+        >
           Organization Manager
         </Typography>
+
         <Grid container spacing={4} justifyContent="flex-start">
           {organizations.map(org => (
             <Grid item xs={12} sm={6} md={4} key={org.id}>
@@ -199,28 +166,53 @@ const CreateOrganization: React.FC = () => {
       </Box>
 
       <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
-        <DialogTitle>{editingOrg ? 'Edit Organization' : 'New Organization'}</DialogTitle>
+        <DialogTitle>
+          {editingOrg ? 'Edit Organization' : 'New Organization'}
+        </DialogTitle>
         <DialogContent dividers>
           <TextField
             fullWidth
             margin="normal"
-            sx={{ input: { color: 'white' } }}
             label="Name"
+            sx={{ input: { color: 'white' } }}
             value={orgName}
             onChange={e => setOrgName(e.target.value)}
           />
+
           <TextField
             fullWidth
             margin="normal"
             label="Description"
             multiline
             rows={3}
-            sx={{ input: { color: colors.primary[0] } }}
             value={description}
-            onChange={e => setDescription(e.target.value)}
+            onChange={(e) => {
+              setDescription(e.target.value);
+              setDescriptionTouched(true);
+
+            }}
+
+            InputLabelProps={{
+              style: {
+                color: descriptionTouched
+                  ? colors.greenAccent[500]
+                  : colors.primary[700],
+              },
+
+            }}
+            sx={{
+              input: { color: 'white' },
+
+              textarea: {
+                color: "white",
+              },
+              transition: 'color 0.3s ease-in-out',
+            }}
           />
 
-          <Typography variant="h6" sx={{ mt: 2 }}>Team Members</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Team Members
+          </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
             <TextField
               label="Add member"
@@ -232,13 +224,22 @@ const CreateOrganization: React.FC = () => {
           </Box>
           <List>
             {members.map((m, i) => (
-              <ListItem key={i} secondaryAction={<IconButton edge="end" onClick={() => handleRemoveMember(i)}><RemoveIcon /></IconButton>}>
+              <ListItem
+                key={i}
+                secondaryAction={
+                  <IconButton edge="end" onClick={() => handleRemoveMember(i)}>
+                    <RemoveIcon />
+                  </IconButton>
+                }
+              >
                 <ListItemText primary={m} />
               </ListItem>
             ))}
           </List>
 
-          <Typography variant="h6" sx={{ mt: 2 }}>Projects</Typography>
+          <Typography variant="h6" sx={{ mt: 2 }}>
+            Projects
+          </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
             <TextField
               label="Add project"
@@ -250,7 +251,14 @@ const CreateOrganization: React.FC = () => {
           </Box>
           <List>
             {projects.map((p, i) => (
-              <ListItem key={i} secondaryAction={<IconButton edge="end" onClick={() => handleRemoveProject(i)}><RemoveIcon /></IconButton>}>
+              <ListItem
+                key={i}
+                secondaryAction={
+                  <IconButton edge="end" onClick={() => handleRemoveProject(i)}>
+                    <RemoveIcon />
+                  </IconButton>
+                }
+              >
                 <ListItemText primary={p} />
               </ListItem>
             ))}
