@@ -14,7 +14,7 @@ import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
 import { getUser } from "../utils/getters.utils"; // Adjust the import path as necessary
-import { User, OrgMember, ProjectMember } from "../utils/types";
+import { User, OrgMember, ProjectMember, GetUserResult } from "../utils/types";
 import NavBar from "../Components/Navbar/NavBar"; // Import NavBar
 
 const AboutUser: React.FC = () => {
@@ -29,67 +29,66 @@ const AboutUser: React.FC = () => {
 
   const isDark = theme.palette.mode === "dark";
 
-/** Real Backend UseEffect Replacing Mock Logic */
-useEffect(() => {
-  const timeoutId = setTimeout(() => {
-    if (!isLoaded && !confirmationShown.current) {
-      confirmationShown.current = true;
-      const confirmed = window.confirm(
-        "Unable to load user profile. Click OK to return to home page."
-      );
-      if (confirmed) {
-        navigate("/");
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      if (!isLoaded && !confirmationShown.current) {
+        confirmationShown.current = true;
+        const confirmed = window.confirm(
+          "Unable to load user profile. Click OK to return to home page."
+        );
+        if (confirmed) {
+          navigate("/");
+        }
+        setIsLoaded(true);
       }
-      setIsLoaded(true);
+    }, 5000);
+  
+    if (!userId) {
+      clearTimeout(timeoutId);
+      return;
     }
-  }, 5000);
-
-  if (!userId) {
-    clearTimeout(timeoutId);
-    return;
-  }
-
-  const fetchAndSetUser = async () => {
-    try {
-      const fetchedUser = await fetchUserData(userId, "update");
-
-      if (!fetchedUser) {
+  
+    const fetchAndSetUser = async () => {
+      try {
+        const fetchedUser = await getParsedUserById(parseInt(userId, 10));
+  
+        if (!fetchedUser) {
+          if (!confirmationShown.current) {
+            confirmationShown.current = true;
+            const confirmed = window.confirm(
+              "User does not exist. Click OK to return to home page."
+            );
+            if (confirmed) {
+              navigate("/");
+            }
+          }
+          setIsLoaded(true);
+          return;
+        }
+  
+        setViewedUser(fetchedUser);
+        setIsOwnProfile(user && fetchedUser.id === user.id);
+        setIsLoaded(true);
+      } catch (error) {
+        console.error("Error loading user data:", error);
         if (!confirmationShown.current) {
           confirmationShown.current = true;
           const confirmed = window.confirm(
-            "User does not exist. Click OK to return to home page."
+            "Error loading user data. Click OK to return to home page."
           );
           if (confirmed) {
             navigate("/");
           }
         }
         setIsLoaded(true);
-        return;
       }
-
-      setViewedUser(fetchedUser);
-      setIsOwnProfile(user && fetchedUser.id === user.id);
-      setIsLoaded(true);
-    } catch (error) {
-      console.error("Error loading user data:", error);
-      if (!confirmationShown.current) {
-        confirmationShown.current = true;
-        const confirmed = window.confirm(
-          "Error loading user data. Click OK to return to home page."
-        );
-        if (confirmed) {
-          navigate("/");
-        }
-      }
-      setIsLoaded(true);
-    }
-  };
-
-  fetchAndSetUser();
-
-  return () => clearTimeout(timeoutId);
-}, [userId, user, navigate, isLoaded]);
-
+    };
+  
+    fetchAndSetUser();
+  
+    return () => clearTimeout(timeoutId);
+  }, [userId, user, navigate, isLoaded]);
+  
   /** File Upload Handler Start */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile) return; // Ensure only own profile can update avatar
@@ -288,16 +287,21 @@ useEffect(() => {
 
 export default AboutUser;
 
-async function fetchUserData(userId: string, arg1: string): Promise<User | null> {
+/**
+ * Fetches and parses user data by user ID.
+ * Wraps the getUser API call and maps response to expected structure.
+ *
+ * @param userId - ID of the user to fetch.
+ * @returns Parsed user object or null if not found or error.
+ */
+export const getParsedUserById = async (userId: number): Promise<User | null> => {
   try {
-    const result = await getUser(parseInt(userId, 10)); 
-    // getUser now returns an object with status, data, and error
-    
+    const result = await getUser(userId); // <-- This calls your exported `getUser`
+
     if (result.status !== 200 || !result.data) {
-      // If the status is not OK or the data is null, return null
       return null;
     }
-    
+
     const userData = result.data;
 
     return {
@@ -306,13 +310,13 @@ async function fetchUserData(userId: string, arg1: string): Promise<User | null>
       email: userData.email || '',
       name: userData.name || '',
       password: userData.password || '',
-      verified: userData.verified || false,
+      verified: userData.verified ?? false,
       avatar: userData.avatar || '',
       organizations: userData.organizations || [],
-      projects: userData.projects || []
+      projects: userData.projects || [],
     };
   } catch (error) {
-    console.error("Error fetching user:", error);
+    console.error("Error in getParsedUserById:", error);
     return null;
   }
-}
+};
