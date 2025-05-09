@@ -7,8 +7,9 @@ import { Issue } from "../utils/types"; // Import the Issue type
 export const mockActivityData: Issue[] = [
   {
     id: 1, // Changed to number
-    title: "Design Instagram Teasers", // Was tasktitle
-    desc: "Oversee the design of a series of Instagram teasers to create visual appeal for the upcoming product launch. Ensure that the branding and tone align with the company's guidelines.", // Kept desc
+    title: "Design Instagram Teasers", // Was taskName
+    desc  : "Oversee the design of a series of Instagram teasers to create visual appeal for the upcoming product launch. Ensure that the branding and tone align with the company's guidelines.", // Kept description
+
     priority: 1, // Added priority (defaulted to 1)
     created: new Date(), // Added created date (defaulted to now)
     completed: new Date("2025-04-10"), // Was dueDate, converted to Date

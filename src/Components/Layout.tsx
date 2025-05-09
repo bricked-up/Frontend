@@ -4,7 +4,11 @@ import { useTheme } from "@mui/material/styles";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
+<<<<<<< HEAD
+import LogoutButton from './Navbar/LogoutButton';
+=======
 import LogoutButton from "./Navbar/LogoutButton"; // Keeping this import as it was in the provided code
+>>>>>>> origin/dev
 import "../css/dashboard.css";
 
 /**
@@ -29,6 +33,14 @@ import "../css/dashboard.css";
 const Layout: React.FC = () => {
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
   const theme = useTheme();
+
+  useEffect(() => {
+    const main = document.getElementById("main");
+    if (main) {
+      main.style.transition = "margin-left 0.5s ease";
+      main.style.marginLeft = isSidebar ? "250px" : "0";
+    }
+  }, [isSidebar]);
 
   useEffect(() => {
     const main = document.getElementById("main");
