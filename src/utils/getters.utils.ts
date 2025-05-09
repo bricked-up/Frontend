@@ -81,7 +81,9 @@ export const getUser = async (userId: number): Promise<GetUserResult> => {
 			return { status: response.status, data: null, error };
 		}
 
-		const data: User = await response.json();
+		const text = await response.text();
+		const data : User = (text ? JSON.parse(text) : {})
+
 		return { status: response.status, data: data, error: undefined };
 	} catch (error: any) {
 		console.error("Network or parsing error in getUser:", error.message);
@@ -125,6 +127,8 @@ export const getIssue = async (issueId: number): Promise<GetIssueResult> => {
 			method: "GET",
 		});
 
+		
+
 		if (!response.ok) {
 			const error = await parseErrorResponse(response);
 			console.error(
@@ -132,6 +136,8 @@ export const getIssue = async (issueId: number): Promise<GetIssueResult> => {
 			);
 			return { status: response.status, data: null, error };
 		}
+
+		
 
 		const data: Issue = await response.json();
 		// Add date parsing here if Issue type requires it and dates are returned as strings
