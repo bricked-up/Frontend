@@ -13,8 +13,7 @@ import LoadingPage from "./LoadingPage";
 import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
-
-import mockUsers from "../utils/mockUserData";
+import { getUser } from "../utils/getters.utils"; // Adjust the import path as necessary
 import { User, OrgMember, ProjectMember } from "../utils/types";
 import NavBar from "../Components/Navbar/NavBar"; // Import NavBar
 
@@ -30,33 +29,33 @@ const AboutUser: React.FC = () => {
 
   const isDark = theme.palette.mode === "dark";
 
-  /** Mock Data UseEffect Start */
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (!isLoaded && !confirmationShown.current) {
-        confirmationShown.current = true; // Set the flag to true
-        const confirmed = window.confirm(
-          "Unable to load user profile. Click OK to return to home page."
-        );
-        if (confirmed) {
-          navigate("/");
-        }
-        setIsLoaded(true); // Prevent timeout from firing again
+/** Real Backend UseEffect Replacing Mock Logic */
+useEffect(() => {
+  const timeoutId = setTimeout(() => {
+    if (!isLoaded && !confirmationShown.current) {
+      confirmationShown.current = true;
+      const confirmed = window.confirm(
+        "Unable to load user profile. Click OK to return to home page."
+      );
+      if (confirmed) {
+        navigate("/");
       }
-    }, 5000);
-
-    if (!userId) {
-      clearTimeout(timeoutId);
-      return;
+      setIsLoaded(true);
     }
+  }, 5000);
 
+  if (!userId) {
+    clearTimeout(timeoutId);
+    return;
+  }
+
+  const fetchAndSetUser = async () => {
     try {
-      const id = parseInt(userId, 10); // Convert userId to number
-      const fetchedUser = mockUsers.find((u) => u.id === id);
+      const fetchedUser = await fetchUserData(userId, "update");
 
       if (!fetchedUser) {
         if (!confirmationShown.current) {
-          confirmationShown.current = true; // Set the flag to true
+          confirmationShown.current = true;
           const confirmed = window.confirm(
             "User does not exist. Click OK to return to home page."
           );
@@ -64,16 +63,17 @@ const AboutUser: React.FC = () => {
             navigate("/");
           }
         }
-        setIsLoaded(true); // Prevent further loading attempts
+        setIsLoaded(true);
         return;
       }
+
       setViewedUser(fetchedUser);
-      setIsOwnProfile(user && fetchedUser.id === user.id); // Check if viewing own profile
+      setIsOwnProfile(user && fetchedUser.id === user.id);
       setIsLoaded(true);
     } catch (error) {
       console.error("Error loading user data:", error);
       if (!confirmationShown.current) {
-        confirmationShown.current = true; // Set the flag to true
+        confirmationShown.current = true;
         const confirmed = window.confirm(
           "Error loading user data. Click OK to return to home page."
         );
@@ -81,33 +81,14 @@ const AboutUser: React.FC = () => {
           navigate("/");
         }
       }
-      setIsLoaded(true); // Prevent further loading attempts
+      setIsLoaded(true);
     }
+  };
 
-    return () => clearTimeout(timeoutId); // Cleanup on unmount
-  }, [userId, user, navigate, isLoaded]);
-  /** Mock Data UseEffect End */
+  fetchAndSetUser();
 
-  /** Real Backend UseEffect (Commented out for now) */
-  // useEffect(() => {
-  //   const fetchAndSetUser = async () => {
-  //     if (!userId) return;
-  //     const fetchedUser = await fetchUserData(userId, "update");
-  //     if (!fetchedUser) {
-  //       const confirmed = window.confirm("User does not exist. Click OK to return to home page.");
-  //       if (confirmed) {
-  //         navigate("/");
-  //       }
-  //       setIsLoaded(true);
-  //       return;
-  //     }
-  //     setViewedUser(fetchedUser);
-  //     setIsOwnProfile(fetchedUser.id === user.id);
-  //     setIsLoaded(true);
-  //   };
-  //   fetchAndSetUser();
-  // }, [userId, user, navigate]);
-  /** Real Backend UseEffect End */
+  return () => clearTimeout(timeoutId);
+}, [userId, user, navigate, isLoaded]);
 
   /** File Upload Handler Start */
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -306,3 +287,32 @@ const AboutUser: React.FC = () => {
 };
 
 export default AboutUser;
+
+async function fetchUserData(userId: string, arg1: string): Promise<User | null> {
+  try {
+    const result = await getUser(parseInt(userId, 10)); 
+    // getUser now returns an object with status, data, and error
+    
+    if (result.status !== 200 || !result.data) {
+      // If the status is not OK or the data is null, return null
+      return null;
+    }
+    
+    const userData = result.data;
+
+    return {
+      id: userData.id,
+      displayName: userData.displayName || '',
+      email: userData.email || '',
+      name: userData.name || '',
+      password: userData.password || '',
+      verified: userData.verified || false,
+      avatar: userData.avatar || '',
+      organizations: userData.organizations || [],
+      projects: userData.projects || []
+    };
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return null;
+  }
+}
