@@ -13,10 +13,13 @@ import {
   ListItem,
   ListItemText,
   Grid,
+  Tab,
+  Tabs,
 } from "@mui/material";
 import AddCircleOutline from "@mui/icons-material/AddCircleOutline";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
+import AssignmentIcon from "@mui/icons-material/Assignment";
 import { useTheme } from "@mui/material/styles";
 import {
   getAllOrganizations,
@@ -124,26 +127,29 @@ const CreateOrganization: React.FC = () => {
     setOrganizations(prev => prev.filter(o => o.id !== id));
   };
 
+
+
   return (
     <>
       <Box sx={{ p: 3 }}>
-        <Typography
-          variant="h4"
-          textAlign="center"
+        <Tab
+          icon={<AssignmentIcon />}
+          iconPosition="start"
+          label={`Organizations`}
           sx={{
+
             color:
               theme.palette.mode === "dark"
                 ? colors.greenAccent[400]
                 : colors.blueAccent[600],
           }}
-          gutterBottom
-        >
-          Organization Manager
-        </Typography>
+
+        />
+
 
         <Grid container spacing={4} justifyContent="flex-start">
           {organizations.map(org => (
-            <Grid item xs={12} sm={6} md={4} key={org.id}>
+            <Grid item xs={12} sm={6} md={4} key={org.id}  >
               <OrganizationCard
                 organization={org}
                 onEdit={openDialog}
@@ -154,22 +160,24 @@ const CreateOrganization: React.FC = () => {
         </Grid>
       </Box>
 
-      <Box sx={{ position: 'fixed', bottom: 24, right: 24 }}>
+      <Box sx={{ position: 'fixed', bottom: 24, right: 24, boxShadow: 3 }}>
         <Button
           startIcon={<AddCircleOutline />}
           variant="contained"
           color="secondary"
           onClick={() => openDialog()}
-        >
+        > 
           New Organization
         </Button>
       </Box>
 
-      <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ color: theme.palette.mode === "dark" ? colors.greenAccent[400] : colors.blueAccent[600] }}>
+      <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm" >
+        <DialogTitle sx={{ color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}>
           {editingOrg ? 'Edit Organization' : 'New Organization'}
         </DialogTitle>
-        <DialogContent dividers>
+        <DialogContent dividers sx={{
+          borderLeft: `4px solid ${"#dc2626"}`,
+        }}>
           <TextField
             fullWidth
             margin="normal"
@@ -178,8 +186,8 @@ const CreateOrganization: React.FC = () => {
               input: {
                 color:
                   theme.palette.mode === "dark"
-                    ? colors.greenAccent[400]
-                    : colors.blueAccent[600],
+                    ? "#E0E0E0"
+                    : "#141414",
               }
             }}
             value={orgName}
@@ -204,20 +212,22 @@ const CreateOrganization: React.FC = () => {
               input: { color: 'white' },
 
               textarea: {
-                
+
                 color:
                   theme.palette.mode === "dark"
-                    ? colors.greenAccent[400]
-                    : colors.blueAccent[600],
+                    ? "#E0E0E0"
+                    : "#141414",
               },
               transition: 'color 0.3s ease-in-out',
             }}
           />
 
-          <Typography variant="h6" sx={{ mt: 2, color:
+          <Typography variant="h6" sx={{
+            mt: 2, color:
               theme.palette.mode === "dark"
-                ? colors.greenAccent[400]
-                : colors.blueAccent[600], }}>
+                ? "#E0E0E0"
+                : "#141414",
+          }}>
             Team Members
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
@@ -225,10 +235,14 @@ const CreateOrganization: React.FC = () => {
               label="Add member"
               value={newMember}
               onChange={e => setNewMember(e.target.value)}
-              sx={{ input: { color:
-                theme.palette.mode === "dark"
-                  ? colors.greenAccent[400]
-                  : colors.blueAccent[600], } }}
+              sx={{
+                input: {
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "#E0E0E0"
+                      : "#141414",
+                }
+              }}
             />
             <IconButton onClick={handleAddMember}><AddIcon /></IconButton>
           </Box>
@@ -247,10 +261,12 @@ const CreateOrganization: React.FC = () => {
             ))}
           </List>
 
-          <Typography variant="h6" sx={{ mt: 2, color:
+          <Typography variant="h6" sx={{
+            mt: 2, color:
               theme.palette.mode === "dark"
-                ? colors.greenAccent[400]
-                : colors.blueAccent[600], }}>
+                ? "#E0E0E0"
+                : "#141414",
+          }}>
             Projects
           </Typography>
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 1 }}>
@@ -258,10 +274,14 @@ const CreateOrganization: React.FC = () => {
               label="Add project"
               value={newProject}
               onChange={e => setNewProject(e.target.value)}
-              sx={{ input: { color:
-                theme.palette.mode === "dark"
-                  ? colors.greenAccent[400]
-                  : colors.blueAccent[600], } }}
+              sx={{
+                input: {
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "#E0E0E0"
+                      : "#141414",
+                }
+              }}
             />
             <IconButton onClick={handleAddProject}><AddIcon /></IconButton>
           </Box>

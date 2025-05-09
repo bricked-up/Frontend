@@ -60,8 +60,7 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
   // Background colors adapt to theme
   const cardBg = isDark ? 'rgba(50, 63, 83, 0.73)' : 'rgba(255, 255, 255, 0.84)';
   const textColor = isDark ? '#e2e8f0' : '#1e293b';
-  const borderColor = '#3b82f6'; // Accent color for left border
-
+  const borderColor = '#4cceac'; // Accent color for left border
   return (
     // Grow animation for initial mount
     <Grow in timeout={400}>
@@ -75,6 +74,7 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
           color: textColor,                        // Theme-based text color
           display: 'flex',                         // Flex container
           flexDirection: 'column',                 // Vertical layout
+          boxShadow: '0 2px 10px rgba(0,0,0,0.1)', // Subtle shadow
           gap: 1,                                   // Spacing between items
           transition: 'transform 0.3s ease, box-shadow 0.3s ease',
           '&:hover': {
@@ -137,8 +137,8 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
         <CardActions sx={{ justifyContent: 'flex-end', pt: 1 }}>
           <Tooltip title="Edit Organization" sx={{color:
               theme.palette.mode === "dark"
-                ? colors.greenAccent[400]
-                : colors.blueAccent[600],}}>
+                ? colors.greenAccent[100]
+                : colors.greenAccent[100],}}>
             <IconButton
               size="small"
               onClick={e => {
