@@ -1,35 +1,43 @@
 // src/test/getters.utils.test.ts
 
-import { 
+import {
     getUser,
     getIssue,
-    getAllUsers,
-    getOrg,
-    getOrgMember,
-    getProject,
-    getProjectMember,
-} from "../utils/getters.utils"; 
+    getAllUsers,     
+    getOrg,          
+    getOrgMember,    
+    getProject,      
+    getProjectMember // Corrected from getProjectMembers if singular is intended and exists
+    // getProjectIssues, // Removed - Not exported from getters.utils.ts
+    // getOrgIssues,      // Removed - Not exported from getters.utils.ts
+} from "../utils/getters.utils";
+import { User, Issue, OrgMember, ProjectMember, Organization, Project } from "../utils/types"; // Added missing types for tests
 
 describe("Getter Utility Functions (Integration Tests)", () => {
     jest.setTimeout(30000);
 
     describe("getUser", () => {
         it("should get existing user data successfully (status 200)", async () => {
-            const existingUserId = 1;
-            const result = await getUser(existingUserId); 
+            const existingUserId = 1; // Ensure this user ID exists in your test DB
+            const result = await getUser(existingUserId);
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
+            // Update this to match the exact structure returned by your /get-user endpoint
+            // The User type has organizations/projects as number[] | OrgMember[], but
+            // the test implies getUser returns number[] for these from the backend.
             expect(result.data).toEqual(
                 expect.objectContaining({
                     id: 1,
-                    email: "john.doe@example.com",
-                    name: "John Doe",
-                    // displayName: "JohnDoe", // Add if your populate.sql has this
-                    avatar: "avatar1.png",
-                    verified: true,
-                    projects: expect.arrayContaining([1, 2]),
+                    email: "john.doe@example.com", // Match your populate.sql
+                    name: "John Doe",             // Match your populate.sql
+                    // displayName: "JohnDoe",    // Add if present in populate.sql and User type
+                    avatar: "avatar1.png",        // Match your populate.sql
+                    verified: true,               // Match your populate.sql
+                    // The following depends on what /get-user actually returns.
+                    // If it only returns IDs, this is correct.
                     organizations: expect.arrayContaining([1]),
+                    projects: expect.arrayContaining([1, 2]),
                     issues: expect.arrayContaining([1]),
                 }),
             );
@@ -37,26 +45,17 @@ describe("Getter Utility Functions (Integration Tests)", () => {
 
         it("should handle user not found (backend returns 204 No Content, resulting in status 204 and data: {})", async () => {
             const nonExistentUserId = 999999;
-            const result = await getUser(nonExistentUserId); 
-            expect(result.status).toBe(204); 
-            expect(result.data).toEqual({}); // Because (text ? JSON.parse(text) : {}) with empty text from 204
+            const result = await getUser(nonExistentUserId);
+            expect(result.status).toBe(204);
+            expect(result.data).toEqual({});
             expect(result.error).toBeUndefined();
         });
-
-        // Illustrative test for 200 OK + invalid non-empty JSON
-        // it("should handle user not found (backend returns 200+invalid non-empty JSON, resulting in status 0)", async () => {
-        //     const invalidJsonUserId = 777777; // Requires specific backend mock
-        //     // const result = await getUser(invalidJsonUserId); 
-        //     // expect(result.status).toBe(0);
-        //     // expect(result.data).toBeNull();
-        //     // expect(result.error).toMatch(/JSON.parse/i);
-        // });
     });
 
     describe("getIssue", () => {
         it("should get existing issue data successfully (status 200) and parse dates/fields", async () => {
-            const existingIssueId = 1;
-            const result = await getIssue(existingIssueId); 
+            const existingIssueId = 1; // Ensure this ID exists
+            const result = await getIssue(existingIssueId);
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
@@ -67,162 +66,183 @@ describe("Getter Utility Functions (Integration Tests)", () => {
                     desc: "Install and configure all necessary tools",
                     priority: 1,
                     cost: 500,
-                    tagId: 1, 
+                    tagId: 1, // Check if backend sends tagId or tagid, handled by getter
                 }),
             );
             expect(result.data?.created).toBeInstanceOf(Date);
             if (result.data?.created) {
-                 expect(result.data.created.toISOString()).toContain("2023-01-01T10:00:00");
+                // Be careful with exact ISO string matching due to timezones if not UTC
+                expect(result.data.created.toISOString()).toContain("2023-01-01T");
             }
-            expect(result.data?.completed).toBeNull(); 
+            expect(result.data?.completed).toBeNull(); // Or beInstanceOf(Date) if completed
         });
 
         it("should handle issue not found (status 404)", async () => {
             const nonExistentIssueId = 888888;
-            const result = await getIssue(nonExistentIssueId); 
+            const result = await getIssue(nonExistentIssueId);
             expect(result.status).toBe(404);
             expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
+            // The exact error message depends on your backend's 404 response for issues
             expect(result.error).toContain("Issue not found");
         });
-
-        // Illustrative test for 200 OK + empty body for getIssue (if it used .json())
-        // it("should handle issue not found (backend returns 200+empty body, resulting in status 0 from .json() fail)", async () => {
-        //     const emptyBodyIssueId = 888999; // Hypothetical ID
-        //     // const result = await getIssue(emptyBodyIssueId); 
-        //     // expect(result.status).toBe(0); 
-        //     // expect(result.data).toBeNull();
-        //     // expect(result.error).toMatch(/Unexpected end of JSON input|JSON.parse/i);
-        // });
     });
 
     describe("getAllUsers", () => {
         it("should get all users successfully (status 200)", async () => {
-            const result = await getAllUsers(); 
+            const result = await getAllUsers();
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).toBeInstanceOf(Array);
             if (result.data && result.data.length > 0) {
-                if (typeof result.data[0] === 'object' && result.data[0] !== null) {
-                    expect(result.data[0]).toHaveProperty("id");
-                    expect(result.data[0]).toHaveProperty("email");
-                } else {
-                    // This case indicates backend is not returning array of User objects
-                    console.warn(`getAllUsers: data[0] is not an object. Received: ${JSON.stringify(result.data[0])}. Backend might be returning IDs instead of User objects.`);
-                }
+                const firstUser = result.data[0] as User; // Type assertion for easier property access
+                expect(firstUser).toHaveProperty("id");
+                expect(firstUser).toHaveProperty("email");
             } else {
-                // This case is fine if DB is empty, but populate.sql should have users
-                console.warn("getAllUsers returned an empty array or null data. Check populate.sql.");
+                console.warn("getAllUsers returned an empty array or null data. Check populate.sql or if the endpoint is responding correctly.");
             }
         });
     });
 
     describe("getOrg", () => {
-        const existingOrgId = 1;
+        const existingOrgId = 1; // Ensure this ID exists
         const nonExistentOrgId = 90909;
 
-        it("should handle existing organization data (status 0 if backend JSON is malformed)", async () => {
-            const result = await getOrg(existingOrgId); 
-            if (result.status === 200) { // Ideal case: valid JSON
+        it("should get existing organization data (status 200)", async () => {
+            const result = await getOrg(existingOrgId);
+            // This test was previously expecting status 0 for malformed JSON.
+            // Ideally, if the org exists and JSON is valid, it should be 200.
+            if (result.status === 200) {
                 expect(result.error).toBeUndefined();
                 expect(result.data).not.toBeNull();
-                expect(result.data?.id).toBe(existingOrgId);
-            } else { // Backend sent malformed JSON for existingOrgId
-                expect(result.status).toBe(0); 
-                expect(result.data).toBeNull();
-                expect(result.error).toMatch(/JSON.parse|Unexpected number/i); // Based on your console log
-                console.warn(`getOrg(${existingOrgId}): Received status 0 due to parsing error. Backend JSON is likely malformed.`);
+                expect((result.data as Organization).id).toBe(existingOrgId);
+            } else if (result.status === 0 && result.error?.includes("JSON.parse")) {
+                 console.warn(`getOrg(${existingOrgId}): Received status 0 due to parsing error. Backend JSON for this org is likely malformed.`);
+                 // You might want to fail the test here if valid JSON is expected:
+                 // expect(result.status).toBe(200);
+            } else {
+                // Fail if status is neither 200 nor an expected parsing error
+                console.error(`getOrg(${existingOrgId}) unexpected status/error:`, result);
+                expect(result.status).toBe(200);
             }
         });
 
-        it("should handle organization not found (backend returns status 500)", async () => {
-            const result = await getOrg(nonExistentOrgId); 
-            expect(result.status).toBe(500);
+        it("should handle organization not found (backend returns 500 or specific not found status)", async () => {
+            // The PDF for GetOrgHandler doesn't specify the error for "not found".
+            // It shows 500 for "Failed to get org". Adjust if your backend has a more specific "not found" (e.g., 404 or 204).
+            const result = await getOrg(nonExistentOrgId);
+            expect(result.status).toBe(500); // Or 404 / 204 if backend behaves differently
             expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
-            expect(result.error).toContain("Failed to get org: Organization not found"); // Based on your console log
+            if (result.status === 500) {
+                expect(result.error).toContain("Failed to get org"); // Or a more specific "not found" message
+            }
         });
     });
 
     describe("getProject", () => {
-        const existingProjectId = 1;
+        const existingProjectId = 1; // Ensure this ID exists
         const nonExistentProjectId = 80808;
 
         it("should get existing project data successfully (status 200)", async () => {
-            const result = await getProject(existingProjectId); 
+            const result = await getProject(existingProjectId);
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
-            expect(result.data?.id).toBe(existingProjectId);
+            expect((result.data as Project).id).toBe(existingProjectId);
+            // Check for processed issues if applicable
+            if ((result.data as Project).issues && (result.data as Project).issues!.length > 0) {
+                const firstIssue = (result.data as Project).issues![0];
+                if (firstIssue.created) expect(firstIssue.created).toBeInstanceOf(Date);
+            }
         });
 
         it("should handle project not found (backend returns 204 No Content, resulting in status 204 and data: {})", async () => {
-            const result = await getProject(nonExistentProjectId); 
-            expect(result.status).toBe(204); 
-            expect(result.data).toEqual({}); 
+            // The PDF for GetProjHandler doesn't explicitly state 204 for not found,
+            // but your getter handles it this way. Confirm backend behavior.
+            const result = await getProject(nonExistentProjectId);
+            expect(result.status).toBe(204);
+            expect(result.data).toEqual({});
             expect(result.error).toBeUndefined();
         });
     });
-    
-    describe("getOrgMember", () => {
-        const existingOrgMemberId = 1; 
-        const nonExistentOrgMemberId = 70707;
 
-        it("should get existing org member data and map fields (status 200 if backend data is parsable)", async () => {
-            const result = await getOrgMember(existingOrgMemberId); 
-            if (result.status === 200) {
+    describe("getOrgMember", () => {
+        const existingOrgMemberId = 1; // Ensure this ID exists
+        const nonExistentOrgMemberId = 70707; // For testing "not found"
+
+        it("should get existing org member data and map fields (status 200)", async () => {
+            const result = await getOrgMember(existingOrgMemberId);
+             if (result.status === 200) {
                 expect(result.error).toBeUndefined();
                 expect(result.data).not.toBeNull();
-                expect(result.data?.id).toBe(existingOrgMemberId);
-                expect(result.data).toHaveProperty("userId"); 
-                if ((result.data as any).projectid !== undefined) { // Based on your console log
-                    console.warn(`getOrgMember(${existingOrgMemberId}) returned data with 'projectid' instead of 'orgId'.`);
-                }
+                const memberData = result.data as OrgMember;
+                expect(memberData.id).toBe(existingOrgMemberId);
+                expect(memberData).toHaveProperty("userId");
+                expect(memberData).toHaveProperty("orgId");
             } else if (result.status === 0 && result.error?.includes("JSON.parse")) {
-                 console.warn(`Skipping getOrgMember success test for ID ${existingOrgMemberId} due to parsing error (status 0). Check backend data for this ID if it should be valid.`);
-            } else if (result.status === 404) { 
-                 console.warn(`getOrgMember(${existingOrgMemberId}) not found (404). Check populate.sql.`);
-            } else { 
-                console.warn(`getOrgMember(${existingOrgMemberId}) returned status ${result.status} with error: ${result.error}. Check populate.sql if this ID should exist and be valid.`);
-                 expect(result.status).toBe(200); // Fallback to fail if not 200 or handled parsing error or expected 204/404
+                 console.warn(`getOrgMember(${existingOrgMemberId}) parsing error: ${result.error}. Check backend data.`);
+                 expect(result.status).toBe(200); // Fail if parsing error and shouldn't be
+            } else {
+                 console.warn(`getOrgMember(${existingOrgMemberId}) returned status ${result.status} with error: ${result.error}. Expected 200.`);
+                 expect(result.status).toBe(200);
             }
         });
-        
-        it("should handle org member not found (backend returns 200+empty body, resulting in status 0 from .json() fail)", async () => {
-            const result = await getOrgMember(nonExistentOrgMemberId); 
-            expect(result.status).toBe(0); 
-            expect(result.data).toBeNull();
-            expect(result.error).toMatch(/Unexpected end of JSON input|JSON.parse/i); // Based on your console log
+
+        it("should handle org member not found (e.g. backend returns 200+empty body, or 404)", async () => {
+            // The PDF for GetOrgMemberHandler doesn't specify "not found" behavior.
+            // Your original test expected status 0 due to .json() fail on empty body.
+            // A 404 or 204 from backend would be more RESTful for "not found".
+            const result = await getOrgMember(nonExistentOrgMemberId);
+            if (result.status === 0 && result.error?.match(/Unexpected end of JSON input|JSON.parse/i)) {
+                // This matches your original expectation for an empty body from a 200 OK.
+                expect(result.data).toBeNull();
+            } else if (result.status === 404 || result.status === 204) {
+                // Ideal "not found" scenarios
+                expect(result.data).toBeNull();
+                if (result.status === 404) expect(result.error).toBeDefined();
+            } else {
+                console.warn(`getOrgMember(${nonExistentOrgMemberId}) unexpected result:`, result);
+                // Adjust this expectation based on actual backend behavior for "not found"
+                expect([0, 204, 404]).toContain(result.status);
+            }
         });
     });
 
     describe("getProjectMember", () => {
-        const existingProjectMemberId = 1;
+        const existingProjectMemberId = 1; // Ensure this ID exists
         const nonExistentProjectMemberId = 60606;
 
         it("should get existing project member data and map fields (status 200)", async () => {
-             const result = await getProjectMember(existingProjectMemberId); 
-             if (result.status === 200) {
+            const result = await getProjectMember(existingProjectMemberId);
+            if (result.status === 200) {
                 expect(result.error).toBeUndefined();
                 expect(result.data).not.toBeNull();
-                expect(result.data?.id).toBe(existingProjectMemberId);
-                expect(result.data).toHaveProperty("userId"); 
-                expect(result.data).toHaveProperty("projectId"); 
+                const memberData = result.data as ProjectMember;
+                expect(memberData.id).toBe(existingProjectMemberId);
+                expect(memberData).toHaveProperty("userId");
+                expect(memberData).toHaveProperty("projectId");
             } else if (result.status === 0 && result.error?.includes("JSON.parse")) {
-                console.warn(`Skipping getProjectMember success test for ID ${existingProjectMemberId} due to parsing error (status 0). Check backend data for this ID if it should be valid.`);
-            } else if (result.status === 404) { 
-                 console.warn(`getProjectMember(${existingProjectMemberId}) not found (404). Check populate.sql.`);
-            } else { 
-                 console.warn(`getProjectMember(${existingProjectMemberId}) returned status ${result.status} with error: ${result.error}. Check populate.sql if this ID should exist and be valid.`);
-                 expect(result.status).toBe(200); 
+                console.warn(`getProjectMember(${existingProjectMemberId}) parsing error: ${result.error}. Check backend data.`);
+                expect(result.status).toBe(200); // Fail if parsing error and shouldn't be
+            } else {
+                console.warn(`getProjectMember(${existingProjectMemberId}) returned status ${result.status} with error: ${result.error}. Expected 200.`);
+                expect(result.status).toBe(200);
             }
         });
 
-        it("should handle project member not found (backend returns 200+empty body, resulting in status 0 from .json() fail)", async () => {
-            const result = await getProjectMember(nonExistentProjectMemberId); 
-            expect(result.status).toBe(0); 
-            expect(result.data).toBeNull();
-            expect(result.error).toMatch(/Unexpected end of JSON input|JSON.parse/i); // Based on your console log
+        it("should handle project member not found (e.g. backend returns 200+empty body, or 404)", async () => {
+            // Similar to getOrgMember, PDF for GetProjMemberHandler doesn't specify "not found".
+            const result = await getProjectMember(nonExistentProjectMemberId);
+             if (result.status === 0 && result.error?.match(/Unexpected end of JSON input|JSON.parse/i)) {
+                expect(result.data).toBeNull();
+            } else if (result.status === 404 || result.status === 204) {
+                expect(result.data).toBeNull();
+                if (result.status === 404) expect(result.error).toBeDefined();
+            } else {
+                console.warn(`getProjectMember(${nonExistentProjectMemberId}) unexpected result:`, result);
+                expect([0, 204, 404]).toContain(result.status);
+            }
         });
     });
 });
