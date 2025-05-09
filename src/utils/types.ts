@@ -122,7 +122,7 @@ export type Project = {
     createdBy: string;
     createdById: string;
     createdAt: Date;
-    tasks: Task[];
+    issues: Issue[];
   }
   
   export interface Task {

@@ -15,39 +15,39 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { Task } from "../../utils/types";
+import { Issue } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
 
-interface TaskCardProps {
-  task: Task;
+interface IssueCardProps {
+  Issue: Issue;
   boardId: number;
-  onDelete: (taskId: string) => void;
-  onComplete: (taskId: string) => void;
-  onEdit: (task: Task) => void; // <-- Added for opening the edit modal
+  onDelete: (IssueId: number) => void;
+  onComplete: (IssueId: number) => void;
+  onEdit: (Issue: Issue) => void; // <-- Added for opening the edit modal
 }
 
 /**
- * TaskCard.tsx
+ * IssueCard.tsx
  *
- * Card component to display individual task/issue.
+ * Card component to display individual Issue/issue.
  * Supports delete, complete/incomplete toggle, and edit on click.
  *
  * Props:
- *  - task (Task): Task data
+ *  - Issue (Issue): Issue data
  *  - boardId (number): ID of the board
- *  - onDelete (function): Callback to delete task
- *  - onComplete (function): Callback to complete/un-complete task
- *  - onEdit (function): Callback to edit task
+ *  - onDelete (function): Callback to delete Issue
+ *  - onComplete (function): Callback to complete/un-complete Issue
+ *  - onEdit (function): Callback to edit Issue
  */
 
-export const TaskCard: React.FC<TaskCardProps> = ({
-  task,
+export const IssueCard: React.FC<IssueCardProps> = ({
+  Issue,
   boardId,
   onDelete,
   onComplete,
   onEdit,
 }) => {
-  const isCompleted = !!task.completed;
+  const isCompleted = !!Issue.completed;
 
   const getBorderColor = () => {
     return isCompleted ? "#16a34a" : "#dc2626"; // green if complete, red if in progress
@@ -82,17 +82,17 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             cursor: "pointer",
           },
         }}
-        onClick={() => onEdit(task)} // <-- clicking the card triggers edit
+        onClick={() => onEdit(Issue)} // <-- clicking the card triggers edit
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight={700} noWrap>
-            {task.title}
+            {Issue.title}
           </Typography>
           <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation(); // prevent card click
-              onDelete(task.id);
+              onDelete(Issue.id);
             }}
           >
             <DeleteOutlineRoundedIcon color="error" />
@@ -104,57 +104,57 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           color="text.secondary"
           sx={{ fontSize: "1rem", mb: 1 }}
         >
-          {task.desc}
+          {Issue.desc}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <WarningAmberRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Priority: {task.priority}
+            Priority: {Issue.priority}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <LoyaltyRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Tag ID: {task.tagid}
+            Tag ID: {Issue.tagId}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <PaidRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Cost: {task.cost}
+            Cost: {Issue.cost}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <TodayRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Created: {new Date(task.created).toLocaleDateString("en-GB")}
+            Created: {new Date(Issue.created).toLocaleDateString("en-GB")}
           </Typography>
         </Box>
 
-        {task.completed && (
+        {Issue.completed && (
           <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
             <CheckCircleRoundedIcon fontSize="small" />
             <Typography
               variant="caption"
               sx={{ fontSize: "0.9rem", color: "#4ade80" }}
             >
-              Completed: {new Date(task.completed).toLocaleDateString("en-GB")}
+              Completed: {new Date(Issue.completed).toLocaleDateString("en-GB")}
             </Typography>
           </Box>
         )}
 
-        {task.completed ? (
+        {Issue.completed ? (
           <Box display="flex" justifyContent="center" mt={1.5}>
             <Button
               variant="outlined"
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(task.id);
+                onComplete(Issue.id);
               }}
               sx={{
                 color: "#f59e0b",
@@ -181,7 +181,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               startIcon={<CheckCircleRoundedIcon />}
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(task.id);
+                onComplete(Issue.id);
               }}
               sx={{
                 backgroundColor: "#16a34a",
@@ -203,12 +203,6 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </Button>
           </Box>
         )}
-
-        <Box display="flex" justifyContent="flex-end" pt={1}>
-          <Avatar sx={{ width: 28, height: 28, bgcolor: "#475569" }}>
-            {task.createdBy?.[0]?.toUpperCase()}
-          </Avatar>
-        </Box>
       </Card>
     </Grow>
   );
