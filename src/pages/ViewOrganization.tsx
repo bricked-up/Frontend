@@ -31,7 +31,38 @@ const orgColumns: GridColDef[] = [
     field: "projects",
     headerName: "Projects",
     flex: 2,
-    renderCell: params => Array.isArray(params.value) ? params.value.join(", ") : "",
+    renderCell: (params) => params.value.join(", "),
+  },
+];
+
+const allRows = [
+  {
+    id: 1,
+    name: "Bilbo",
+    email: "k@gmail.co",
+    role: "Admin",
+    organization: "Bricked-Up",
+  },
+  {
+    id: 5,
+    name: "Gandalf",
+    email: "bigstick@gmx.de",
+    role: "Admin",
+    organization: "SAP",
+  },
+  {
+    id: 2,
+    name: "Frodo",
+    email: "anva@outlook.com",
+    role: "Member",
+    organization: "George King IT",
+  },
+  {
+    id: 3,
+    name: "Samwise",
+    email: "bigtoesam@yahoo.com",
+    role: "Member",
+    organization: "Bricked-Up",
   },
 ];
 
@@ -114,6 +145,24 @@ const ViewOrg = () => {
       >
         <Box sx={{ p: 2, display: "flex", justifyContent: "left" }}>
           <DropDown value={selectedOrg} onSelect={setSelectedOrg} options={orgs.map(o => o.name)} />
+          <Typography
+            variant="h5"
+            sx={{
+              padding: 3,
+              textAlign: "right",
+              marginLeft: "500px",
+              color:
+                theme.palette.mode === "light"
+                  ? colors.grey[700]
+                  : colors.grey[100],
+              fontWeight: 600,
+              textTransform: "uppercase",
+              letterSpacing: "0.5px",
+              fontSize: "1.2rem",
+            }}
+          >
+            Organization Projects
+          </Typography>
         </Box>
 
         <Box sx={{ display: "flex", flex: 1, gap: 2, padding: 2 }}>
