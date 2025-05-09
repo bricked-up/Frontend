@@ -19,6 +19,7 @@ import ViewOrg from "./ViewOrganization";
 import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
 import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import ViewProject from "../Components/ViewProject";
+import CreateProject from "../Components/CreateProject";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -92,6 +93,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+                <Route path="/createProject" element={<CreateProject />} />
 				<Route path="/createOrg" element={<CreateOrg />} />
                 <Route
                   path="/createIssue"
