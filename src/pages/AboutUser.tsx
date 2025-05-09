@@ -1,5 +1,12 @@
-import React, { useState, useEffect } from "react";
-import { Box, Typography, Button, Paper, useTheme, Divider } from "@mui/material";
+import React, { useState, useEffect, useRef } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Paper,
+  useTheme,
+  Divider,
+} from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import LoadingPage from "./LoadingPage";
@@ -19,14 +26,22 @@ const AboutUser: React.FC = () => {
   const [viewedUser, setViewedUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const confirmationShown = useRef(false); // Ref to track if confirmation has been shown
+
   const isDark = theme.palette.mode === "dark";
 
   /** Mock Data UseEffect Start */
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (!isLoaded) {
-        window.alert("Unable to load user profile. Please try again later.");
-        navigate("/");
+      if (!isLoaded && !confirmationShown.current) {
+        confirmationShown.current = true; // Set the flag to true
+        const confirmed = window.confirm(
+          "Unable to load user profile. Click OK to return to home page."
+        );
+        if (confirmed) {
+          navigate("/");
+        }
+        setIsLoaded(true); // Prevent timeout from firing again
       }
     }, 5000);
 
@@ -40,18 +55,33 @@ const AboutUser: React.FC = () => {
       const fetchedUser = mockUsers.find((u) => u.id === id);
 
       if (!fetchedUser) {
-        window.alert("User does not exist");
-        navigate("/login");
+        if (!confirmationShown.current) {
+          confirmationShown.current = true; // Set the flag to true
+          const confirmed = window.confirm(
+            "User does not exist. Click OK to return to home page."
+          );
+          if (confirmed) {
+            navigate("/");
+          }
+        }
+        setIsLoaded(true); // Prevent further loading attempts
         return;
       }
-
       setViewedUser(fetchedUser);
       setIsOwnProfile(user && fetchedUser.id === user.id); // Check if viewing own profile
       setIsLoaded(true);
     } catch (error) {
       console.error("Error loading user data:", error);
-      window.alert("Error loading user data. Please try again.");
-      navigate("/");
+      if (!confirmationShown.current) {
+        confirmationShown.current = true; // Set the flag to true
+        const confirmed = window.confirm(
+          "Error loading user data. Click OK to return to home page."
+        );
+        if (confirmed) {
+          navigate("/");
+        }
+      }
+      setIsLoaded(true); // Prevent further loading attempts
     }
 
     return () => clearTimeout(timeoutId); // Cleanup on unmount
@@ -64,8 +94,11 @@ const AboutUser: React.FC = () => {
   //     if (!userId) return;
   //     const fetchedUser = await fetchUserData(userId, "update");
   //     if (!fetchedUser) {
-  //       window.alert("User does not exist");
-  //       navigate("/login");
+  //       const confirmed = window.confirm("User does not exist. Click OK to return to home page.");
+  //       if (confirmed) {
+  //         navigate("/");
+  //       }
+  //       setIsLoaded(true);
   //       return;
   //     }
   //     setViewedUser(fetchedUser);
@@ -108,7 +141,9 @@ const AboutUser: React.FC = () => {
           top: 0,
           zIndex: 1100,
           backgroundColor: theme.palette.background.paper,
-          boxShadow: isDark ? "0 2px 8px rgba(0,0,0,0.5)" : "0 2px 6px rgba(0,0,0,0.1)",
+          boxShadow: isDark
+            ? "0 2px 8px rgba(0,0,0,0.5)"
+            : "0 2px 6px rgba(0,0,0,0.1)",
         }}
       >
         <NavBar />
@@ -177,7 +212,12 @@ const AboutUser: React.FC = () => {
                     }}
                   >
                     Change Avatar
-                    <input type="file" accept="image/*" hidden onChange={handleFileUpload} />
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={handleFileUpload}
+                    />
                   </Button>
                 </Box>
               )}
@@ -202,20 +242,22 @@ const AboutUser: React.FC = () => {
               <Typography variant="h6" fontWeight="bold" gutterBottom>
                 Organizations
               </Typography>
-              {viewedUser.organizations && viewedUser.organizations.length > 0 ? (
-                viewedUser.organizations.map((org: OrgMember, index: number) => (
-                  <Box key={index} sx={{ mb: 1 }}>
-                    <Typography>
-                      Org ID: {org.orgId} — Member ID: {org.id}
-                    </Typography>
-                    {org.roles && org.roles.length > 0 && (
-                      <Typography variant="body2" sx={{ ml: 2 }}>
-                        Roles:{" "}
-                        {org.roles.map((role) => role.name).join(", ")}
+              {viewedUser.organizations &&
+              viewedUser.organizations.length > 0 ? (
+                viewedUser.organizations.map(
+                  (org: OrgMember, index: number) => (
+                    <Box key={index} sx={{ mb: 1 }}>
+                      <Typography>
+                        Org ID: {org.orgId} — Member ID: {org.id}
                       </Typography>
-                    )}
-                  </Box>
-                ))
+                      {org.roles && org.roles.length > 0 && (
+                        <Typography variant="body2" sx={{ ml: 2 }}>
+                          Roles: {org.roles.map((role) => role.name).join(", ")}
+                        </Typography>
+                      )}
+                    </Box>
+                  )
+                )
               ) : (
                 <Typography>No organization memberships found.</Typography>
               )}
@@ -228,19 +270,20 @@ const AboutUser: React.FC = () => {
                 Projects
               </Typography>
               {viewedUser.projects && viewedUser.projects.length > 0 ? (
-                viewedUser.projects.map((proj: ProjectMember, index: number) => (
-                  <Box key={index} sx={{ mb: 1 }}>
-                    <Typography>
-                      Project ID: {proj.projectId} — Member ID: {proj.id}
-                    </Typography>
-                    {proj.roles && proj.roles.length > 0 && (
-                      <Typography variant="body2" sx={{ ml: 2 }}>
-                        Roles:{" "}
-                        {proj.roles.map((role) => role.name).join(", ")}
+                viewedUser.projects.map(
+                  (proj: ProjectMember, index: number) => (
+                    <Box key={index} sx={{ mb: 1 }}>
+                      <Typography>
+                        Project ID: {proj.projectId} — Member ID: {proj.id}
                       </Typography>
-                    )}
-                  </Box>
-                ))
+                      {proj.roles && proj.roles.length > 0 && (
+                        <Typography variant="body2" sx={{ ml: 2 }}>
+                          Roles: {proj.roles.map((role) => role.name).join(", ")}
+                        </Typography>
+                      )}
+                    </Box>
+                  )
+                )
               ) : (
                 <Typography>No project memberships found.</Typography>
               )}

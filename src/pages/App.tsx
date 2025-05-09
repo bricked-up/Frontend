@@ -45,7 +45,7 @@ function App() {
               {/* user related routes */}
               <Route path="/user">
                 <Route path=":userId">
-                  <Route path="aboutuser" element={<AboutUser />} />
+                  <Route path="aboutUser" element={<AboutUser />} />
                   
                   <Route element={<Layout />}>
                     <Route path="organizations" />

@@ -82,7 +82,7 @@ change the URL to /user/:usrId/about and so on
 
 ### All user related
 /user/:usrId
-    /about         - about the user
+    /aboutUser         - about the user
     /projects      - list of the projects they are in
     /organizations - list of all the organizations they are in
     /issues        - all the issues the user has assigned to them
@@ -106,7 +106,7 @@ change the URL to /user/:usrId/about and so on
 
 ### All user related
 /user/:usrId
-    /about         - about the user
+    /aboutUser         - about the user
     /projects      - list of the projects they are in
     /organizations - list of all the organizations they are in
     /issues        - all the issues the user has assigned to them
@@ -143,7 +143,7 @@ This section details the frontend routes defined in `App.tsx`. Routes are groupe
 
 These routes are nested under `/user/:userId/`. The `:userId` parameter represents the ID of the user whose information is being accessed.
 
-* `/user/:userId/about`: Renders the `AboutUser` component, displaying the user's profile information. Requires authentication.
+* `/user/:userId/aboutUser`: Renders the `AboutUser` component, displaying the user's profile information. Requires authentication.
 * `/user/:userId/organizations`: (Placeholder/Future Route) Intended to display organizations the user belongs to. Defined within the main `Layout`.
 * `/user/:userId/projects`: (Placeholder/Future Route) Intended to display projects the user is involved in. Defined within the main `Layout`.
 * `/user/:userId/issues`: (Placeholder/Future Route) Intended to display issues assigned to the user. Defined within the main `Layout`.
