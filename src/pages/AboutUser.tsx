@@ -15,7 +15,6 @@ import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
 import { getUser } from "../utils/getters.utils"; // Adjust the import path as necessary
 import { User, OrgMember, ProjectMember, GetUserResult } from "../utils/types";
-import NavBar from "../Components/Navbar/NavBar"; // Import NavBar
 
 const AboutUser: React.FC = () => {
   const navigate = useNavigate();
@@ -126,7 +125,6 @@ const AboutUser: React.FC = () => {
             : "0 2px 6px rgba(0,0,0,0.1)",
         }}
       >
-        <NavBar />
       </Box>
 
       <Box
