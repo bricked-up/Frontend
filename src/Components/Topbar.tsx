@@ -70,7 +70,11 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
       <Box
         display="flex"
         sx={{
-          backgroundColor: colors.primary[400],
+          backgroundColor:
+            theme.palette.mode === "light"
+              ? colors.primary[900]
+              : colors.primary[400],
+          color: colors.grey[100],
           borderRadius: "3px",
           ml: 5,
           paddingX: 1,

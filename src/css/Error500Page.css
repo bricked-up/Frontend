@@ -5,7 +5,7 @@
   width: auto;
   max-width: 560px;
   display: flex;
-  align-items: center;
+  align-items: ceanter;
   justify-content: center;
   flex-direction: column;
 }
@@ -63,8 +63,7 @@ svg {
   transform-origin: center;
 }
 .raios {
-  -webkit-animation: flicker-4 4s linear infinite both;
-  animation: flicker-4 4s linear infinite both;
+
 }
 .tomada,
 .fio-500,
@@ -78,38 +77,6 @@ svg {
   to { transform: scale(1); }
 }
 
-@-webkit-keyframes flicker-4 {
-  0%, 100% { opacity: 1; }
-  31.98% { opacity: 1; }
-  32%, 32.8% { opacity: 0; }
-  32.82%, 34.98% { opacity: 1; }
-  35%, 35.7% { opacity: 0; }
-  35.72%, 36.98% { opacity: 1; }
-  37%, 37.6% { opacity: 0; }
-  37.62%, 67.98% { opacity: 1; }
-  68%, 68.4% { opacity: 0; }
-  68.42%, 95.98% { opacity: 1; }
-  96%, 96.7% { opacity: 0; }
-  96.72%, 98.98% { opacity: 1; }
-  99%, 99.6% { opacity: 0; }
-  99.62% { opacity: 1; }
-}
-@keyframes flicker-4 {
-  0%, 100% { opacity: 1; }
-  31.98% { opacity: 1; }
-  32%, 32.8% { opacity: 0; }
-  32.82%, 34.98% { opacity: 1; }
-  35%, 35.7% { opacity: 0; }
-  35.72%, 36.98% { opacity: 1; }
-  37%, 37.6% { opacity: 0; }
-  37.62%, 67.98% { opacity: 1; }
-  68%, 68.4% { opacity: 0; }
-  68.42%, 95.98% { opacity: 1; }
-  96%, 96.7% { opacity: 0; }
-  96.72%, 98.98% { opacity: 1; }
-  99%, 99.6% { opacity: 0; }
-  99.62% { opacity: 1; }
-}
 
 @-webkit-keyframes vibrate-1 {
   0% { transform: translate(0); }

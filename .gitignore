@@ -5,6 +5,9 @@
 /.pnp
 .pnp.js
 
+#VS Code
+.vscode
+
 # documentation
 /docs
 
