@@ -10,39 +10,42 @@ import { API_BASE } from "../config";
  * @param {string} endPoint 'signup' | 'verify' | 'login'
  * @returns {Promise<number>}
  */
-export const authUser = async (email: string, password: string, endPoint: string): Promise<number> => {
-    try {
-        const params = new URLSearchParams({
-            "email": email,
-        });
+export const authUser = async (
+  email: string,
+  password: string,
+  endPoint: string
+): Promise<number> => {
+  try {
+    const params = new URLSearchParams({ email });
 
-        params.append("email", email);
-        if (endPoint !== "verify") {
-            params.append("password", password);
-        }
-            
-        window.alert(params.toString())
-
-        const response = await fetch(`${API_BASE}/${endPoint}`, {
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: params,
-            credentials:"include"
-        });
-
-        window.alert(`meow meow ${response.status}`);
-
-        if (!response.ok) {
-            return 500;
-        }
-
-        
-        return response.status;
-
-    } catch (error: any) {
-        console.error("Network error:", error.message);
-        return -1;
+    if (endPoint !== "verify") {
+      params.append("password", password);
     }
+
+    console.log(params);
+    console.log(`Sending request to ${API_BASE}/${endPoint}`);
+    console.log("Params:", params.toString());
+
+    const response = await fetch(`${API_BASE}/${endPoint}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      body: params,
+      credentials: "include",
+    });
+
+    console.log("Response status:", response.status);
+
+
+    if (response.ok && response.status === 200) {
+      window.location.href = "/";
+      return 200;
+    }
+
+    return 500;
+  } catch (error: any) {
+    console.error("Network error:", error.message);
+    return -1;
+  }
 };
 
 export default authUser;
