@@ -16,6 +16,7 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
+import CreateProject from "../Components/CreateProject";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 
@@ -54,7 +55,6 @@ function App() {
                 </Route>
               </Route>
 
-
               {/* project related routes */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -86,6 +86,7 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
                 <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
+                <Route path="/createProject" element={<CreateProject />} />
               </Route>
 
               {/* routes for 404 and server errors */}

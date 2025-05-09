@@ -1,3 +1,4 @@
+// CreateProject.tsx
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
@@ -12,21 +13,17 @@ import {
   Paper,
   Divider,
   CircularProgress,
-  InputAdornment
+  InputAdornment,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '../css/CreateProject.css';
+import { createProject, NewProjectParams } from '../utils/post.utils'; // Adjust the import path
 
 type Organization = {
   id: number;
   name: string;
 };
 
-/**
- * CreateProject component for creating new projects
- * @component
- * @returns {JSX.Element} Create project form
- */
 const CreateProject: React.FC = () => {
   const [name, setName] = useState('');
   const [budget, setBudget] = useState<string>('');
@@ -38,21 +35,16 @@ const CreateProject: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const navigate = useNavigate();
 
-  // Mock function to fetch user's organizations
   useEffect(() => {
     const fetchUserOrganizations = async () => {
       try {
-        // In a real app, you would fetch from your API
-        // const response = await fetch(`/api/users/${userId}/organizations`);
-        // const data = await response.json();
-        
         // Mock response
         const mockOrganizations = [
           { id: 1, name: 'Tech Innovators' },
           { id: 2, name: 'Design Studio' },
-          { id: 3, name: 'Marketing Pros' }
+          { id: 3, name: 'Marketing Pros' },
         ];
-        
+
         setOrganizations(mockOrganizations);
         setLoading(false);
       } catch (err) {
@@ -64,9 +56,9 @@ const CreateProject: React.FC = () => {
     fetchUserOrganizations();
   }, []);
 
-  const handleSubmit = (event: React.FormEvent) => {
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    
+
     // Validation
     if (!name || !budget || !charter || !orgId) {
       setError('Please fill in all required fields');
@@ -80,19 +72,37 @@ const CreateProject: React.FC = () => {
       return;
     }
 
-    const projectData = {
+    setLoading(true);
+    setError(null);
+    setSuccessMessage(null);
+
+    const newProjectParams: NewProjectParams = {
       name,
+      orgId: Number(orgId),
+      tag: '', // You might want to add a tag input field later
       budget: budgetValue,
       charter,
-      organization_id: Number(orgId)
+      archived: false, // Default value
+      members: [], // No members selected in this form
+      issues: [], // No issues selected in this form
     };
 
-    // Mock API call
-    console.log('Creating project:', projectData);
-    setSuccessMessage('Project created successfully!');
-    setError(null);
-    
-    setTimeout(() => navigate('/projects'), 1500);
+    try {
+      const result = await createProject(newProjectParams, 'projects');
+      if (result.project) {
+        console.log('Project created successfully:', result.project);
+        setSuccessMessage('Project created successfully!');
+        setTimeout(() => navigate('/projects'), 1500);
+      } else {
+        console.error('Failed to create project:', result.error);
+        setError(`Failed to create project: ${result.error || 'Unknown error'}`);
+      }
+    } catch (error: any) {
+      console.error('There was an error creating the project:', error);
+      setError('Failed to create project. Please try again later.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (loading) {
@@ -122,7 +132,7 @@ const CreateProject: React.FC = () => {
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit}>
+        <Box component="form" onSubmit={handleSubmit} className="create-project-form">
           <TextField
             label="Project Name"
             value={name}
@@ -145,7 +155,7 @@ const CreateProject: React.FC = () => {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">$</InputAdornment>
-              )
+              ),
             }}
             sx={{ mb: 2 }}
           />

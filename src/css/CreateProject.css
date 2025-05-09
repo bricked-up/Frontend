@@ -1,87 +1,307 @@
+/* CreateProject.css - Enhanced and Interactive */
+
+:root {
+  /* Light Mode Variables */
+  --primary-color-light: #5d3a7e;
+  --primary-color-darken-light: #4a2d64;
+  --primary-color-focus-glow-light: rgba(93, 58, 126, 0.2);
+  --background-paper-gradient-start-light: #ffffff;
+  --background-paper-gradient-end-light: #f7f7f9;
+  --accent-line-color-light: var(--primary-color-light);
+  --background-form-element-light: #f8f9fa;
+  --text-color-primary-light: #5d3a7e;
+  --text-color-input-light: rgba(0, 0, 0, 0.87);
+  --text-color-button-light: #ffffff;
+  --border-color-light: rgba(0, 0, 0, 0.23);
+  --border-color-focus-light: #5d3a7e;
+  --shadow-paper-light: 0 8px 28px rgba(0, 0, 0, 0.08);
+  --shadow-paper-hover-light: 0 12px 35px rgba(0, 0, 0, 0.12);
+  --shadow-button-hover-light: 0 4px 8px rgba(0, 0, 0, 0.15);
+  --alert-bg-light: #e3f2fd;
+  --alert-text-light: #2196f3;
+
+  /* Dark Mode Variables */
+  --primary-color-dark: #bb86fc;
+  --primary-color-darken-dark: #9c6ade;
+  --primary-color-focus-glow-dark: rgba(187, 134, 252, 0.25);
+  --background-paper-gradient-start-dark: #212124;
+  --background-paper-gradient-end-dark: #1e1e1e;
+  --accent-line-color-dark: var(--primary-color-dark);
+  --background-form-element-dark: #303030;
+  --text-color-primary-dark: #bb86fc;
+  --text-color-input-dark: #f0f0f0;
+  --text-color-button-dark: #121212;
+  --border-color-dark: rgba(255, 255, 255, 0.23);
+  --border-color-focus-dark: #bb86fc;
+  --shadow-paper-dark: 0 8px 30px rgba(0, 0, 0, 0.25);
+  --shadow-paper-hover-dark: 0 12px 40px rgba(0, 0, 0, 0.35);
+  --shadow-button-hover-dark: 0 4px 8px rgba(0, 0, 0, 0.3);
+  --alert-bg-dark: #303030;
+  --alert-text-dark: #f0f0f0;
+
+  /* Common Variables */
+  --border-radius-main: 16px;
+  --border-radius-fields: 10px;
+  --transition-duration-fast: 0.2s;
+  --transition-duration-normal: 0.3s;
+  --transition-easing: cubic-bezier(0.25, 0.8, 0.25, 1);
+  --button-font-weight: 600;
+  --button-font-size: 1.05rem;
+  --accent-line-height: 3px;
+  --accent-line-height-hover: 5px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --current-primary-color: var(--primary-color-dark);
+    --current-primary-color-darken: var(--primary-color-darken-dark);
+    --current-primary-color-focus-glow: var(--primary-color-focus-glow-dark);
+    --current-background-paper: linear-gradient(160deg, var(--background-paper-gradient-start-dark), var(--background-paper-gradient-end-dark));
+    --current-accent-line-color: var(--accent-line-color-dark);
+    --current-background-form-element: var(--background-form-element-dark);
+    --current-text-color-primary: var(--text-color-primary-dark);
+    --current-text-color-input: var(--text-color-input-dark);
+    --current-text-color-button: var(--text-color-button-dark);
+    --current-border-color: var(--border-color-dark);
+    --current-border-color-focus: var(--border-color-focus-dark);
+    --current-shadow-paper: var(--shadow-paper-dark);
+    --current-shadow-paper-hover: var(--shadow-paper-hover-dark);
+    --current-shadow-button-hover: var(--shadow-button-hover-dark);
+    --current-alert-bg: var(--alert-bg-dark);
+    --current-alert-text: var(--alert-text-dark);
+  }
+}
+
+:root:not([data-theme='dark']) {
+  --current-primary-color: var(--primary-color-light);
+  --current-primary-color-darken: var(--primary-color-darken-light);
+  --current-primary-color-focus-glow: var(--primary-color-focus-glow-light);
+  --current-background-paper: linear-gradient(160deg, var(--background-paper-gradient-start-light), var(--background-paper-gradient-end-light));
+  --current-accent-line-color: var(--accent-line-color-light);
+  --current-background-form-element: var(--background-form-element-light);
+  --current-text-color-primary: var(--text-color-primary-light);
+  --current-text-color-input: var(--text-color-input-light);
+  --current-text-color-button: var(--text-color-button-light);
+  --current-border-color: var(--border-color-light);
+  --current-border-color-focus: var(--border-color-focus-light);
+  --current-shadow-paper: var(--shadow-paper-light);
+  --current-shadow-paper-hover: var(--shadow-paper-hover-light);
+  --current-shadow-button-hover: var(--shadow-button-hover-light);
+  --current-alert-bg: var(--alert-bg-light);
+  --current-alert-text: var(--alert-text-light);
+}
+
+@keyframes accentPulse {
+  0%, 100% { transform: scaleX(1); }
+  50% { transform: scaleX(1.04); }
+}
+
 .create-project-container {
   padding: 2rem;
   max-width: 800px;
-  margin: 0 auto;
+  margin: 3rem auto;
+  transition: all var(--transition-duration-normal) var(--transition-easing);
 }
 
 .create-project-paper {
-  padding: 2rem;
-  border-radius: 12px;
-  background-color: #ffffff;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  position: relative;
+  padding: 2.5rem;
+  padding-top: calc(2.5rem + var(--accent-line-height));
+  border-radius: var(--border-radius-main);
+  background: var(--current-background-paper);
+  box-shadow: var(--current-shadow-paper);
+  overflow: hidden;
+  backdrop-filter: blur(6px) saturate(180%);
+  background-blend-mode: overlay;
+  transition: transform var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+}
+
+.create-project-paper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: var(--accent-line-height);
+  background-color: var(--current-accent-line-color);
+  transition: height var(--transition-duration-fast);
+}
+
+.create-project-paper::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -75%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transform: skewX(-25deg);
+  transition: 0.5s;
+}
+
+.create-project-paper:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: var(--current-shadow-paper-hover);
+}
+
+.create-project-paper:hover::before {
+  height: var(--accent-line-height-hover);
+  animation: accentPulse 1.5s ease-in-out infinite;
+}
+
+.create-project-paper:hover::after {
+  left: 125%;
 }
 
 .create-project-paper h1 {
-  color: #5d3a7e;
+  color: var(--current-text-color-primary);
   text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 2.5rem;
+  font-size: 2.3rem;
+  font-weight: 600;
 }
 
 .create-project-form {
   display: flex;
   flex-direction: column;
-  gap: 1.5rem;
+  gap: 2.2rem;
 }
 
 .create-project-form .MuiFormControl-root {
-  background-color: #f8f9fa;
-  border-radius: 8px;
+  background-color: var(--current-background-form-element);
+  border-radius: var(--border-radius-fields);
+  transition: background-color var(--transition-duration-normal);
 }
 
 .create-project-form .MuiOutlinedInput-root {
-  border-radius: 8px;
+  border-radius: var(--border-radius-fields);
+  transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+}
+
+.create-project-form .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: var(--current-border-color);
 }
 
 .create-project-form .MuiInputLabel-root {
-  color: #5d3a7e;
+  color: var(--current-text-color-primary);
   font-weight: 500;
+  font-size: 1.05rem;
+  margin-bottom: 0.5rem;
+  display: block;
+  transform-origin: top left;
+  transition: transform var(--transition-duration-fast), color var(--transition-duration-fast);
 }
 
-.create-project-form .Mui-focused .MuiInputLabel-root {
-  color: #5d3a7e;
+.create-project-form .MuiInputLabel-root.Mui-focused {
+  color: var(--current-border-color-focus);
+  transform: translateY(-6px) scale(0.9);
+  background: var(--current-background-paper);
+  padding: 0 4px;
+  border-radius: 4px;
 }
 
 .create-project-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: #5d3a7e;
+  border-color: var(--current-border-color-focus);
   border-width: 2px;
+  box-shadow: 0 0 0 3px var(--current-primary-color-focus-glow);
+}
+
+.create-project-form .MuiInputBase-input {
+  color: var(--current-text-color-input);
+  font-size: 1rem;
+  padding: 16px 14px;
+}
+
+.create-project-form .MuiButton-root {
+  padding: 12px 28px;
+  font-weight: var(--button-font-weight);
+  text-transform: none;
+  border-radius: var(--border-radius-fields);
+  font-size: var(--button-font-size);
+  transition: all var(--transition-duration-fast);
+  will-change: transform, box-shadow;
 }
 
 .create-project-form .MuiButton-contained {
-  background-color: #5d3a7e;
-  padding: 10px 24px;
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 8px;
+  background-color: var(--current-primary-color);
+  color: var(--current-text-color-button);
 }
 
-.create-project-form .MuiButton-contained:hover {
-  background-color: #4a2d64;
+.create-project-form .MuiButton-contained:hover,
+.create-project-form .MuiButton-contained:focus-visible {
+  background-color: var(--current-primary-color-darken);
+  color: var(--current-text-color-button);
+  box-shadow: var(--current-shadow-button-hover);
+  transform: translateY(-2px) scale(1.03);
 }
 
-.create-project-form .MuiButton-outlined {
-  border-color: #5d3a7e;
-  color: #5d3a7e;
-  padding: 10px 24px;
-  font-weight: 600;
-  text-transform: none;
-  border-radius: 8px;
-}
-
-.create-project-form .MuiButton-outlined:hover {
-  background-color: rgba(93, 58, 126, 0.04);
-  border-color: #4a2d64;
+.create-project-form .MuiButton-contained:active {
+  transform: scale(0.98);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
 }
 
 .create-project-form .MuiAlert-root {
-  border-radius: 8px;
+  border-radius: var(--border-radius-fields);
+  font-size: 1rem;
+  padding: 1rem;
+  background-color: var(--current-alert-bg);
+  color: var(--current-alert-text);
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+input[type=number] {
+  -moz-appearance: textfield;
 }
 
 @media (max-width: 768px) {
-  .create-project-container {
-      padding: 1rem;
+  :root {
+    --button-font-size: 0.95rem;
+    --border-radius-main: 12px;
+    --border-radius-fields: 8px;
   }
-  
+
+  .create-project-container {
+    padding: 1rem;
+    margin: 1.5rem auto;
+  }
+
   .create-project-paper {
-      padding: 1.5rem;
+    padding: 1.5rem;
+    padding-top: calc(1.5rem + var(--accent-line-height));
+  }
+
+  .create-project-paper:hover {
+    transform: translateY(-4px) scale(1.01);
+  }
+
+  .create-project-paper h1 {
+    font-size: 1.9rem;
+    margin-bottom: 2rem;
+  }
+
+  .create-project-form {
+    gap: 1.5rem;
+  }
+
+  .create-project-form .MuiInputLabel-root {
+    font-size: 1rem;
+  }
+
+  .create-project-form .MuiInputBase-input {
+    font-size: 0.9rem;
+    padding: 14px 12px;
+  }
+
+  .create-project-form .MuiButton-root {
+    padding: 10px 20px;
+  }
+
+  .create-project-form .MuiAlert-root {
+    font-size: 0.9rem;
   }
 }
