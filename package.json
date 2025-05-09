@@ -22,7 +22,7 @@
     "ajv-keywords": "^3.5.2",
     "bcrypt-ts": "^6.0.0",
     "date-fns": "^4.1.0",
-    "framer-motion": "^12.6.3",
+    "framer-motion": "^12.7.4",
     "jest": "^29.7.0",
     "lucide-react": "^0.487.0",
     "openpgp": "^6.1.0",
@@ -43,6 +43,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "docs": "typedoc --entryPoints src --out docs",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -68,7 +69,9 @@
     "@babel/preset-react": "^7.26.3",
     "@types/date-fns": "^2.5.3",
     "@types/react-big-calendar": "^1.16.1",
-    "@types/react-router-dom": "^5.3.3"
+    "@types/react-router-dom": "^5.3.3",
+    "jsdoc": "^4.0.4",
+    "typedoc": "^0.28.3"
   },
   "proxy": "http://clabsql.clamv.constructor.university:3100"
 }

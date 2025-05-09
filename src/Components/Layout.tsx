@@ -3,9 +3,28 @@ import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
-import LogoutButton from './Navbar/LogoutButton';
+import LogoutButton from './Navbar/LogoutButton'; // Keeping this import as it was in the provided code
 import "../css/dashboard.css";
 
+/**
+ * Provides the main structural layout for authenticated sections of the application.
+ *
+ * This component renders a persistent sidebar (`Sidebar`), a top navigation bar (`Topbar`),
+ * and a main content area where nested routes are rendered via the `<Outlet />` component
+ * from `react-router-dom`. It manages the collapsed/expanded state of the sidebar
+ * and adjusts the left margin of the main content area accordingly with a transition effect.
+ *
+ * @component
+ * @example
+ * // Used in App.tsx to wrap protected routes
+ * <Route element={<Layout />}>
+ * <Route path="/dashboard" element={<Dashboard />} />
+ * <Route path="/activity" element={<Activity />} />
+ * // ... other routes
+ * </Route>
+ *
+ * @returns {JSX.Element} The Layout component providing the app's structure.
+ */
 const Layout: React.FC = () => {
   const [isSidebar, setIsSidebar] = useState<boolean>(true);
 
