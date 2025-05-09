@@ -13,9 +13,9 @@ import LoadingPage from "./LoadingPage";
 import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
 import { ImagePlus } from "lucide-react";
-import { getUser } from "../utils/getters.utils"; // Adjust the import path as necessary
+import { getUser } from "../utils/getters.utils"; 
 import { User, OrgMember, ProjectMember } from "../utils/types";
-import NavBar from "../Components/Navbar/NavBar"; // Import NavBar
+import NavBar from "../Components/Navbar/NavBar"; 
 
 const AboutUser: React.FC = () => {
   const navigate = useNavigate();
