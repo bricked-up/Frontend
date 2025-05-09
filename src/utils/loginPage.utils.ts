@@ -27,7 +27,7 @@ export const authUser = async (email: string, password: string, endPoint: string
         if (!response.ok) {
             return 500;
         }
-
+        console.log("Response status:", response.status);
         return response.status;
 
     } catch (error: any) {

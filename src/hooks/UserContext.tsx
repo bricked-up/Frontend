@@ -1,47 +1,75 @@
-import { createContext, useContext, useState, ReactNode, useEffect } from "react";
-import { User } from "../utils/types"
+// src/hooks/UserContext.tsx
+import React, { createContext, useContext, useState, ReactNode, useEffect, Dispatch, SetStateAction } from "react";
+import { User } from "../utils/types"; // Ensure this path is correct for your User type
 
-// create the UserContext
-const UserContext = createContext<{ user: User; setUser: (user: User) => void } | undefined>(
+// 1. Define the shape of your context data
+// User can be User object or null (when logged out)
+// setUser can accept a User object or null
+export interface UserContextType {
+  user: User | null;
+  setUser: Dispatch<SetStateAction<User | null>>;
+}
+
+// 2. Create the UserContext and EXPORT it.
+// Provide an initial undefined value, the custom hook `useUser` will handle this.
+export const UserContext = createContext<UserContextType | undefined>(
   undefined
 );
 
-// provider component to wrap our App
-// this stores the variables in local storage with the key value of 'user'
+// 3. Provider component
 export const UserProvider = ({ children }: { children: ReactNode }) => {
-  const [user, setUser] = useState<User>(() => {
+  // Initialize state: user can be User or null
+  const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem("user");
-    return savedUser ? JSON.parse(savedUser) : null;
+    if (savedUser) {
+      try {
+        const parsedUser = JSON.parse(savedUser);
+        // Basic check to ensure it's an object and not just the string "null"
+        if (typeof parsedUser === 'object' && parsedUser !== null) {
+          // You might want to add more validation here to ensure parsedUser actually conforms to the User type
+          return parsedUser as User;
+        }
+      } catch (error) {
+        console.error("Failed to parse user from localStorage:", error);
+      }
+    }
+    return null; // Default to null if not found or parsing fails
   });
 
+  // Effect to update localStorage when user state changes
   useEffect(() => {
-    localStorage.setItem("user", JSON.stringify(user));
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      // If user is null (logged out), remove the item from localStorage
+      localStorage.removeItem("user");
+    }
   }, [user]);
 
+  // The value provided to the context now matches UserContextType
   return <UserContext.Provider value={{ user, setUser }}>{children}</UserContext.Provider>;
 };
 
+// 4. Custom hook to consume the context (recommended)
 /**
- * This variable is going to be the persistent user. The data will be obtained from the server and then
- * stored. if email is null, this means that the user is not logged in. Note that every time you do 
- * a change to the user, the data is saved locally and not sent to the server. For that please use
- * sendUserData and to fetch most recent data from the server do getUserData
- * 
- * @example
- * // initialize the variable. Must be done for every page that needs it.
- * const {user, setUser} = useUser();
- * 
- * // to Modify the user's name
- * setUser(...user, displayName: newDisplayName)
- * 
- * // to change the whole user
- * setUser{... user, email: newEmail, displayName: newDisplayName, ....}
+ * This hook provides access to the user state and setUser function.
+ * It ensures that the context is used within a UserProvider.
  *
- * @returns {UserContext} 
+ * @example
+ * const { user, setUser } = useUser();
+ * if (user) {
+ * console.log(user.displayName);
+ * setUser({ ...user, displayName: "New Name" });
+ * }
+ * // To log out:
+ * // setUser(null);
+ *
+ * @returns {UserContextType} The user context value.
+ * @throws {Error} If used outside of a UserProvider.
  */
-export const useUser = () => {
+export const useUser = (): UserContextType => {
   const context = useContext(UserContext);
-  if (!context) {
+  if (context === undefined) { // Check for undefined, as that's the default in createContext
     throw new Error("useUser must be used within a UserProvider");
   }
   return context;
