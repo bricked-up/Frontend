@@ -50,12 +50,11 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
    * Calls the `logout()` function to remove user data (e.g., from localStorage/cookies),
    * then navigates the user back to the home page ("/").
    *
-   * @function handleLogout
+   * @function viewProfile
    * @returns {void}
    */
-  const handleLogout = (): void => {
-    logout();
-    navigate("/");
+  const viewProfile = (): void => {
+    navigate("/user/:'userId/aboutUser");
   };
 
   return (
@@ -136,7 +135,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
               bgcolor="transparent"
             >
               <button
-                onClick={handleLogout}
+                onClick={viewProfile}
                 style={{
                   backgroundColor: "red",
                   color: "white",
@@ -146,7 +145,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
                   borderRadius: "4px",
                 }}
               >
-                Logout
+                View Profile
               </button>
             </Box>
           )}
