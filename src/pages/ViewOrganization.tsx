@@ -1,119 +1,61 @@
-import React, { useState } from "react";
-import { Box, Paper, useTheme, Button, Typography } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import { Box, Paper, useTheme, Typography } from "@mui/material";
 import { DataGrid, GridToolbar, GridColDef } from "@mui/x-data-grid";
 import { tokens } from "../theme";
 import Header from "../Components/Header";
 import DropDown from "../Components/DropDown";
 import { useUser } from "../hooks/UserContext";
+import { getOrganizationsFromStore } from "../utils/OrganizationStore";
+import { Organization } from "../utils/Organization";
 
-const columns: GridColDef[] = [
+// User table columns
+const userColumns: GridColDef[] = [
   { field: "id", headerName: "ID", flex: 0.5 },
   { field: "name", headerName: "Name", flex: 1 },
   { field: "email", headerName: "Email", flex: 2 },
   { field: "role", headerName: "Role", flex: 1 },
+  { field: "organization", headerName: "Organization", flex: 1 },
 ];
 
-const columnsOrg: GridColDef[] = [
+// Organization table columns
+const orgColumns: GridColDef[] = [
   { field: "id", headerName: "ID", flex: 0.5 },
   { field: "name", headerName: "Name", flex: 1 },
+  {
+    field: "members",
+    headerName: "Members",
+    flex: 2,
+    renderCell: params => Array.isArray(params.value) ? params.value.join(", ") : "",
+  },
   {
     field: "projects",
     headerName: "Projects",
     flex: 2,
-    renderCell: (params) => params.value.join(", "),
+    renderCell: params => Array.isArray(params.value) ? params.value.join(", ") : "",
   },
 ];
 
-const allRows = [
-  {
-    id: 1,
-    name: "Bilbo",
-    email: "k@gmail.co",
-    role: "Admin",
-    organization: "Bricked-Up",
-  },
-  {
-    id: 5,
-    name: "Gandalf",
-    email: "bigstick@gmx.de",
-    role: "Admin",
-    organization: "SAP",
-  },
-  {
-    id: 2,
-    name: "Frodo",
-    email: "anva@outlook.com",
-    role: "Member",
-    organization: "George King IT",
-  },
-  {
-    id: 3,
-    name: "Samwise",
-    email: "bigtoesam@yahoo.com",
-    role: "Member",
-    organization: "Bricked-Up",
-  },
-];
-
-const allRowsOrg = [
-  { id: 1, name: "Bricked-Up", projects: ["Project A", "Project B"] },
-  { id: 2, name: "SAP", projects: ["Project C"] },
-  { id: 3, name: "George King IT", projects: ["Project D", "Project E"] },
+// Sample users
+const allUsers = [
+  { id: 1, name: "Bilbo", email: "k@gmail.co", role: "Admin", organization: "Bricked-Up" },
+  { id: 5, name: "Gandalf", email: "bigstick@gmx.de", role: "Admin", organization: "SAP" },
+  { id: 2, name: "Frodo", email: "anva@outlook.com", role: "Member", organization: "George King IT" },
+  { id: 3, name: "Samwise", email: "bigtoesam@yahoo.com", role: "Member", organization: "Bricked-Up" },
 ];
 
 const ViewOrg = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selectedOrg, setSelectedOrg] = useState("");
+  const [orgs, setOrgs] = useState<Organization[]>([]);
   const { user } = useUser();
 
-  const role = user?.role;
+  useEffect(() => {
+    setOrgs(getOrganizationsFromStore());
+  }, []);
 
-  const filteredRows = selectedOrg
-    ? allRows.filter((row) => row.organization === selectedOrg)
-    : allRows;
-
-  const filteredRowsOrg = selectedOrg
-    ? allRowsOrg.filter((row) => row.name === selectedOrg)
-    : allRowsOrg;
-
-  const deleteOrganization = async () => {
-    if (!selectedOrg) {
-      alert("Please select an organization to delete.");
-      return;
-    }
-
-    if (!window.confirm(`Are you sure you want to delete "${selectedOrg}"? This action cannot be undone.`)) {
-      return;
-    }
-
-    try {
-      const org = allRowsOrg.find((o) => o.name === selectedOrg);
-      if (!org) {
-        alert("Selected organization not found.");
-        return;
-      }
-
-      const response = await fetch("/delete-org", {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: `orgid=${org.id}`,
-      });
-
-      if (response.ok) {
-        alert("Organization deleted successfully.");
-        setSelectedOrg("");
-      } else {
-        const error = await response.text();
-        alert("Failed to delete organization: " + error);
-      }
-    } catch (error) {
-      console.error("Delete error:", error);
-      alert("An unexpected error occurred.");
-    }
-  };
+  const filteredUsers = selectedOrg ? allUsers.filter(u => u.organization === selectedOrg) : allUsers;
+  const filteredOrgs = selectedOrg ? orgs.filter(o => o.name === selectedOrg) : orgs;
 
   const dataGridStyle = {
     border: "none",
@@ -158,7 +100,6 @@ const ViewOrg = () => {
       }}
     >
       <Header title="Organizations" subtitle="" />
-
       <Paper
         sx={{
           width: { xs: "100%", sm: "95%", md: "90%", lg: "85%" },
@@ -172,32 +113,14 @@ const ViewOrg = () => {
         }}
       >
         <Box sx={{ p: 2, display: "flex", justifyContent: "left" }}>
-          <DropDown value={selectedOrg} onSelect={setSelectedOrg} />
-          <Typography
-            variant="h5"
-            sx={{
-              padding: 3,
-              textAlign: "right",
-              marginLeft: "500px",
-              color:
-                theme.palette.mode === "light"
-                  ? colors.grey[700]
-                  : colors.grey[100],
-              fontWeight: 600,
-              textTransform: "uppercase",
-              letterSpacing: "0.5px",
-              fontSize: "1.2rem",
-            }}
-          >
-            Organization Projects
-          </Typography>
+          <DropDown value={selectedOrg} onSelect={setSelectedOrg} options={orgs.map(o => o.name)} />
         </Box>
 
         <Box sx={{ display: "flex", flex: 1, gap: 2, padding: 2 }}>
           <Box sx={{ flex: 1 }}>
             <DataGrid
-              rows={filteredRows}
-              columns={columns}
+              rows={filteredUsers}
+              columns={userColumns}
               slots={{ toolbar: GridToolbar }}
               initialState={{
                 pagination: { paginationModel: { pageSize: 10, page: 0 } },
@@ -209,8 +132,8 @@ const ViewOrg = () => {
 
           <Box sx={{ flex: 1 }}>
             <DataGrid
-              rows={filteredRowsOrg}
-              columns={columnsOrg}
+              rows={filteredOrgs}
+              columns={orgColumns}
               slots={{ toolbar: GridToolbar }}
               initialState={{
                 pagination: { paginationModel: { pageSize: 10, page: 0 } },
@@ -226,7 +149,4 @@ const ViewOrg = () => {
 };
 
 export default ViewOrg;
-
-
-
 

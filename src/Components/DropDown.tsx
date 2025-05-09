@@ -10,11 +10,12 @@ import "../css/index.css"; // Import your CSS file
 type DropDownProps = {
     value: string;
     onSelect: (value: string) => void;
+    options?: string[];
 };
 
-const DropDown = ({ value, onSelect }: DropDownProps) => {
+const DropDown: React.FC<DropDownProps> = ({ value, onSelect, options = [] }) => {
     const handleChange = (event: SelectChangeEvent) => {
-        onSelect(event.target.value);
+        onSelect(event.target.value as string);
     };
 
     return (
@@ -33,9 +34,9 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
                 displayEmpty
                 renderValue={(selected) => {
                     if (!selected) {
-                        return <span style={{ color: "#aaa" }}>Select Organization</span>; // placeholder style
+                        return <span style={{ color: "#aaa" }}>Select Organization</span>;
                     }
-                    return selected; // actual selected text
+                    return selected;
                 }}
                 sx={{
                     backgroundColor: "#2c2f48",
@@ -52,7 +53,7 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
                 MenuProps={{
                     PaperProps: {
                         sx: {
-                            width: 200, // Adjusted width
+                            width: 200,
                             backgroundColor: "#2c2f48",
                             color: "#fff",
                             mt: 1,
@@ -67,9 +68,11 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
                 }}
             >
                 <MenuItem value="">All</MenuItem>
-                <MenuItem value="Bricked-Up">Bricked-Up</MenuItem>
-                <MenuItem value="George King IT">George King IT</MenuItem>
-                <MenuItem value="SAP">SAP</MenuItem>
+                {options.map(opt => (
+                    <MenuItem key={opt} value={opt}>
+                        {opt}
+                    </MenuItem>
+                ))}
             </Select>
         </FormControl>
     );
