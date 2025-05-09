@@ -182,6 +182,7 @@ These routes require user authentication and are rendered within the main `Layou
 - `/aboutUser`: Renders the `AboutUser` component (Note: This seems duplicative of `/user/:userId/about`; clarification might be needed on its specific use case).
 - `/activity`: (Currently Commented Out) Intended to render the `Activity` page component, likely showing recent updates or a feed.
 - `/calendar`: (Currently Commented Out) Intended to render the `CalendarPage` component for viewing events or deadlines.
+- `/createOrg`: Renders the `CreateOrg` component for creating organizations.
 
 ### Error Handling Routes
 

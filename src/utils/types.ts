@@ -36,6 +36,7 @@ export type Project = {
  * @property {OrgMember[]} [members] - Optional array of members in this organization.
  * @property {OrgRole[]} [roles] - Optional array of roles defined within this organization.
  */
+
 export type Organization = {
   id?: number;
   name: string;
@@ -63,6 +64,7 @@ export type Organization = {
  * (Backend might send IDs; frontend type expects full Issue objects).
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
+
 export type User = {
   displayName: string;
   id: number;
@@ -228,6 +230,7 @@ export type VerifyUser = {
   id: number;
   code: number;
   expires: Date;
+
 }
 
 /**
@@ -262,6 +265,7 @@ export interface Board {
   tasks: Task[];
 }
 
+
 /**
  * @description Represents a task within a board.
  * @property {string} id - The unique identifier for the task (note: type is string).
@@ -285,6 +289,7 @@ export interface Task {
   createdBy: string;
   completed?: Date;
 }
+
 
 /**
  * @description Represents the data structure for creating a new board.
