@@ -348,6 +348,8 @@ li {
 }
 
 
+
+
 /*for the PageNotFound script: */
 :root {
 	--purple: #28254C;
@@ -614,6 +616,7 @@ html, body {
       transition: background .5s ease;
       overflow: hidden;
       -webkit-mask-image: -webkit-radial-gradient(white, black);
+      mask-image: radial-gradient(white, black);
       
       &:before {
         content: '';
