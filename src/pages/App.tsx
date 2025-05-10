@@ -10,17 +10,19 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeam from "../Components/ViewTeams";
+import ViewProject from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
+import CreateTask from "../Components/CreateIssue/CreateIssue";
+import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 
 function App() {
   const [theme, colorMode] = useMode();
   const { user } = useUser();
-  
+
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
@@ -36,23 +38,23 @@ function App() {
               ) : (
                 <Route path="/" element={<LandingPage />} />
               )}
-              
+
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
-              
+
               {/* user related routes */}
               <Route path="/user/:userId">
                 <Route element={<Layout />}>
-                <Route path="aboutUser" element={<AboutUser />} />
-                <Route path="organizations" />
-               <Route path="projects" />
-               <Route path="issues" />
-              </Route>
+                  <Route path="aboutUser" element={<AboutUser />} />
+                  <Route path="organizations" />
+                  <Route path="projects" />
+                  <Route path="issues" />
+                </Route>
               </Route>
 
-              
+
               {/* project related routes */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -60,7 +62,7 @@ function App() {
                   <Route path="issues" />
                 </Route>
               </Route>
-              
+
               {/* organization related routes */}
               <Route path="/organization">
                 <Route path=":orgId">
@@ -69,22 +71,23 @@ function App() {
                   <Route path="issues" />
                 </Route>
               </Route>
-              
+
               {/* Protected Routes */}
               <Route element={<Layout />}>
                 <Route
                   path="/dashboard"
                   element={
-                      <Dashboard />
+                    <Dashboard />
                   }
                 />
-                <Route path="/view_team" element={<ViewTeam />} />
-                <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/viewProject" element={<ViewProject />} />
+                <Route path="/aboutUser" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/vieworg" element={<ViewOrg />} />
+                <Route path="/viewOrg" element={<ViewOrg />} />
+                <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
               </Route>
-              
+
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
                 <Route path="*" element={<Page404 />} />
