@@ -171,6 +171,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item 
           </Box>
         )}
       </Box>
