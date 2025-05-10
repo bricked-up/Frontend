@@ -1,3 +1,5 @@
+/* EditProjectForm.css - Synchronized with Theme Colors */
+
 .edit-project-container {
   display: flex;
   justify-content: center;
@@ -10,11 +12,96 @@
   max-width: 600px;
   padding: 24px;
   box-sizing: border-box;
+  background-color: var(--background-color);
+  border-radius: 12px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .edit-project-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 16px;
 }
-  
+
+.edit-project-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* TextField Background Sync with Theme */
+.MuiInputBase-root {
+  background-color: var(--input-background) !important;
+  border-radius: 6px;
+}
+
+/* Background and Text Color Based on Theme */
+body[data-theme='dark'] .MuiInputBase-root {
+  --input-background: var(--background-color) !important;
+  color: white !important;
+}
+
+body[data-theme='light'] .MuiInputBase-root {
+  --input-background: var(--background-color) !important;
+  color: black !important;
+}
+
+/* Override Focus Color */
+.edit-project-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: #20c997 !important;
+}
+
+.edit-project-form .MuiButton-root {
+  color: white !important;
+  border-radius: 8px;
+  text-transform: none;
+}
+
+/* Submit and Cancel Buttons */
+.edit-project-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 16px;
+}
+
+.edit-project-buttons .MuiButton-contained {
+  background-color: #20c997 !important;
+  color: white !important;
+}
+
+.edit-project-buttons .MuiButton-contained:hover {
+  background-color: #17a2b8 !important;
+}
+
+.edit-project-buttons .MuiButton-outlined {
+  border-color: #20c997 !important;
+  color: #20c997 !important;
+}
+
+.edit-project-buttons .MuiButton-outlined:hover {
+  background-color: rgba(32, 201, 151, 0.1) !important;
+}
+
+.edit-project-form .MuiChip-root {
+  margin-right: 8px;
+  background-color: #20c997 !important;
+  color: white !important;
+}
+
+.edit-project-form .MuiAlert-root {
+  margin-bottom: 10px;
+  border-radius: 8px;
+}
+
+.edit-project-form .MuiCircularProgress-root {
+  color: #20c997;
+}
+
+.edit-project-team-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 8px;
+}  
