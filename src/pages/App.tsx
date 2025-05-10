@@ -13,6 +13,7 @@ import AboutUser from "./AboutUser";
 import ViewProject from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import EditProjectForm from "../Components/EditProjectForm";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
@@ -54,8 +55,7 @@ function App() {
                 </Route>
               </Route>
 
-
-              {/* project related routes */}
+              {/* Project */}
               <Route path="/project">
                 <Route path=":projectId">
                   <Route path="users" />
@@ -63,7 +63,7 @@ function App() {
                 </Route>
               </Route>
 
-              {/* organization related routes */}
+              {/* Organization */}
               <Route path="/organization">
                 <Route path=":orgId">
                   <Route path="users" />
@@ -86,6 +86,8 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
                 <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
+                {/* Add the route for EditProjectForm */}
+                <Route path="/editProject/:projectId" element={<EditProjectForm />} />
               </Route>
 
               {/* routes for 404 and server errors */}
