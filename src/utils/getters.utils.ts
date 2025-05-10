@@ -150,6 +150,8 @@ function parseRawIssueArray(rawIssues: RawIssueData[]): Issue[] {
  * @returns {Promise<GetUserResult>} A promise resolving to an object containing the HTTP status,
  * User data (or null if not found/error), and an optional error message.
  */
+
+
 export const getUser = async (userId: number): Promise<GetUserResult> => {
     // try {
         const params = new URLSearchParams({

@@ -91,6 +91,8 @@ export const createNewIssue = async (
   endpoint: string
 ): Promise<Result> => {
   try {
+    const sessionId = localStorage.getItem("sessionId") || "";
+
     const params = new URLSearchParams();
     Object.entries(paramsObj).forEach(([key, value]) => {
       if (value != null) {
@@ -100,7 +102,10 @@ export const createNewIssue = async (
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+        "X-Session-Id": sessionId,
+      },
       body: params,
     });
 
@@ -129,6 +134,7 @@ export const createNewIssue = async (
     return { status: 0, issue: null, error: err.message || "Unknown error" };
   }
 };
+
 
 /**
  * Creates a new organization, optionally linking existing project IDs.
