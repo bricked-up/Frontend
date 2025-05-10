@@ -9,8 +9,6 @@ import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 
 const Login = () => {
-  const { user, setUser } = useUser();
-
   const [password, setPassword] = useState("");
   const [confirmpwd, setConfirmpwd] = useState("");
   const [isLoginActive, setisLoginActive] = useState(true);
@@ -128,12 +126,11 @@ const Login = () => {
                 className="btn-login"
                 onClick={async (e) => {
                   e.preventDefault();
-                  const response = await authUser(account, password, "login");
-                  if (response === 500) {
+                  const { status } = await authUser(account, password, "login");
+                  if (status === 500) {
                     navigate("/500");
                   }
-                  if (response === 200) {
-                    setUser({ ...user, email: account });
+                  if (status === 200) {
                     navigate("/");
                   }
                 }}
@@ -212,16 +209,20 @@ const Login = () => {
                 )}
               </fieldset>
 
+              {/* Signup Button */}
               <button
                 type="submit"
                 className="btn-signup"
                 onClick={async () => {
-                  const response = await authUser(account, password, "signup");
-                  if (response === 500) {
+                  const { status } = await authUser(
+                    account,
+                    password,
+                    "signup"
+                  );
+                  if (status === 500) {
                     navigate("/500");
                   }
-                  if (response === 200) {
-                    setUser({ ...user, email: account });
+                  if (status === 200) {
                     navigate("/");
                   }
                 }}
