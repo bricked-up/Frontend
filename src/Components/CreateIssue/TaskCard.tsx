@@ -116,8 +116,15 @@ export const TaskCard: React.FC<TaskCardProps> = ({
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <LoyaltyRoundedIcon fontSize="small" />
-          <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Tag ID: {task.tagid}
+          <Typography
+            variant="caption"
+            sx={{
+              fontSize: "0.9rem",
+              color: task.tagColor, // Use tag color
+              fontWeight: "bold",
+            }}
+          >
+            Tag: {task.tagName}
           </Typography>
         </Box>
 
