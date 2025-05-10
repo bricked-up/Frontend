@@ -1,6 +1,6 @@
 import * as React from "react";
 import { Box, useTheme } from "@mui/material";
-import Channels from "../Components/Channels";
+import ViewProject from "../Components/ViewProject";
 
 /**
  * The dashboard component
@@ -34,8 +34,8 @@ function Dashboard() {
         backgroundColor: theme.palette.background.default, // <-- fix is here
       }}
     >
-      <Box width="90%" mt={-50}>
-        <Channels />
+      <Box width="100%" mt={-80}>
+        <ViewProject />
       </Box>
     </Box>
   );
