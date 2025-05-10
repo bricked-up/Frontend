@@ -18,6 +18,7 @@ import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import EmailVerification from "./EmailVerification";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -31,6 +32,8 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
+
+              
               {user ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -43,6 +46,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
+              <Route path="/testt" element={<LandingPage />} />
+              <Route path="/verification" element={<EmailVerification />} />
+
+              {/* route for email verification */}
 
               {/* user related routes */}
               <Route path="/user/:userId">
@@ -95,6 +102,8 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
+
+          
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>

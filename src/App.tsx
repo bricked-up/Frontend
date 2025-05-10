@@ -13,7 +13,7 @@ function App() {
       <Routes>
         {/* Public routes */}
         <Route path="/login" element={<Login />} />
-        <Route path="/verify-email" element={<EmailVerification />} />
+        <Route path="/verification" element={<EmailVerification />} />
 
         {/* Protected routes - only accessible if logged in AND verified */}
         <Route
@@ -25,8 +25,11 @@ function App() {
           }
         />
 
-        {/* Fallback route */}
-        <Route path="*" element={<Navigate to="/login" replace />} />
+        {/* Set the default/fallback route to EmailVerification */}
+        <Route path="/verification" element={<EmailVerification />} />
+        
+        {/* Any other unknown routes redirect to EmailVerification */}
+        <Route path="*" element={<Navigate to="/verification" replace />} />
       </Routes>
     </div>
   );

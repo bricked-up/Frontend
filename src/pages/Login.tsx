@@ -13,7 +13,6 @@ import {
   Tabs,
   Tab,
   Container,
-  Link,
   Alert,
   List,
   ListItem,
@@ -82,39 +81,97 @@ const Login = () => {
     setError("");
   };
 
-  const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!account) {
-      e.preventDefault();
-      setError("Please enter your email address");
-    } else {
-      setError("");
+const handleLogin = async () => {
+    if (!account || !password) {
+      setError("Please enter both email and password");
+      return;
     }
-  };
 
-  const handleLogin = async () => {
-    const response = await authUser(account, password, "login");
-    if (response === 500) {
+    try {
+      const response = await authUser(account, password, "login");
+      
+      if (response === 200 || response === 201) {
+        // Create user object with login info
+        const loggedInUser = {
+          ...user,
+          email: account,
+          password: password, // Include password in the user object
+          verified: true // Assuming login successful means verified
+        };
+
+        // Store user info in local storage
+        localStorage.setItem('user', String(user.id));
+        
+        // Update user context
+        setUser(loggedInUser);
+        navigate("/dashboard");
+      } else if (response === 401) {
+        setError("Invalid email or password");
+      } else if (response === 403) {
+        // Create user object with unverified status
+        const unverifiedUser = {
+          ...user,
+          email: account,
+          password: password, // Include password in the user object
+          verified: false
+        };
+        
+        // Update user context even for unverified users
+        setUser(unverifiedUser);
+        
+        setError("Account not verified. Please check your email.");
+        navigate("/verification");
+      } else if (response === 500) {
+        navigate("/500");
+      } else {
+        setError("Login failed. Please try again.");
+      }
+    } catch (error) {
+      console.error("Login error:", error);
       navigate("/500");
     }
-    if (response === 200) {
-      setUser({ ...user, email: account });
-      navigate("/dashboard");
-    }
   };
 
-  const handleSignup = async () => {
-    setRegisterAttempt(true);
-    if (isValid) {
-      const response = await authUser(account, password, "signup");
-      if (response === 500) {
-        navigate("/500");
-      }
-      if (response === 200) {
-        setUser({ ...user, email: account });
-        navigate("/dashboard");
-      }
+const handleSignup = async () => {
+  setRegisterAttempt(true);
+  if (!isValid) return;
+
+  try {
+    const response = await authUser(account, password, "signup");
+    
+    if (response === 200 || response === 201) {
+      // Create temporary user object with all required fields
+      const tempUser = {
+        id: typeof user.id === "number" ? user.id : Date.now(), // Ensure id is always a number
+        email: account,
+        password: password, // Make sure password is included
+        name: account.split('@')[0],
+        displayName: account.split('@')[0],
+        verified: false,
+        organizations: [],
+        projects: [],
+        issues: [],
+        sessions: []
+      };
+
+      // Store user ID in local storage
+      localStorage.setItem('user', String(tempUser.id));
+      
+      // Update user context
+      setUser(tempUser);
+      navigate("/verification");
+    } else if (response === 409) {
+      setError("Email already exists");
+    } else if (response === 500) {
+      navigate("/500");
+    } else {
+      setError("Registration failed. Please try again.");
     }
-  };
+  } catch (error) {
+    console.error("Signup error:", error);
+    navigate("/500");
+  }
+};
 
   return (
     <Box
@@ -308,24 +365,6 @@ const Login = () => {
                 >
                   Login
                 </Button>
-
-                <Box textAlign="center">
-                  <Link
-                    href="/forgot_pwd"
-                    onClick={handleForgotPwd}
-                    underline="hover"
-                    sx={{ 
-                      display: 'inline-block', 
-                      mt: 1,
-                      color: isDark ? '#94a3b8' : '#475569',
-                      '&:hover': {
-                        color: isDark ? '#cbd5e1' : '#334155'
-                      }
-                    }}
-                  >
-                    Forgot password?
-                  </Link>
-                </Box>
               </Box>
             </TabPanel>
 
