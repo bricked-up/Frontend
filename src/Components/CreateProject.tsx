@@ -11,13 +11,12 @@ import {
   Box,
   Typography,
   Paper,
-  // Divider, // Not explicitly used, h1 margin and form gap handle spacing
   CircularProgress,
   InputAdornment,
 } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
-import '../css/CreateProject.css'; // Ensure this CSS is loaded
-import { createProject, NewProjectParams } from '../utils/post.utils'; // Adjust the import path
+import '../css/CreateProject.css';
+import { createProject, NewProjectParams } from '../utils/post.utils';
 
 type Organization = {
   id: number;
@@ -40,7 +39,7 @@ const CreateProject: React.FC = () => {
     const fetchUserOrganizations = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate network delay
+        await new Promise(resolve => setTimeout(resolve, 1000));
         const mockOrganizations = [
           { id: 1, name: 'Tech Innovators Inc.' },
           { id: 2, name: 'Design Studio Co.' },
@@ -64,6 +63,7 @@ const CreateProject: React.FC = () => {
       setSuccessMessage(null);
       return;
     }
+
     const budgetValue = parseFloat(budget);
     if (isNaN(budgetValue) || budgetValue <= 0) {
       setError('Please enter a valid, positive budget amount.');
@@ -87,20 +87,12 @@ const CreateProject: React.FC = () => {
     };
 
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
-      // const result = await createProject(newProjectParams, 'projects');
-      // Forcing a mock success for demonstration
-      const result = { project: { ...newProjectParams, id: Date.now() } , error: null };
-
+      const result = { project: { ...newProjectParams, id: Date.now() }, error: null };
 
       if (result.project) {
         setSuccessMessage('Project created successfully! Redirecting...');
-        setName('');
-        setBudget('');
-        setCharter('');
-        setOrgId('');
-        setTimeout(() => navigate('/projects'), 2000);
+        setTimeout(() => navigate(`/projects/${result.project.id}`), 2000);
       } else {
         setError(`Failed to create project: ${result.error || 'An unknown error occurred.'}`);
       }
@@ -128,17 +120,17 @@ const CreateProject: React.FC = () => {
         </Typography>
 
         {error && (
-          <Alert severity="error" sx={{ mb: 2, mt: 2 }}>
+          <Alert severity="error">
             {error}
           </Alert>
         )}
         {successMessage && (
-          <Alert severity="success" sx={{ mb: 2, mt: 2 }}>
+          <Alert severity="success">
             {successMessage}
           </Alert>
         )}
 
-        <Box component="form" onSubmit={handleSubmit} className="create-project-form" sx={{ mt: successMessage || error ? 1 : 0 /* Adjusted base margin-top */ }}>
+        <Box component="form" onSubmit={handleSubmit} className="create-project-form">
           <TextField
             label="Project Name"
             value={name}
@@ -146,22 +138,14 @@ const CreateProject: React.FC = () => {
             fullWidth
             required
           />
-
           <TextField
             label="Budget"
             value={budget}
-            onChange={(e) => setBudget(e.target.value)}
+            onChange={(e) => setBudget(e.target.value.replace(/[^0-9.]/g, ''))}
             fullWidth
             required
             type="number"
-            inputProps={{ min: "0", step: "0.01" }}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">$</InputAdornment>
-              ),
-            }}
           />
-
           <TextField
             label="Project Charter"
             value={charter}
@@ -171,7 +155,6 @@ const CreateProject: React.FC = () => {
             rows={4}
             required
           />
-
           <FormControl fullWidth required>
             <InputLabel id="org-id-label">Organization</InputLabel>
             <Select
@@ -180,13 +163,7 @@ const CreateProject: React.FC = () => {
               value={orgId}
               label="Organization"
               onChange={(e) => setOrgId(e.target.value)}
-              disabled={organizations.length === 0 || formSubmitting}
             >
-              {organizations.length === 0 && !loading && ( // Show only if not loading and no orgs
-                <MenuItem value="" disabled>
-                  <em>No organizations available</em>
-                </MenuItem>
-              )}
               {organizations.map((org) => (
                 <MenuItem key={org.id} value={org.id.toString()}>
                   {org.name}
@@ -194,13 +171,11 @@ const CreateProject: React.FC = () => {
               ))}
             </Select>
           </FormControl>
-
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
             <Button
               variant="outlined"
               onClick={() => navigate(-1)}
               disabled={formSubmitting}
-              sx={{ px: 4 }} // Restored sx prop for specific padding override
             >
               Cancel
             </Button>
@@ -209,8 +184,6 @@ const CreateProject: React.FC = () => {
               variant="contained"
               color="primary"
               disabled={organizations.length === 0 || formSubmitting || loading}
-              startIcon={formSubmitting ? <CircularProgress size={20} color="inherit" /> : null}
-              sx={{ px: 4 }} // Restored sx prop for specific padding override
             >
               {formSubmitting ? 'Creating...' : 'Create Project'}
             </Button>
