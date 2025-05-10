@@ -15,7 +15,7 @@ export interface Result {
 }
 
 export interface NewOrganizationParams {
-  name: string;
+  orgName: string;
   projects?: string[];
 }
 
