@@ -1,70 +1,25 @@
+import { specialChars } from "@testing-library/user-event";
 import React, { useState } from "react";
+import usePasswordValidation from "../hooks/usePasswordValidation";
+import { red } from "@mui/material/colors";
+import NavBar from "../Components/Navbar/NavBar";
+import { useTheme } from "@mui/material/styles";
+import { authUser } from "../utils/loginPage.utils";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
-import usePasswordValidation from "../hooks/usePasswordValidation";
-import authUser from "../utils/loginPage.utils";
-import { useTheme } from "@mui/material/styles";
-import {
-  Box,
-  Typography,
-  TextField,
-  Button,
-  Paper,
-  Tabs,
-  Tab,
-  Container,
-  Alert,
-  List,
-  ListItem,
-  ListItemText,
-  useMediaQuery,
-  Divider
-} from "@mui/material";
-import { motion } from "framer-motion";
-import NavBar from "../Components/Navbar/NavBar";
 
-interface TabPanelProps {
-  children?: React.ReactNode;
-  index: number;
-  value: number;
-}
-
-/**
- * TabPanel component for switching between login and signup forms
- */
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`login-tabpanel-${index}`}
-      aria-labelledby={`login-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  );
-}
-
-/**
- * Login component provides UI for logging into an existing account or signing up for a new account.
- */
 const Login = () => {
-  const { user, setUser } = useUser();
   const [password, setPassword] = useState("");
   const [confirmpwd, setConfirmpwd] = useState("");
-  const [tabValue, setTabValue] = useState(0);
+  const [isLoginActive, setisLoginActive] = useState(true);
   const [registerAttempt, setRegisterAttempt] = useState(false);
   const [account, setAccount] = useState("");
   const [error, setError] = useState("");
-  const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDark = theme.palette.mode === "dark";
 
-  // Password validation hook
+  const navigate = useNavigate();
+
+  const toggle = () => setisLoginActive(!isLoginActive);
+
   const { isValid, errors } = usePasswordValidation({
     password,
     confirmpwd,
@@ -75,487 +30,210 @@ const Login = () => {
     specialChar: true,
   });
 
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue);
-    setRegisterAttempt(false);
-    setError("");
-  };
-
-const handleLogin = async () => {
-    if (!account || !password) {
-      setError("Please enter both email and password");
-      return;
-    }
-
-    try {
-      const response = await authUser(account, password, "login");
-      
-      if (response === 200 || response === 201) {
-        // Create user object with login info
-        const loggedInUser = {
-          ...user,
-          email: account,
-          password: password, // Include password in the user object
-          verified: true // Assuming login successful means verified
-        };
-
-        // Store user info in local storage
-        localStorage.setItem('user', String(user.id));
-        
-        // Update user context
-        setUser(loggedInUser);
-        navigate("/dashboard");
-      } else if (response === 401) {
-        setError("Invalid email or password");
-      } else if (response === 403) {
-        // Create user object with unverified status
-        const unverifiedUser = {
-          ...user,
-          email: account,
-          password: password, // Include password in the user object
-          verified: false
-        };
-        
-        // Update user context even for unverified users
-        setUser(unverifiedUser);
-        
-        setError("Account not verified. Please check your email.");
-        navigate("/verification");
-      } else if (response === 500) {
-        navigate("/500");
-      } else {
-        setError("Login failed. Please try again.");
-      }
-    } catch (error) {
-      console.error("Login error:", error);
-      navigate("/500");
-    }
-  };
-
-const handleSignup = async () => {
-  setRegisterAttempt(true);
-  if (!isValid) return;
-
-  try {
-    const response = await authUser(account, password, "signup");
-    
-    if (response === 200 || response === 201) {
-      // Create temporary user object with all required fields
-      const tempUser = {
-        id: typeof user.id === "number" ? user.id : Date.now(), // Ensure id is always a number
-        email: account,
-        password: password, // Make sure password is included
-        name: account.split('@')[0],
-        displayName: account.split('@')[0],
-        verified: false,
-        organizations: [],
-        projects: [],
-        issues: [],
-        sessions: []
-      };
-
-      // Store user ID in local storage
-      localStorage.setItem('user', String(tempUser.id));
-      
-      // Update user context
-      setUser(tempUser);
-      navigate("/verification");
-    } else if (response === 409) {
-      setError("Email already exists");
-    } else if (response === 500) {
-      navigate("/500");
+  const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    if (!account) {
+      e.preventDefault();
+      setError("No account registered!");
     } else {
-      setError("Registration failed. Please try again.");
+      setError("");
     }
-  } catch (error) {
-    console.error("Signup error:", error);
-    navigate("/500");
-  }
-};
+  };
+
+  const theme = useTheme();
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
+    <div
+      style={{
+        backgroundColor: theme.palette.background.default,
         minHeight: "100vh",
-        fontFamily: "'Poppins', sans-serif",
-        background: isDark
-          ? "linear-gradient(135deg, #0f172a, #1e293b, #334155)"
-          : "linear-gradient(135deg, #e0f2fe, #f1f5f9, #f8fafc)",
-        color: theme.palette.text.primary,
-        transition: "background 0.5s ease, color 0.5s ease"
+        width: "100vw",
       }}
     >
       <NavBar />
-
-      <Container
-        maxWidth="sm"
-        sx={{
-          flex: 1,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          py: 8,
-        }}
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          style={{ width: "100%" }}
+      <p>{account}</p>
+      <section className="forms-section">
+        <h1
+          className="section-title"
+          style={{ color: theme.palette.text.primary }}
         >
-          <Paper
-            elevation={8}
-            sx={{
-              backdropFilter: "blur(16px)",
-              background: isDark
-                ? "rgba(30, 41, 59, 0.7)"
-                : "rgba(255, 255, 255, 0.8)",
-              borderRadius: 6,
-              p: { xs: 4, sm: 6 },
-              width: "100%",
-              textAlign: "center",
-              border: `1px solid ${theme.palette.divider}`,
-              boxShadow: isDark
-                ? "0 12px 32px rgba(0, 0, 0, 0.3)"
-                : "0 8px 20px rgba(0, 194, 255, 0.15)",
-              transition: "all 0.4s ease-in-out"
-            }}
-          >
-            <Typography
-              variant="h4"
-              component="h1"
-              sx={{
-                fontWeight: 700,
-                letterSpacing: "-0.5px",
-                color: isDark ? "#f1f5f9" : "#0f172a",
-                mb: 3
-              }}
+          Welcome to Bricked Up!
+        </h1>
+        <div className="forms">
+          {/* Login Form */}
+          <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
+            <button
+              type="button"
+              className="switcher switcher-login"
+              onClick={toggle}
             >
-              Welcome to Bricked Up!
-            </Typography>
+              Login
+              <span className="underline"></span>
+            </button>
 
-            <Tabs
-              value={tabValue}
-              onChange={handleTabChange}
-              variant="fullWidth"
-              sx={{
-                '& .MuiTabs-indicator': {
-                  height: 3,
-                  background: "linear-gradient(to right, #0ea5e9, #6366f1)",
-                },
-                mb: 2
-              }}
-            >
-              <Tab
-                label="Login"
-                sx={{
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                  color: isDark ? "#cbd5e1" : "#334155",
-                  '&.Mui-selected': {
-                    color: isDark ? "#f1f5f9" : "#0f172a",
-                  }
-                }}
-              />
-              <Tab
-                label="Sign Up"
-                sx={{
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
-                  color: isDark ? "#cbd5e1" : "#334155",
-                  '&.Mui-selected': {
-                    color: isDark ? "#f1f5f9" : "#0f172a",
-                  }
-                }}
-              />
-            </Tabs>
+            <form className="form form-login">
+              <fieldset>
+                <legend></legend>
+                <div className="input-block">
+                  <label htmlFor="login-email">E-mail</label>
+                  <input
+                    id="login-email"
+                    type="email"
+                    value={account}
+                    onChange={(e) => setAccount(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-block">
+                  <label htmlFor="login-password">Password</label>
+                  <input
+                    id="login-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
 
-            {/* Login Form */}
-            <TabPanel value={tabValue} index={0}>
-              <Box component="form">
-                <TextField
-                  fullWidth
-                  required
-                  id="login-email"
-                  label="Email"
-                  type="email"
-                  variant="outlined"
-                  margin="normal"
-                  value={account}
-                  onChange={(e) => setAccount(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  required
-                  id="login-password"
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  margin="normal"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
-                />
-
-                {error && (
-                  <Alert 
-                    severity="error" 
-                    sx={{ 
-                      mt: 2, 
-                      bgcolor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
-                      color: isDark ? '#fca5a5' : '#b91c1c',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#f87171' : '#ef4444'
-                      }
+                <div className="forgotpwd">
+                  <a
+                    href="/forgot_pwd"
+                    className="forgot-pwd-link"
+                    onClick={handleForgotPwd}
+                    style={{
+                      display: "block",
+                      marginTop: "10px",
+                      textAlign: "center",
                     }}
                   >
-                    {error}
-                  </Alert>
-                )}
-
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  onClick={handleLogin}
-                  sx={{
-                    mt: 3,
-                    mb: 2,
-                    py: 1.5,
-                    borderRadius: 8,
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    background: "linear-gradient(to right, #0ea5e9, #6366f1)",
-                    color: "#fff",
-                    boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)",
-                    filter: "drop-shadow(0 0 0.75rem rgba(99, 102, 241, 0.5))",
-                    '&:hover': {
-                      background: "linear-gradient(to right, #6366f1, #0ea5e9)"
-                    }
-                  }}
-                >
-                  Login
-                </Button>
-              </Box>
-            </TabPanel>
-
-            {/* Sign Up Form */}
-            <TabPanel value={tabValue} index={1}>
-              <Box component="form">
-                <TextField
-                  fullWidth
-                  required
-                  id="signup-email"
-                  label="Email"
-                  type="email"
-                  variant="outlined"
-                  margin="normal"
-                  value={account}
-                  onChange={(e) => setAccount(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  required
-                  id="signup-password"
-                  label="Password"
-                  type="password"
-                  variant="outlined"
-                  margin="normal"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
-                />
-                <TextField
-                  fullWidth
-                  required
-                  id="signup-password-confirm"
-                  label="Confirm Password"
-                  type="password"
-                  variant="outlined"
-                  margin="normal"
-                  value={confirmpwd}
-                  onChange={(e) => setConfirmpwd(e.target.value)}
-                  error={registerAttempt && !isValid && password !== confirmpwd}
-                  helperText={registerAttempt && password !== confirmpwd ? "Passwords don't match" : ""}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
-                />
-
-                {registerAttempt && errors.length > 0 && (
-                  <Alert 
-                    severity="warning" 
-                    sx={{ 
-                      mt: 2,
-                      bgcolor: isDark ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.08)',
-                      color: isDark ? '#fcd34d' : '#92400e',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#fbbf24' : '#f59e0b'
-                      }
-                    }}
-                  >
-                    <Typography 
-                      variant="subtitle2"
-                      sx={{
-                        color: isDark ? '#fcd34d' : '#92400e',
+                    Forgot password?
+                  </a>
+                  {error && (
+                    <p
+                      style={{
+                        color: "red",
+                        textAlign: "center",
+                        marginTop: "10px",
                       }}
                     >
-                      Password requirements:
-                    </Typography>
-                    <List dense disablePadding>
-                      {errors.map((err, index) => (
-                        <ListItem key={index} disablePadding sx={{ py: 0.5 }}>
-                          <ListItemText 
-                            primary={err} 
-                            sx={{
-                              '& .MuiListItemText-primary': {
-                                color: isDark ? '#fcd34d' : '#92400e',
-                              }
-                            }}
-                          />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Alert>
-                )}
+                      {error}
+                    </p>
+                  )}
+                </div>
+              </fieldset>
 
-                {registerAttempt && isValid && (
-                  <Alert 
-                    severity="success"
-                    sx={{ 
-                      mt: 2,
-                      bgcolor: isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.08)',
-                      color: isDark ? '#86efac' : '#166534',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#4ade80' : '#22c55e'
-                      }
-                    }}
-                  >
-                    All requirements met!
-                  </Alert>
-                )}
+              <button
+                type="submit"
+                className="btn-login"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const { status } = await authUser(account, password, "login");
+                  if (status === 500) {
+                    navigate("/500");
+                  }
+                  if (status === 200) {
+                    navigate("/");
+                  }
+                }}
+              >
+                Login
+              </button>
+            </form>
+          </div>
 
-                <Button
-                  variant="contained"
-                  fullWidth
-                  size="large"
-                  onClick={handleSignup}
-                  sx={{
-                    mt: 3,
-                    mb: 2,
-                    py: 1.5,
-                    borderRadius: 8,
-                    fontWeight: "bold",
-                    textTransform: "none",
-                    background: "linear-gradient(to right, #0ea5e9, #6366f1)",
-                    color: "#fff",
-                    boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)",
-                    filter: "drop-shadow(0 0 0.75rem rgba(99, 102, 241, 0.5))",
-                    '&:hover': {
-                      background: "linear-gradient(to right, #6366f1, #0ea5e9)"
-                    }
-                  }}
-                >
-                  Register
-                </Button>
-              </Box>
-            </TabPanel>
+          {/* Signup Form */}
+          <div className={`form-wrapper ${!isLoginActive ? "is-active" : ""}`}>
+            <button
+              type="button"
+              className="switcher switcher-signup"
+              onClick={toggle}
+            >
+              Sign Up
+              <span className="underline"></span>
+            </button>
 
-            <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
-
-            <Typography
-              variant="subtitle2"
-              sx={{
-                fontStyle: "italic",
-                opacity: 0.65,
-                color: isDark ? "#94a3b8" : "#475569"
+            <form
+              className="form form-signup"
+              onSubmit={(e) => {
+                e.preventDefault();
+                setRegisterAttempt(true);
               }}
             >
-              "Start collaborating and organizing with your team today!"
-            </Typography>
-          </Paper>
-        </motion.div>
-      </Container>
+              <fieldset>
+                <legend>
+                  Please, enter your email, password and password confirmation
+                  for sign up.
+                </legend>
+                <div className="input-block">
+                  <label htmlFor="signup-email">E-mail</label>
+                  <input
+                    id="signup-email"
+                    type="email"
+                    onChange={(e) => setAccount(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-block">
+                  <label htmlFor="signup-password">Password</label>
+                  <input
+                    id="signup-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+                <div className="input-block">
+                  <label htmlFor="signup-password-confirm">
+                    Confirm password
+                  </label>
+                  <input
+                    id="signup-password-confirm"
+                    type="password"
+                    value={confirmpwd}
+                    onChange={(e) => setConfirmpwd(e.target.value)}
+                    required
+                  />
+                </div>
+                {registerAttempt && !isValid && (
+                  <ul>
+                    {errors.length > 0 ? (
+                      errors.map((err, index) => (
+                        <li key={index} style={{ color: "red" }}>
+                          {err}
+                        </li>
+                      ))
+                    ) : (
+                      <li style={{ color: "green" }}>All good!</li>
+                    )}
+                  </ul>
+                )}
+              </fieldset>
 
-      <Box
-        component="footer"
-        sx={{
-          textAlign: "center",
-          py: 2,
-          fontSize: "0.9rem",
-          opacity: 0.4,
-          color: theme.palette.text.secondary,
-          borderTop: `1px solid ${theme.palette.divider}`,
-          transition: "color 0.4s ease, border-color 0.4s ease"
-        }}
-      >
-        © 2025 Bricked Up, Inc. · Privacy · Terms
-      </Box>
-    </Box>
+              {/* Signup Button */}
+              <button
+                type="submit"
+                className="btn-signup"
+                onClick={async () => {
+                  const { status } = await authUser(
+                    account,
+                    password,
+                    "signup"
+                  );
+                  if (status === 500) {
+                    navigate("/500");
+                  }
+                  if (status === 200) {
+                    navigate("/verification");
+                  }
+                }}
+              >
+                Register
+              </button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </div>
   );
 };
 
