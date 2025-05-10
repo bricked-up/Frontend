@@ -1,44 +1,4 @@
-/* CreateProject.css - Enhanced and Interactive - Teal/Turquoise Theme v3 */
-
-:root {
-  --primary-color-light: #20c997;
-  --primary-color-darken-light: #1baa80;
-  --primary-color-focus-glow-light: rgba(32, 201, 151, 0.25);
-  --background-paper-gradient-start-light: #ffffff;
-  --background-paper-gradient-end-light: #f7f7f9;
-  --accent-line-color-light: var(--primary-color-light);
-  --background-form-element-light: #e6faf2;
-  --text-color-primary-light: #212529; /* Dark Gray for Light Mode */
-  --text-color-input-light: #212529; /* Dark Gray for Light Mode */
-  --text-color-button-light: #ffffff;
-  --text-color-body-light: #212529; /* Dark Gray for Light Mode */
-  --border-color-light: rgba(0, 0, 0, 0.23);
-  --border-color-focus-light: var(--primary-color-light);
-  --shadow-paper-light: 0 4px 15px rgba(0, 0, 0, 0.08);
-  --shadow-paper-hover-light: 0 8px 20px rgba(0, 0, 0, 0.12);
-  --shadow-button-hover-light: 0 3px 6px rgba(27, 170, 128, 0.2);
-  --alert-bg-light: #e8f9f5;
-  --alert-text-light: #17a2b8;
-
-  --primary-color-dark: #52d9b3;
-  --primary-color-darken-dark: #3ccba0;
-  --primary-color-focus-glow-dark: rgba(82, 217, 179, 0.25);
-  --background-paper-gradient-start-dark: #212124;
-  --background-paper-gradient-end-dark: #1e1e1e;
-  --accent-line-color-dark: var(--primary-color-dark);
-  --background-form-element-dark: #1A6051;
-  --text-color-primary-dark: #f8f9fa; /* Near White for Dark Mode */
-  --text-color-input-dark: #f8f9fa; /* Near White for Dark Mode */
-  --text-color-button-dark: #ffffff;
-  --text-color-body-dark: #f8f9fa; /* Near White for Dark Mode */
-  --border-color-dark: rgba(255, 255, 255, 0.23);
-  --border-color-focus-dark: var(--primary-color-dark);
-  --shadow-paper-dark: 0 8px 30px rgba(0, 0, 0, 0.25);
-  --shadow-paper-hover-dark: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --shadow-button-hover-dark: 0 4px 8px rgba(82, 217, 179, 0.2);
-  --alert-bg-dark: #2a3f3c;
-  --alert-text-dark: #a6e9d5;
-}
+/* CreateProject.css - Full Synchronization with Theme Colors */
 
 .create-project-container {
   display: flex;
@@ -51,49 +11,71 @@
   width: 600px;
   padding: 2rem;
   border-radius: 12px;
-  background: var(--current-background-paper);
-  box-shadow: var(--current-shadow-paper);
+  background-color: var(--background-color, #ffffff);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease-in-out;
 }
 
+body[data-theme='dark'] .create-project-paper {
+  background-color: var(--background-paper-gradient-end-dark, #1e1e2f);
+  box-shadow: var(--shadow-paper-dark);
+}
+
+body[data-theme='light'] .create-project-paper {
+  background-color: #f8f9fa !important;
+  box-shadow: var(--shadow-paper-light);
+}
+
+/* Form Styling */
 .create-project-form {
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
-} 
-
-.create-project-form .MuiInputBase-input {
-  color: var(--current-text-color-input) !important;
-  background-color: var(--current-background-form-element);
 }
 
-.create-project-form .MuiButton-root {
-  color: var(--current-text-color-button) !important;
-}
-
-.create-project-paper:hover {
-  box-shadow: var(--current-shadow-paper-hover);
-  transform: translateY(-3px);
-}
-
-.create-project-form .MuiFormControl-root { 
-  background-color: var(--current-background-form-element);
-  border-radius: 8px; 
-}
-   
+/* Input Field Styling */
 .create-project-form .MuiOutlinedInput-root {
-  border-radius: 8px; 
+  border: none !important;
+  box-shadow: none !important;
+  background-color: var(--current-background-form-element) !important;
+  border-radius: 6px;
 }
 
-.create-project-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
-  border-color: var(--current-border-color-focus);
-  border-width: 2px;
+body[data-theme='dark'] .MuiOutlinedInput-root {
+  --current-background-form-element: var(--background-form-element-dark) !important;
 }
 
-.create-project-form .MuiButton-contained {
-  background-color: var(--primary-color-light);
+body[data-theme='light'] .MuiOutlinedInput-root {
+  --current-background-form-element: #ffffff !important;
 }
 
-.create-project-form .MuiButton-contained:hover {
-  background-color: var(--primary-color-darken-light);
+/* Button Styling */
+.create-project-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 16px;
+}
+
+.create-project-buttons .MuiButton-root {
+  color: white !important;
+  border-radius: 8px;
+  text-transform: none;
+}
+
+.create-project-buttons .MuiButton-contained {
+  background-color: #20c997 !important;
+}
+
+.create-project-buttons .MuiButton-contained:hover {
+  background-color: #17a2b8 !important;
+}
+
+.create-project-buttons .MuiButton-outlined {
+  border-color: #20c997 !important;
+  color: #20c997 !important;
+}
+
+.create-project-buttons .MuiButton-outlined:hover {
+  background-color: rgba(32, 201, 151, 0.1) !important;
 }

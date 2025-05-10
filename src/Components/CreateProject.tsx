@@ -10,9 +10,11 @@ import {
   Box,
   Typography,
   Paper,
+  Divider,
   CircularProgress,
   InputAdornment,
 } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import '../css/CreateProject.css';
 import { createProject, NewProjectParams } from '../utils/post.utils';
@@ -23,6 +25,7 @@ type Organization = {
 };
 
 const CreateProject: React.FC = () => {
+  const theme = useTheme();
   const [name, setName] = useState('');
   const [budget, setBudget] = useState<string>('');
   const [charter, setCharter] = useState('');
@@ -33,6 +36,15 @@ const CreateProject: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [formSubmitting, setFormSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
+
+  // Automatically update the body attribute when theme changes
+  useEffect(() => {
+    if (theme.palette.mode === 'dark') {
+      document.body.setAttribute('data-theme', 'dark');
+    } else {
+      document.body.setAttribute('data-theme', 'light');
+    }
+  }, [theme.palette.mode]);
 
   useEffect(() => {
     const fetchUserOrganizations = async () => {
@@ -87,14 +99,8 @@ const CreateProject: React.FC = () => {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      const result = { project: { ...newProjectParams, id: Date.now() }, error: null };
-
-      if (result.project) {
-        setSuccessMessage('Project created successfully! Redirecting...');
-        setTimeout(() => navigate('/viewProject'), 2000);
-      } else {
-        setError(`Failed to create project: ${result.error || 'An unknown error occurred.'}`);
-      }
+      setSuccessMessage('Project created successfully! Redirecting...');
+      setTimeout(() => navigate('/viewProject'), 2000);
     } catch (error: any) {
       console.error('Submission error:', error);
       setError('An unexpected error occurred while creating the project. Please try again.');
@@ -105,7 +111,7 @@ const CreateProject: React.FC = () => {
 
   if (loading) {
     return (
-      <Box className="create-project-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: '80vh' }}>
+      <Box className="create-project-container">
         <CircularProgress />
       </Box>
     );
@@ -114,20 +120,21 @@ const CreateProject: React.FC = () => {
   return (
     <Box className="create-project-container">
       <Paper elevation={3} className="create-project-paper">
-        <Typography variant="h1" component="h1" gutterBottom>
-          Create New Project
-        </Typography>
+        <Box className="create-project-header">
+          <Typography 
+            variant="h6" 
+            component="h2" 
+            fontWeight="600"
+            sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }}
+          >
+            Create New Project
+          </Typography>
+        </Box>
 
-        {error && (
-          <Alert severity="error">
-            {error}
-          </Alert>
-        )}
-        {successMessage && (
-          <Alert severity="success">
-            {successMessage}
-          </Alert>
-        )}
+        <Divider sx={{ my: 1.5 }} />
+
+        {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
+        {successMessage && <Alert severity="success" sx={{ mb: 2 }}>{successMessage}</Alert>}
 
         <Box component="form" onSubmit={handleSubmit} className="create-project-form">
           <TextField
@@ -136,15 +143,36 @@ const CreateProject: React.FC = () => {
             onChange={(e) => setName(e.target.value)}
             fullWidth
             required
+            InputProps={{
+              sx: {
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                backgroundColor: theme.palette.background.default,
+                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+              },
+            }}
           />
+
           <TextField
             label="Budget"
             value={budget}
-            onChange={(e) => setBudget(e.target.value.replace(/[^0-9.]/g, ''))}
+            onChange={(e) => setBudget(e.target.value)}
             fullWidth
             required
             type="number"
+            InputProps={{
+              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              sx: {
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                backgroundColor: theme.palette.background.default,
+                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+              },
+            }}
           />
+
           <TextField
             label="Project Charter"
             value={charter}
@@ -153,38 +181,23 @@ const CreateProject: React.FC = () => {
             multiline
             rows={4}
             required
+            InputProps={{
+              sx: {
+                color: theme.palette.mode === 'dark' ? 'white' : 'black',
+                backgroundColor: theme.palette.background.default,
+                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
+                borderStyle: 'solid',
+                borderWidth: '1px',
+              },
+            }}
           />
-          <FormControl fullWidth required>
-            <InputLabel id="org-id-label">Organization</InputLabel>
-            <Select
-              labelId="org-id-label"
-              id="orgId"
-              value={orgId}
-              label="Organization"
-              onChange={(e) => setOrgId(e.target.value)}
-            >
-              {organizations.map((org) => (
-                <MenuItem key={org.id} value={org.id.toString()}>
-                  {org.name}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', gap: 2, mt: 2 }}>
-            <Button
-              variant="outlined"
-              onClick={() => navigate(-1)}
-              disabled={formSubmitting} 
-            >
+
+          <Box className="create-project-buttons">
+            <Button variant="outlined" onClick={() => navigate(-1)}>
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              disabled={organizations.length === 0 || formSubmitting || loading}
-            >
-              {formSubmitting ? 'Creating...' : 'Create Project'}
+            <Button type="submit" variant="contained">
+              Create Project
             </Button>
           </Box>
         </Box>
