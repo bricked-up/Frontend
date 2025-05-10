@@ -15,7 +15,8 @@ import {
 import { useTheme } from '@mui/material/styles';
 import { useNavigate } from 'react-router-dom';
 import { Close, Save, PersonAdd } from '@mui/icons-material';
-import './EditProjectForm.css';
+import '../css/EditProjectForm.css';
+
 
 interface TeamMember {
   id: number;

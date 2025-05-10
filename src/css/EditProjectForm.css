@@ -103,5 +103,5 @@ body[data-theme='light'] .MuiInputBase-root {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
-  margin-top: 8px;
+  margin-top: 8px; 
 }  
