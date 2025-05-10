@@ -1,43 +1,45 @@
-/* CreateProject.css - Enhanced and Interactive */
+/* CreateProject.css - Enhanced and Interactive - Teal/Turquoise Theme v3 */
 
 :root {
-  /* Light Mode Variables */
-  --primary-color-light: #5d3a7e;
-  --primary-color-darken-light: #4a2d64;
-  --primary-color-focus-glow-light: rgba(93, 58, 126, 0.2);
+  /* Light Mode Variables - Teal/Turquoise Theme */
+  --primary-color-light: #20c997; /* Vibrant Teal */
+  --primary-color-darken-light: #1baa80; /* Darker Teal */
+  --primary-color-focus-glow-light: rgba(32, 201, 151, 0.25); /* Teal Focus Glow */
   --background-paper-gradient-start-light: #ffffff;
   --background-paper-gradient-end-light: #f7f7f9;
   --accent-line-color-light: var(--primary-color-light);
-  --background-form-element-light: #f8f9fa;
-  --text-color-primary-light: #5d3a7e;
-  --text-color-input-light: rgba(0, 0, 0, 0.87);
+  --background-form-element-light: #e6faf2; /* THEME: Very Light Teal for form field backgrounds */
+  --text-color-primary-light: #1baa80; /* For headings and primary themed text */
+  --text-color-input-light: #005C4B; /* THEME: Dark Teal for text in form fields */
   --text-color-button-light: #ffffff;
+  --text-color-body-light: #343a40; /* NEW: Dark Gray for general body text */
   --border-color-light: rgba(0, 0, 0, 0.23);
-  --border-color-focus-light: #5d3a7e;
+  --border-color-focus-light: var(--primary-color-light);
   --shadow-paper-light: 0 8px 28px rgba(0, 0, 0, 0.08);
   --shadow-paper-hover-light: 0 12px 35px rgba(0, 0, 0, 0.12);
-  --shadow-button-hover-light: 0 4px 8px rgba(0, 0, 0, 0.15);
-  --alert-bg-light: #e3f2fd;
-  --alert-text-light: #2196f3;
+  --shadow-button-hover-light: 0 4px 8px rgba(27, 170, 128, 0.2);
+  --alert-bg-light: #e8f9f5;
+  --alert-text-light: #17a2b8;
 
-  /* Dark Mode Variables */
-  --primary-color-dark: #bb86fc;
-  --primary-color-darken-dark: #9c6ade;
-  --primary-color-focus-glow-dark: rgba(187, 134, 252, 0.25);
+  /* Dark Mode Variables - Teal/Turquoise Theme */
+  --primary-color-dark: #52d9b3; /* Lighter Teal for Dark Mode */
+  --primary-color-darken-dark: #3ccba0;
+  --primary-color-focus-glow-dark: rgba(82, 217, 179, 0.25);
   --background-paper-gradient-start-dark: #212124;
   --background-paper-gradient-end-dark: #1e1e1e;
   --accent-line-color-dark: var(--primary-color-dark);
-  --background-form-element-dark: #303030;
-  --text-color-primary-dark: #bb86fc;
-  --text-color-input-dark: #f0f0f0;
-  --text-color-button-dark: #121212;
+  --background-form-element-dark: #1A6051; /* THEME: Dark Teal for form field backgrounds */
+  --text-color-primary-dark: #52d9b3; /* For headings and primary themed text */
+  --text-color-input-dark: #cce8e3; /* THEME: Light Teal/Cyan for text in form fields */
+  --text-color-button-dark: #003c32;
+  --text-color-body-dark: #ced4da; /* NEW: Light Gray for general body text */
   --border-color-dark: rgba(255, 255, 255, 0.23);
-  --border-color-focus-dark: #bb86fc;
+  --border-color-focus-dark: var(--primary-color-dark);
   --shadow-paper-dark: 0 8px 30px rgba(0, 0, 0, 0.25);
   --shadow-paper-hover-dark: 0 12px 40px rgba(0, 0, 0, 0.35);
-  --shadow-button-hover-dark: 0 4px 8px rgba(0, 0, 0, 0.3);
-  --alert-bg-dark: #303030;
-  --alert-text-dark: #f0f0f0;
+  --shadow-button-hover-dark: 0 4px 8px rgba(82, 217, 179, 0.2);
+  --alert-bg-dark: #2a3f3c;
+  --alert-text-dark: #a6e9d5;
 
   /* Common Variables */
   --border-radius-main: 16px;
@@ -62,6 +64,7 @@
     --current-text-color-primary: var(--text-color-primary-dark);
     --current-text-color-input: var(--text-color-input-dark);
     --current-text-color-button: var(--text-color-button-dark);
+    --current-text-color-body: var(--text-color-body-dark); /* Apply general body text color */
     --current-border-color: var(--border-color-dark);
     --current-border-color-focus: var(--border-color-focus-dark);
     --current-shadow-paper: var(--shadow-paper-dark);
@@ -82,6 +85,7 @@
   --current-text-color-primary: var(--text-color-primary-light);
   --current-text-color-input: var(--text-color-input-light);
   --current-text-color-button: var(--text-color-button-light);
+  --current-text-color-body: var(--text-color-body-light); /* Apply general body text color */
   --current-border-color: var(--border-color-light);
   --current-border-color-focus: var(--border-color-focus-light);
   --current-shadow-paper: var(--shadow-paper-light);
@@ -91,17 +95,15 @@
   --current-alert-text: var(--alert-text-light);
 }
 
-@keyframes accentPulse {
-  0%, 100% { transform: scaleX(1); }
-  50% { transform: scaleX(1.04); }
-}
-
-.create-project-container {
+/* Apply the body text color to the main container or body for general text if not otherwise specified */
+.create-project-container { /* Or apply to body tag in a global CSS */
+  color: var(--current-text-color-body);
   padding: 2rem;
   max-width: 800px;
   margin: 3rem auto;
   transition: all var(--transition-duration-normal) var(--transition-easing);
 }
+
 
 .create-project-paper {
   position: relative;
@@ -113,7 +115,8 @@
   overflow: hidden;
   backdrop-filter: blur(6px) saturate(180%);
   background-blend-mode: overlay;
-  transition: transform var(--transition-duration-normal), box-shadow var(--transition-duration-normal);
+  transition: transform var(--transition-duration-normal) var(--transition-easing),
+              box-shadow var(--transition-duration-normal) var(--transition-easing);
 }
 
 .create-project-paper::before {
@@ -124,7 +127,7 @@
   width: 100%;
   height: var(--accent-line-height);
   background-color: var(--current-accent-line-color);
-  transition: height var(--transition-duration-fast);
+  transition: height var(--transition-duration-fast) var(--transition-easing);
 }
 
 .create-project-paper::after {
@@ -134,9 +137,10 @@
   left: -75%;
   width: 50%;
   height: 100%;
-  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.15), transparent);
   transform: skewX(-25deg);
-  transition: 0.5s;
+  transition: left 0.6s var(--transition-easing);
+  z-index: 0;
 }
 
 .create-project-paper:hover {
@@ -154,48 +158,55 @@
 }
 
 .create-project-paper h1 {
-  color: var(--current-text-color-primary);
+  color: var(--current-text-color-primary); /* Uses primary theme color for main heading */
   text-align: center;
   margin-bottom: 2.5rem;
   font-size: 2.3rem;
   font-weight: 600;
+  position: relative;
+  z-index: 1;
 }
 
 .create-project-form {
   display: flex;
   flex-direction: column;
   gap: 2.2rem;
+  position: relative;
+  z-index: 1;
 }
 
 .create-project-form .MuiFormControl-root {
   background-color: var(--current-background-form-element);
   border-radius: var(--border-radius-fields);
-  transition: background-color var(--transition-duration-normal);
+  transition: background-color var(--transition-duration-normal) var(--transition-easing);
 }
 
 .create-project-form .MuiOutlinedInput-root {
   border-radius: var(--border-radius-fields);
-  transition: border-color var(--transition-duration-fast), box-shadow var(--transition-duration-fast);
+  transition: border-color var(--transition-duration-fast) var(--transition-easing),
+              box-shadow var(--transition-duration-fast) var(--transition-easing);
 }
 
 .create-project-form .MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
   border-color: var(--current-border-color);
+  transition: border-color var(--transition-duration-fast) var(--transition-easing);
 }
 
+/* InputLabel will use themed primary color */
 .create-project-form .MuiInputLabel-root {
   color: var(--current-text-color-primary);
   font-weight: 500;
   font-size: 1.05rem;
-  margin-bottom: 0.5rem;
-  display: block;
   transform-origin: top left;
-  transition: transform var(--transition-duration-fast), color var(--transition-duration-fast);
+  transition: transform var(--transition-duration-fast) var(--transition-easing),
+              color var(--transition-duration-fast) var(--transition-easing);
 }
 
+/* Focused InputLabel will use the focus color, and its background matches the form element's themed background */
 .create-project-form .MuiInputLabel-root.Mui-focused {
   color: var(--current-border-color-focus);
-  transform: translateY(-6px) scale(0.9);
-  background: var(--current-background-paper);
+  transform: translateY(-10px) scale(0.9);
+  background: var(--current-background-form-element); /* Crucial for "cut-out" effect on themed inputs */
   padding: 0 4px;
   border-radius: 4px;
 }
@@ -206,27 +217,34 @@
   box-shadow: 0 0 0 3px var(--current-primary-color-focus-glow);
 }
 
+/* Input text itself uses the specific themed input text color */
 .create-project-form .MuiInputBase-input {
   color: var(--current-text-color-input);
   font-size: 1rem;
   padding: 16px 14px;
 }
 
+/* Default Button styles from CSS (padding, font-weight, etc.) */
+/* Specific buttons in CreateProject.tsx might override some of these with `sx` prop, e.g., padding */
 .create-project-form .MuiButton-root {
   padding: 12px 28px;
   font-weight: var(--button-font-weight);
   text-transform: none;
   border-radius: var(--border-radius-fields);
   font-size: var(--button-font-size);
-  transition: all var(--transition-duration-fast);
+  transition: all var(--transition-duration-fast) var(--transition-easing);
   will-change: transform, box-shadow;
 }
 
+/* Contained (Primary) Button Colors and Hover Effects from CSS */
+.create-project-form .MuiButton-containedPrimary,
 .create-project-form .MuiButton-contained {
   background-color: var(--current-primary-color);
   color: var(--current-text-color-button);
 }
 
+.create-project-form .MuiButton-containedPrimary:hover,
+.create-project-form .MuiButton-containedPrimary:focus-visible,
 .create-project-form .MuiButton-contained:hover,
 .create-project-form .MuiButton-contained:focus-visible {
   background-color: var(--current-primary-color-darken);
@@ -235,9 +253,26 @@
   transform: translateY(-2px) scale(1.03);
 }
 
+.create-project-form .MuiButton-containedPrimary:active,
 .create-project-form .MuiButton-contained:active {
   transform: scale(0.98);
   box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Outlined Button Colors and Hover Effects from CSS */
+.create-project-form .MuiButton-outlinedPrimary,
+.create-project-form .MuiButton-outlined {
+  border-color: var(--current-primary-color);
+  color: var(--current-text-color-primary); /* Uses themed primary text color */
+}
+
+.create-project-form .MuiButton-outlinedPrimary:hover,
+.create-project-form .MuiButton-outlinedPrimary:focus-visible,
+.create-project-form .MuiButton-outlined:hover,
+.create-project-form .MuiButton-outlined:focus-visible {
+  border-color: var(--current-primary-color-darken);
+  background-color: var(--current-primary-color-focus-glow);
+  color: var(--current-primary-color-darken);
 }
 
 .create-project-form .MuiAlert-root {
@@ -246,6 +281,9 @@
   padding: 1rem;
   background-color: var(--current-alert-bg);
   color: var(--current-alert-text);
+}
+.create-project-form .MuiAlert-icon {
+    color: var(--current-alert-text);
 }
 
 input[type=number]::-webkit-inner-spin-button,
@@ -298,10 +336,11 @@ input[type=number] {
   }
 
   .create-project-form .MuiButton-root {
+    /* Padding for smaller screens, will be overridden by sx prop if present on a specific button */
     padding: 10px 20px;
   }
 
-  .create-project-form .MuiAlert-root {
+  .create-project-form .MuiAlert-root { 
     font-size: 0.9rem;
   }
 }
