@@ -20,6 +20,7 @@
     "@types/node": "^16.18.126",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
+    "@types/recharts": "^1.8.29",
     "ajv": "^6.12.6",
     "ajv-keywords": "^3.5.2",
     "bcrypt-ts": "^6.0.0",
