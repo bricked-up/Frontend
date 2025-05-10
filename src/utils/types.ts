@@ -23,8 +23,8 @@ export type Project = {
   budget: number;
   charter: string;
   archived: boolean;
-  members?: ProjectMember[];
-  issues?: Issue[];
+  members?: ProjectMember[]; // Assumed to be populated by getProject
+  issues?: Issue[];      // Assumed to be populated by getProject
   tags?: Tag[];
 }
 
@@ -40,13 +40,15 @@ export type Project = {
 export type Organization = {
   id?: number;
   name: string;
-  projects?: Project[];
-  members?: OrgMember[];
+  projects?: Project[]; // Assumed to be populated by getOrg
+  members?: OrgMember[];  // Assumed to be populated by getOrg
   roles?: OrgRole[];
 }
 
 /**
  * @description Represents a user account in the application.
+ * Note: For `getUser` endpoint, `organizations`, `projects`, and `issues` are expected to be number arrays (IDs)
+ * based on current test expectations. The full objects might be populated by other means or more specific getters.
  * @property {string} displayName - The user's preferred display name.
  * @property {number} id - The unique identifier for the user.
  * @property {string} email - The user's email address, used for login and communication.
@@ -56,12 +58,9 @@ export type Organization = {
  * @property {string | null} [avatar] - Optional URL or path to the user's avatar image.
  * @property {boolean} verified - Flag indicating if the user's email address has been verified.
  * @property {number | null} [verifyId] - Optional ID related to the verification process.
- * @property {OrgMember[]} [organizations] - Optional array of organization memberships for the user.
- * (Backend might send IDs; frontend type expects full OrgMember objects).
- * @property {ProjectMember[]} [projects] - Optional array of project memberships for the user.
- * (Backend might send IDs; frontend type expects full ProjectMember objects).
- * @property {Issue[]} [issues] - Optional array of issues assigned to or created by the user.
- * (Backend might send IDs; frontend type expects full Issue objects).
+ * @property {number[] | OrgMember[]} [organizations] - User's organization memberships (IDs from /get-user, full objects elsewhere).
+ * @property {number[] | ProjectMember[]} [projects] - User's project memberships (IDs from /get-user, full objects elsewhere).
+ * @property {number[] | Issue[]} [issues] - Issues assigned to/created by user (IDs from /get-user, full objects elsewhere).
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
 
@@ -70,13 +69,13 @@ export type User = {
   id: number;
   email: string;
   name: string;
-  password: string;
+  password?: string; // Password should not always be present on User objects client-side
   avatar?: string | null;
   verified: boolean;
   verifyId?: number | null;
-  organizations?: OrgMember[];
-  projects?: ProjectMember[];
-  issues?: Issue[];
+  organizations?: number[] | OrgMember[];
+  projects?: number[] | ProjectMember[];
+  issues?: number[] | Issue[];
   sessions?: Session[];
 }
 
@@ -85,9 +84,9 @@ export type User = {
  * @property {number} id - The unique identifier for the issue.
  * @property {string} title - The title or summary of the issue.
  * @property {string | null} [desc] - Optional detailed description of the issue.
- * @property {number | null} [tagId] - Optional ID of an associated tag.
+ * @property {number | null} [tagId] - Optional ID of an associated tag (mapped from backend's tagid).
  * @property {number | null} [priority] - Optional priority level of the issue.
- * @property {Date} created - The date and time when the issue was created. (Parsed from backend string/SQLNullTime).
+ * @property {Date | null} created - The date and time when the issue was created. (Parsed from backend string/SQLNullTime).
  * @property {Date | null} [completed] - Optional date and time when the issue was completed. (Parsed from backend SQLNullTime).
  * @property {number} cost - The estimated or actual cost associated with resolving the issue.
  * @property {Dependency[]} [dependencies] - Optional array of issue dependencies.
@@ -97,9 +96,10 @@ export type Issue = {
   id: number;
   title: string;
   desc?: string | null;
-  tagId?: number | null;
+  tagId?: number | null; // Frontend uses tagId
+  tagid?: number; // Backend might send tagid
   priority?: number | null;
-  created: Date;
+  created: Date | null; // Ensure it's Date or null after parsing
   completed?: Date | null;
   cost: number;
   dependencies?: Dependency[];
@@ -282,7 +282,7 @@ export interface Task {
   id: string;
   title: string;
   desc: string;
-  tagid: number;
+  tagid: number; // Sticking to backend field name for this type
   priority: number;
   cost: number;
   created: Date;
@@ -302,6 +302,19 @@ export interface NewBoard {
   name: string;
   createdBy: string;
   createdAt: Date;
+}
+
+/**
+* @interface SQLNullTime
+* @description Represents the raw structure of a nullable time value often returned
+* by Go backends when using `sql.NullTime`. This interface is useful for parsing
+* such data before converting it to a JavaScript `Date` object or `null`.
+* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
+* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
+*/
+export interface SQLNullTime {
+Time: string;
+Valid: boolean;
 }
 
 // --- Getter Result Types ---
@@ -325,7 +338,7 @@ error?: string;
  * @description Result type for fetching a single User.
  * Wraps the User type within the generic GetResult structure.
  */
-export type GetUserResult = GetResult<User>;
+export type GetUserResult = GetResult<User>; // User type might contain number[] for relations from this getter
 
 /**
  * @description Result type for fetching a single Issue.
@@ -334,37 +347,35 @@ export type GetUserResult = GetResult<User>;
 export type GetIssueResult = GetResult<Issue>;
 
 /**
-* @description Result type for fetching project members.
-* Currently defined as `string[]` based on the hypothetical endpoint's expectation.
-* This might change to `GetResult<ProjectMember[]>` or `GetResult<User[]>` if the
-* endpoint is implemented to return richer member objects.
-*/
-export type GetProjectMembersResult = GetResult<string[]>;
-
-/**
- * @description Result type for fetching an array of Issues for a project.
- * Wraps an array of Issue types within the generic GetResult structure.
+ * @description Result type for fetching all Users.
+ * Wraps an array of User types within the generic GetResult structure.
  */
-export type GetProjectIssuesResult = GetResult<Issue[]>;
+export type GetUsersResult = GetResult<User[]>;
 
 /**
- * @description Result type for fetching an array of Issues for an organization.
- * Wraps an array of Issue types within the generic GetResult structure.
+ * @description Result type for fetching a single Organization.
+ * Wraps the Organization type within the generic GetResult structure.
  */
-export type GetOrgIssuesResult = GetResult<Issue[]>;
+export type GetOrganizationResult = GetResult<Organization>;
 
 /**
-* @interface SQLNullTime
-* @description Represents the raw structure of a nullable time value often returned
-* by Go backends when using `sql.NullTime`. This interface is useful for parsing
-* such data before converting it to a JavaScript `Date` object or `null`.
-* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
-* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
-*/
-export interface SQLNullTime {
-Time: string;
-Valid: boolean;
-}
+ * @description Result type for fetching a single Project.
+ * Wraps the Project type within the generic GetResult structure.
+ */
+export type GetProjectResult = GetResult<Project>;
+
+/**
+ * @description Result type for fetching a single Organization Member.
+ * Wraps the OrgMember type within the generic GetResult structure.
+ */
+export type GetOrgMemberResult = GetResult<OrgMember>;
+
+/**
+ * @description Result type for fetching a single Project Member.
+ * Wraps the ProjectMember type within the generic GetResult structure.
+ */
+export type GetProjectMemberResult = GetResult<ProjectMember>;
+
 
 // --- New Getter Result Types for Board and Task ---
 
