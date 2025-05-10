@@ -59,7 +59,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
    * @returns {void}
    */
   const viewProfile = (): void => {
-    navigate("/user/:userId/aboutUser");
+    navigate("/user.$(user.id)/aboutUser");
   };
 
   // Debounced search effect
@@ -68,8 +68,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
       if (searchQuery.trim() !== "") {
         try {
           const result = await getAllUsers();
-          const allUsers: User[] = result?.data || [];
-
+          const allUsers: User[] = Array.isArray(result?.data) ? result.data.map((item: any): User => item as User) : [];
           const filtered = allUsers.filter((user) =>
             user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
           );
@@ -86,6 +85,8 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
 
     return () => clearTimeout(delayDebounce);
   }, [searchQuery]);
+  console.log(searchQuery);
+  console.log(userSuggestions);
 
   return (
     <Box
