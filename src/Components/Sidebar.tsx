@@ -124,8 +124,16 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
 
             <Item
               title="View Organizations"
-              to="/vieworg"
+              to="/viewOrg"
               icon={<CorporateFareIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+
+            <Item
+              title="Create Issue"
+              to="/createIssue"
+              icon={<AddTaskIcon />}
               selected={selected}
               setSelected={setSelected}
             />
@@ -144,8 +152,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               setSelected={setSelected}
             />
             <Item
-              title="Change Profile"
-              to="/about_user"
+              title="View Your Profile"
+              to="/user/:userId/aboutUser"
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

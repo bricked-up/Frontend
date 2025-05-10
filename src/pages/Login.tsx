@@ -4,7 +4,7 @@ import usePasswordValidation from "../hooks/usePasswordValidation";
 import { red } from "@mui/material/colors";
 import NavBar from "../Components/Navbar/NavBar";
 import { useTheme } from "@mui/material/styles";
-import authUser from "../utils/loginPage.utils";
+import { authUser } from "../utils/loginPage.utils";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 

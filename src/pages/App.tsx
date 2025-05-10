@@ -10,14 +10,13 @@ import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeam from "../Components/ViewTeams";
+import ViewProject from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
 import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
-import ViewProject from "../Components/ViewProject";
 function App() {
   const [theme, colorMode] = useMode();
   const { user } = useUser();
@@ -28,7 +27,7 @@ function App() {
         <CssBaseline />
         <Router>
           <div className="App">
-            {/*set up Routes */}
+            {/* set up Routes */}
             <Routes>
               {user ? (
                 <Route element={<Layout />}>
@@ -38,29 +37,18 @@ function App() {
                 <Route path="/" element={<LandingPage />} />
               )}
 
-              {/*route for login and signup */}
+              {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
 
               {/* user related routes */}
-              <Route path="/user">
-                {/* all of these routes are subroutes of :userId*/}
-                <Route path=":userId">
-                  <Route
-                    index
-                    path="about"
-                    element={
-                      <ProtectedRoute>
-                        <AboutUser />
-                      </ProtectedRoute>
-                    }
-                  />
-                  <Route element={<Layout />}>
-                    <Route path="organizations" />
-                    <Route path="projects" />
-                    <Route path="issues" />
-                  </Route>
+              <Route path="/user/:userId">
+                <Route element={<Layout />}>
+                  <Route path="aboutUser" element={<AboutUser />} />
+                  <Route path="organizations" />
+                  <Route path="projects" />
+                  <Route path="issues" />
                 </Route>
               </Route>
 
@@ -98,8 +86,7 @@ function App() {
 
               {/* routes for 404 and server errors */}
               <Route element={<Layout />}>
-                {" "}
-                <Route path="*" element={<Page404 />} />{" "}
+                <Route path="*" element={<Page404 />} />
               </Route>
               <Route path="/500" element={<Error500Page />} />
             </Routes>
