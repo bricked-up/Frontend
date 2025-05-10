@@ -66,8 +66,8 @@ const Login = () => {
 
   // Password validation hook
   const { isValid, errors } = usePasswordValidation({
-    password: password,
-    confirmpwd: confirmpwd,
+    password,
+    confirmpwd,
     minLength: 8,
     uppercase: true,
     lowercase: true,
