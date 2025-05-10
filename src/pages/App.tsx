@@ -18,6 +18,8 @@ import ViewOrg from "./ViewOrganization";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
+
+
 function App() {
   const [theme, colorMode] = useMode();
 
@@ -60,12 +62,19 @@ function App() {
               </Route>
 
               {/* project related routes */}
-              <Route path="/project">
-                <Route path=":projectId">
-                  <Route path="users" />
-                  <Route path="issues" />
+              <Route element={<Layout />}>
+                {/* /project/:projectId */}
+                <Route path="project">
+                  <Route path=":projectName" element={<ViewProject />}>
+
+                    {/* /project/:projectId/users */}
+                    <Route path="users" element={<Layout />} />
+                    {/* /project/:projectId/issues */}
+                    <Route path="issues" element={<Layout />} />
+                  </Route>
                 </Route>
               </Route>
+              
 
               {/* organization related routes */}
               <Route path="/organization">
@@ -85,7 +94,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
-                <Route path="/createorg" element={<CreateOrg/>} />
+                <Route path="/createorg" element={<CreateOrg />} />
               </Route>
 
               {/* routes for 404 and server errors */}
