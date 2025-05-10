@@ -41,6 +41,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { useParams, useNavigate } from "react-router-dom";
 
 // Mock data for project members with roles based on the ER diagram
 const mockProjectMembers = [
@@ -465,8 +466,8 @@ const ProjectDetails = ({ project }: { project: any }) => {
                         project.progress < 30
                           ? colors.redAccent[500]
                           : project.progress < 70
-                          ? colors.blueAccent[500]
-                          : colors.greenAccent[500],
+                            ? colors.blueAccent[500]
+                            : colors.greenAccent[500],
                       borderRadius: 5,
                     },
                   }}
@@ -711,24 +712,40 @@ const ProjectDetails = ({ project }: { project: any }) => {
   );
 };
 
-const ViewProject = () => {
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
 
-  const [selectedProject, setSelectedProject] = useState("");
+const ViewProject = () => {
+  const { projectName } = useParams<{ projectName: string }>();
+  const navigate = useNavigate();
+  const [selectedProject, setSelectedProject] = useState<string>("");
   const [currentProjectData, setCurrentProjectData] = useState<any>(null);
 
-  // Update current project data when selection changes
+  // Seed dropdown from URL
+  useEffect(() => {
+    if (projectName) {
+      setSelectedProject(decodeURIComponent(projectName));
+    }
+  }, [projectName]);
+
+  // Load project data whenever selectedProject changes
   useEffect(() => {
     if (selectedProject) {
-      const projectData = mockProjects.find((p) => p.name === selectedProject);
-      setCurrentProjectData(projectData);
+      const data = mockProjects.find(p => p.name === selectedProject) ?? null;
+      setCurrentProjectData(data);
+      // Optionally keep URL in sync if user changes dropdown
+      navigate(`/project/${encodeURIComponent(selectedProject)}`, { replace: true });
     } else {
       setCurrentProjectData(null);
     }
-  }, [selectedProject]);
+  }, [selectedProject, navigate]);
+
+  // Single filteredRows declaration
+  const filteredRows = selectedProject
+    ? mockProjectMembers.filter(member => member.project === selectedProject)
+    : mockProjectMembers;
 
   // Define columns based on the ER diagram
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const columns: GridColDef[] = [
     {
       field: "id",
@@ -808,9 +825,7 @@ const ViewProject = () => {
     },
   ];
 
-  const filteredRows = selectedProject
-    ? mockProjectMembers.filter((row) => row.project === selectedProject)
-    : mockProjectMembers;
+  
 
   // Create unique project options without using Set spreading
   const getUniqueProjects = () => {
