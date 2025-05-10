@@ -55,8 +55,6 @@ function App() {
                 </Route>
               </Route>
 
-
-
               {/* Project */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -88,6 +86,8 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
                 <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
+                {/* Add the route for EditProjectForm */}
+                <Route path="/editProject/:projectId" element={<EditProjectForm />} />
               </Route>
 
               {/* routes for 404 and server errors */}
