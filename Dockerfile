@@ -14,6 +14,7 @@ RUN npm install --legacy-peer-deps --force
 
 # Expose the port your app runs on
 EXPOSE 3000
+ENV DANGEROUSLY_DISABLE_HOST_CHECK=true
 
 # Define the command to run your app
 CMD ["npm", "start"]

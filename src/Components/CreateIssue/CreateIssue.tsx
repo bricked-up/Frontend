@@ -1,16 +1,16 @@
 /**
  * CreateIssue.tsx
  *
- * This file defines the CreateTask component for managing project issues.
- * It allows adding, editing, completing, and deleting tasks.
- * Tasks are visually divided into 'In Progress' and 'Completed' sections.
+ * This file defines the CreateIssue component for managing project issues.
+ * It allows adding, editing, completing, and deleting issues.
+ * issues are visually divided into 'In Progress' and 'Completed' sections.
  */
 import React, { useState } from "react";
 import { Tabs, Tab, Slide, Paper, Grow } from "@mui/material";
 import { Button, Box, Typography, Grid, Fade } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Board, Task } from "../../utils/types";
-import { TaskCard } from "./TaskCard";
+import { Board, Issue } from "../../utils/types";
+import { IssueCard } from "./IssueCard";
 import { AddIssue } from "./AddIssue";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -20,7 +20,7 @@ import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 
-interface CreateTaskPageProps {
+interface CreateIssuePageProps {
   board: Board;
 }
 
@@ -30,118 +30,113 @@ export const mockBoard: Board = {
   createdBy: "Kejsi",
   createdById: "user-1",
   createdAt: new Date(),
-  tasks: [
+  issues: [
     {
-      id: "task-1",
+      id: 1,
       title: "Setup Project Repository",
       desc: "Initialize GitHub repository and push the initial commit.",
-      tagid: 1,
+      tagId: 1,
       priority: 1,
       cost: 100,
       created: new Date("2024-04-01"),
-      createdBy: "Kejsi",
       completed: undefined,
     },
     {
-      id: "task-2",
+      id: 2,
       title: "Create Database Schema",
       desc: "Design and create tables for users, projects, and issues.",
-      tagid: 2,
+      tagId: 2,
       priority: 2,
       cost: 300,
       created: new Date("2024-04-02"),
-      createdBy: "Kejsi",
       completed: undefined,
     },
     {
-      id: "task-3",
+      id: 3,
       title: "Implement User Authentication",
       desc: "Login, signup, password reset, and session management.",
-      tagid: 3,
+      tagId: 3,
       priority: 1,
       cost: 250,
       created: new Date("2024-04-04"),
-      createdBy: "Kejsi",
       completed: new Date("2024-04-06"),
     },
     {
-      id: "task-4",
+      id: 4,
       title: "Build Issue Tracking Dashboard",
       desc: "Frontend UI to create, view, edit, and complete issues.",
-      tagid: 1,
+      tagId: 1,
       priority: 3,
       cost: 400,
       created: new Date("2024-04-07"),
-      createdBy: "Kejsi",
       completed: undefined,
     },
     {
-      id: "task-5",
+      id: 5,
       title: "Deploy Application",
       desc: "Deploy backend on server and frontend on Vercel.",
-      tagid: 2,
+      tagId: 2,
       priority: 2,
       cost: 500,
       created: new Date("2024-04-10"),
-      createdBy: "Kejsi",
       completed: undefined,
     },
   ],
 };
 
 /**
- * CreateTask Component
+ * CreateIssue Component
  *
  * Displays and manages a board's list of issues.
- * - Allows creating, editing, deleting, and completing tasks.
- * - Supports switching tasks between 'In Progress' and 'Completed' states.
+ * - Allows creating, editing, deleting, and completing issues.
+ * - Supports switching issues between 'In Progress' and 'Completed' states.
  */
-const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
+const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
   // Import necessary components
   const { Grid } = require("@mui/material");
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState<Task[]>(board.tasks);
-  const [editingTask, setEditingTask] = useState<Task | null>(null);
+  const [showAddIssue, setShowAddIssue] = useState(false);
+  const [issues, setIssues] = useState<Issue[]>(board.issues);
+  const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState(0);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const handleAddTask = (task: Task) => {
-    setTasks((prev) => [...prev, task]);
+  const handleAddIssue = (issue: Issue) => {
+    setIssues((prev) => [...prev, issue]);
   };
 
-  const handleDeleteTask = (taskId: string) => {
-    setTasks((prev) => prev.filter((task) => task.id !== taskId));
+  const handleDeleteIssue = (IssueId: number) => {
+    setIssues((prev) => prev.filter((Issue) => Issue.id !== IssueId));
   };
 
-  const handleCompleteTask = (taskId: string) => {
-    setTasks((prevTasks) =>
-      prevTasks.map((task) =>
-        task.id === taskId
-          ? { ...task, completed: task.completed ? undefined : new Date() }
-          : task
+  const handleCompleteIssue = (IssueId: number) => {
+    setIssues((previssues) =>
+      previssues.map((Issue) =>
+        Issue.id === IssueId
+          ? { ...Issue, completed: Issue.completed ? undefined : new Date() }
+          : Issue
       )
     );
   };
 
-  const handleEditTask = (task: Task) => {
-    setEditingTask(task);
+  const handleEditIssue = (Issue: Issue) => {
+    setEditingIssue(Issue);
   };
 
-  const handleSaveEdit = (updatedTask: Task) => {
-    setTasks((prev) =>
-      prev.map((task) => (task.id === updatedTask.id ? updatedTask : task))
+  const handleSaveEdit = (updatedIssue: Issue) => {
+    setIssues((prev) =>
+      prev.map((Issue) => (Issue.id === updatedIssue.id ? updatedIssue : Issue))
     );
-    setEditingTask(null);
+    setEditingIssue(null);
   };
 
   const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
-  const inProgressTasks = tasks.filter((task) => !task.completed);
-  const completedTasks = tasks.filter((task) => task.completed);
+  const inProgressissues = issues.filter((Issue) => !Issue.completed);
+  const completedissues = issues.filter((Issue) => Issue.completed);
 
   //        bgcolor: theme.palette.background.default,
 
@@ -169,7 +164,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
             startIcon={<AddCircleOutlineIcon />}
             color="secondary"
             variant="contained"
-            onClick={() => setShowAddTask(true)}
+            onClick={() => setShowAddIssue(true)}
             sx={{ borderRadius: "24px", px: 2 }}
           >
             Add Issue
@@ -242,7 +237,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                 <Tab
                   icon={<AssignmentIcon />}
                   iconPosition="start"
-                  label={`In Progress (${inProgressTasks.length})`}
+                  label={`In Progress (${inProgressissues.length})`}
                   sx={{
                     "&:first-of-type::after": {
                       width: activeTab === 0 ? "100%" : 0,
@@ -252,7 +247,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                 <Tab
                   icon={<CheckCircleIcon />}
                   iconPosition="start"
-                  label={`Completed (${completedTasks.length})`}
+                  label={`Completed (${completedissues.length})`}
                   sx={{
                     "&:nth-of-type(2)::after": {
                       width: activeTab === 1 ? "100%" : 0,
@@ -276,18 +271,18 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
             }}
           >
             <TabPanel value={activeTab} index={0}>
-              {inProgressTasks.length > 0 ? (
+              {inProgressissues.length > 0 ? (
                 <Grid container spacing={3}>
-                  {inProgressTasks.map((task) => (
-                    <Grid item xs={12} sm={6} md={4} key={task.id}>
+                  {inProgressissues.map((Issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
                       <Grow in={true} timeout={300}>
                         <Box>
-                          <TaskCard
-                            task={task}
+                          <IssueCard
+                            Issue={Issue}
                             boardId={board.id}
-                            onDelete={handleDeleteTask}
-                            onComplete={handleCompleteTask}
-                            onEdit={handleEditTask}
+                            onDelete={handleDeleteIssue}
+                            onComplete={handleCompleteIssue}
+                            onEdit={handleEditIssue}
                           />
                         </Box>
                       </Grow>
@@ -314,41 +309,41 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                     }}
                   />
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No tasks in progress
+                    No issues in progress
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ mb: 3 }}
                   >
-                    Add your first task to get started
+                    Add your first Issue to get started
                   </Typography>
                   <Button
                     variant="contained"
                     size="large"
                     startIcon={<AddIcon />}
-                    onClick={() => setShowAddTask(true)}
+                    onClick={() => setShowAddIssue(true)}
                     sx={{ borderRadius: "24px", px: 3 }}
                   >
-                    Add new task
+                    Add new Issue
                   </Button>
                 </Paper>
               )}
             </TabPanel>
 
             <TabPanel value={activeTab} index={1}>
-              {completedTasks.length > 0 ? (
+              {completedissues.length > 0 ? (
                 <Grid container spacing={3}>
-                  {completedTasks.map((task) => (
-                    <Grid item xs={12} sm={6} md={4} key={task.id}>
-                      <Grow key={task.id} in={true} timeout={300}>
+                  {completedissues.map((Issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
+                      <Grow key={Issue.id} in={true} timeout={300}>
                         <Box>
-                          <TaskCard
-                            task={task}
+                          <IssueCard
+                            Issue={Issue}
                             boardId={board.id}
-                            onDelete={handleDeleteTask}
-                            onComplete={handleCompleteTask}
-                            onEdit={handleEditTask}
+                            onDelete={handleDeleteIssue}
+                            onComplete={handleCompleteIssue}
+                            onEdit={handleEditIssue}
                           />
                         </Box>
                       </Grow>
@@ -375,14 +370,14 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                     }}
                   />
                   <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No completed tasks yet
+                    No completed issues yet
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ mb: 3 }}
                   >
-                    Tasks you complete will appear here
+                    issues you complete will appear here
                   </Typography>
                   <Button
                     variant="outlined"
@@ -390,7 +385,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                     onClick={() => setActiveTab(0)}
                     sx={{ borderRadius: "24px", px: 3 }}
                   >
-                    View in-progress tasks
+                    View in-progress issues
                   </Button>
                 </Paper>
               )}
@@ -399,22 +394,22 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
         </Box>
       </Fade>
 
-      {showAddTask && (
+      {showAddIssue && (
         <AddIssue
-          show={showAddTask}
-          onClose={() => setShowAddTask(false)}
+          show={showAddIssue}
+          onClose={() => setShowAddIssue(false)}
           boardId={board.id}
-          onAdd={handleAddTask}
+          onAdd={handleAddIssue}
         />
       )}
 
-      {editingTask && (
+      {editingIssue && (
         <AddIssue
-          show={!!editingTask}
-          onClose={() => setEditingTask(null)}
+          show={!!editingIssue}
+          onClose={() => setEditingIssue(null)}
           boardId={board.id}
           onAdd={handleSaveEdit}
-          initialData={editingTask}
+          initialData={editingIssue}
         />
       )}
     </Box>
@@ -448,4 +443,4 @@ const TabPanel = (props: {
   );
 };
 
-export default CreateTask;
+export default CreateIssue;

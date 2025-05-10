@@ -41,6 +41,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { Issue, Project, Tag } from "../utils/types";
 
 // Mock data for project members with roles based on the ER diagram
 const mockProjectMembers = [
@@ -156,102 +157,85 @@ const mockProjectMembers = [
   },
 ];
 
+const mockTags: Tag[] = [
+  {
+    id: 1,
+    projectId: 1,
+    name: "CRM",
+    color: "magenta",
+  },
+  {
+    id: 2,
+    projectId: 1,
+    name: "Enterprise",
+    color: "blue",
+  },
+  {
+    id: 3,
+    projectId: 2,
+    name: "Customer Engagement",
+    color: "white",
+  },
+];
+
 // Mock data for projects based on the ER diagram
-const mockProjects = [
+const mockProjects: Project[] = [
   {
     id: 1,
     name: "Project Alpha",
-    orgid: "ORG001",
+    orgId: 443,
     budget: 250000,
     charter: "Develop a new CRM system",
     archived: false,
-    progress: 75,
-    startDate: "2024-01-15",
-    endDate: "2024-12-31",
-    tags: ["CRM", "Enterprise", "High Priority"],
-    issueCount: 28,
-    completedIssues: 21,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Developer", value: 1 },
-      { name: "Viewer", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 150000 },
-      { name: "Testing", value: 50000 },
-      { name: "Infrastructure", value: 35000 },
-      { name: "Management", value: 15000 },
-    ],
+    tags: mockTags,
   },
   {
     id: 2,
     name: "Project Beta",
-    orgid: "ORG002",
+    orgId: 364,
     budget: 175000,
     charter: "Mobile app for customer engagement",
     archived: false,
-    progress: 45,
-    startDate: "2024-03-01",
-    endDate: "2024-10-15",
-    tags: ["Mobile", "Customer Engagement", "Medium Priority"],
-    issueCount: 42,
-    completedIssues: 19,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Developer", value: 1 },
-      { name: "Tester", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 100000 },
-      { name: "Testing", value: 40000 },
-      { name: "Design", value: 25000 },
-      { name: "Marketing", value: 10000 },
-    ],
+    tags: mockTags,
   },
   {
     id: 3,
     name: "Project Gamma",
-    orgid: "ORG001",
+    orgId: 876,
     budget: 320000,
     charter: "Enterprise data warehouse implementation",
     archived: false,
-    progress: 30,
-    startDate: "2024-02-20",
-    endDate: "2025-04-30",
-    tags: ["Data", "Enterprise", "High Priority"],
-    issueCount: 56,
-    completedIssues: 17,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Designer", value: 1 },
-      { name: "Viewer", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 180000 },
-      { name: "Infrastructure", value: 90000 },
-      { name: "Testing", value: 30000 },
-      { name: "Consulting", value: 20000 },
-    ],
+    tags: mockTags,
   },
   {
     id: 4,
     name: "Project Delta",
-    orgid: "ORG003",
+    orgId: 273,
     budget: 120000,
     charter: "Internal productivity tools suite",
     archived: true,
-    progress: 100,
-    startDate: "2023-09-01",
-    endDate: "2024-03-31",
-    tags: ["Internal", "Productivity", "Completed"],
-    issueCount: 37,
-    completedIssues: 37,
-    roleDistribution: [{ name: "Developer", value: 1 }],
-    budgetAllocation: [
-      { name: "Development", value: 85000 },
-      { name: "Testing", value: 25000 },
-      { name: "Documentation", value: 10000 },
-    ],
+    tags: mockTags,
+  },
+];
+
+const mockIssues: Issue[] = [
+  {
+    id: 1,
+    title: "Bug A",
+    desc: "boombayah",
+    cost: 5,
+    priority: 2,
+    created: new Date(),
+    completed: null,
+  },
+  {
+    id: 2,
+    title: "Bug B",
+    desc: "i want to kms",
+    cost: 3,
+    priority: 1,
+    created: new Date(),
+    completed: new Date(),
   },
 ];
 
@@ -718,6 +702,27 @@ const ViewProject = () => {
   const [selectedProject, setSelectedProject] = useState("");
   const [currentProjectData, setCurrentProjectData] = useState<any>(null);
 
+  const [issues, setIssues] = useState<Issue[]>([]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      const projectData = mockProjects.find((p) => p.name === selectedProject);
+      setCurrentProjectData(projectData);
+
+      if (projectData) {
+        const filteredIssues = mockIssues.filter(
+          (issue) => issue.projectId === projectData.id
+        );
+        setIssues(filteredIssues);
+      } else {
+        setIssues([]);
+      }
+    } else {
+      setCurrentProjectData(null);
+      setIssues([]);
+    }
+  }, [selectedProject]);
+
   // Update current project data when selection changes
   useEffect(() => {
     if (selectedProject) {
@@ -890,7 +895,6 @@ const ViewProject = () => {
               <Typography variant="h6" sx={{ mr: 2, color: colors.grey[100] }}>
                 Filter by Project:
               </Typography>
-              {/* Using your existing DropDown component, but now with project names */}
               <DropDown
                 value={selectedProject}
                 onSelect={setSelectedProject}
