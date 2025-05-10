@@ -4,6 +4,9 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
+
+
 
 #VS Code
 .vscode
@@ -13,6 +16,9 @@
 
 # testing
 /coverage
+
+# port
+.env
 
 # production
 /build
