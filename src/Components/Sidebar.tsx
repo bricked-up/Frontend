@@ -138,7 +138,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             />
             <Item
               title="Create Projects"
-              to="/contacts"
+              to="/createproject"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -195,5 +195,5 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
     </>
   );
 };
-
+ 
 export default Sidebar;
