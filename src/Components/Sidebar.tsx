@@ -10,8 +10,9 @@ import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import { tokens } from "../theme";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import React from "react";
+import { getProjectMember } from "../utils/getters.utils";
 
 interface ItemProps {
   title: string;
@@ -70,6 +71,27 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState<string>("Dashboard");
+
+  const [canExecute, setCanExecute] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+  const fetchMember = async () => {
+    try {
+      const result = await getProjectMember(memberId);
+      if (!result.data) throw new Error(result.error || "Failed to fetch project member");
+
+      setCanExecute(result.data.canExec ?? false); 
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchMember();
+}, [memberId]);
 
   return (
     <>
@@ -136,13 +158,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
-            <Item
-              title="Create Projects"
-              to="/contacts"
-              icon={<ContactsOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
+            {loading && <p>Loading...</p>}
+            {error && <p>Error: {error}</p>}
+            {canExecute && (
+              <Item
+                title="Create Projects"
+                to="/contacts"
+                icon={<ContactsOutlinedIcon />}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )}
             <Item
               title="View Your Profile"
               to="/user/:userId/aboutUser"
