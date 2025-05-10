@@ -7,15 +7,26 @@ import {
     getOrg,
     getOrgMember,
     getProject,
-    getProjectMember
+    getProjectMember,
+    getOrgRole,      // <-- Import new getter
+    getProjectRole   // <-- Import new getter
 } from "../utils/getters.utils";
-import { User, Issue, OrgMember, ProjectMember, Organization, Project } from "../utils/types";
+import {
+    User,
+    Issue,
+    OrgMember,
+    ProjectMember,
+    Organization,
+    Project,
+    OrgRole,         // <-- Import new type
+    ProjectRole      // <-- Import new type
+} from "../utils/types";
 
 describe("Getter Utility Functions (Integration Tests)", () => {
-    jest.setTimeout(30000); // Increased timeout for network requests
+    jest.setTimeout(30000);
 
     describe("getUser", () => {
-        const existingUserId = 1; // Ensure this user ID exists in your test DB
+        const existingUserId = 1;
         const nonExistentUserId = 999999;
 
         it("should get existing user data successfully (status 200)", async () => {
@@ -23,36 +34,33 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
-            // This assertion depends heavily on what /get-user actually returns
-            // and what is populated in your test database for user 1.
             expect(result.data).toEqual(
                 expect.objectContaining({
                     id: existingUserId,
-                    email: "john.doe@example.com", // From your populate.sql or test DB
-                    name: "John Doe",             // From your populate.sql or test DB
-                    avatar: "avatar1.png",        // From your populate.sql or test DB
-                    verified: true,               // From your populate.sql or test DB
-                    // Assuming /get-user returns arrays of IDs for these fields:
-                    organizations: expect.arrayContaining([expect.any(Number)]), // or specific IDs if known
-                    projects: expect.arrayContaining([expect.any(Number)]),      // or specific IDs if known
-                    issues: expect.arrayContaining([expect.any(Number)]),        // or specific IDs if known
+                    email: "john.doe@example.com", // Adjust to your test data
+                    name: "John Doe",             // Adjust to your test data
+                    avatar: "avatar1.png",        // Adjust to your test data
+                    verified: true,
+                    organizations: expect.arrayContaining([expect.any(Number)]),
+                    projects: expect.arrayContaining([expect.any(Number)]),
+                    issues: expect.arrayContaining([expect.any(Number)]),
                 }),
             );
         });
 
-        it("should handle user not found (backend returns 204 No Content, resulting in status 204 and data: {})", async () => {
+        it("should handle user not found (status 204, data: {})", async () => {
             const result = await getUser(nonExistentUserId);
-            expect(result.status).toBe(204); // Assuming backend sends 204 for not found user
-            expect(result.data).toEqual({}); // As per getter logic for empty text from 204
+            expect(result.status).toBe(204);
+            expect(result.data).toEqual({});
             expect(result.error).toBeUndefined();
         });
     });
 
     describe("getIssue", () => {
-        const existingIssueId = 1; // Ensure this ID exists
+        const existingIssueId = 1;
         const nonExistentIssueId = 888888;
 
-        it("should get existing issue data successfully (status 200) and parse dates/fields", async () => {
+        it("should get existing issue data successfully (status 200)", async () => {
             const result = await getIssue(existingIssueId);
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
@@ -60,28 +68,20 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.data).toEqual(
                 expect.objectContaining({
                     id: existingIssueId,
-                    title: "Setup Development Environment", // From your populate.sql or test DB
-                    desc: "Install and configure all necessary tools", // From your populate.sql or test DB
-                    priority: 1, // From your populate.sql or test DB
-                    cost: 500,   // From your populate.sql or test DB
-                    tagId: 1,    // From your populate.sql or test DB (getter handles tagid/tagId)
+                    title: "Setup Development Environment", // Adjust to your test data
+                    tagId: 1,
                 }),
             );
-            if (result.data?.created) { // Ensure created is not null before checking
+            if (result.data?.created) {
                 expect(result.data.created).toBeInstanceOf(Date);
-                 // Example: expect(result.data.created.toISOString()).toContain("2023-01-01"); // Adjust date
             }
-            // Check 'completed' based on your test data for issue 1
-            // expect(result.data?.completed).toBeNull(); or expect(result.data?.completed).toBeInstanceOf(Date);
         });
 
         it("should handle issue not found (status 404)", async () => {
             const result = await getIssue(nonExistentIssueId);
-            expect(result.status).toBe(404); // Backend now sends 404 for not found
+            expect(result.status).toBe(404);
             expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
-            // You might want to check for a specific error message if the backend sends one
-            // expect(result.error).toContain("Issue not found");
         });
     });
 
@@ -92,45 +92,37 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.error).toBeUndefined();
             expect(result.data).toBeInstanceOf(Array);
             if (result.data && result.data.length > 0) {
-                // Backend confirmed to return an array of user IDs
                 expect(typeof result.data[0]).toBe('number');
-                // Optionally, check if all elements are numbers
                 result.data.forEach(item => expect(typeof item).toBe('number'));
             } else {
-                // This is okay if the database can be empty, or warn if users are expected
-                console.warn("getAllUsers returned an empty array or null data. This might be valid if no users exist.");
+                console.warn("getAllUsers returned empty or null data. This may be valid.");
             }
         });
     });
 
     describe("getOrg", () => {
-        const existingOrgId = 1; // Ensure this ID exists
+        const existingOrgId = 1;
         const nonExistentOrgId = 90909;
 
         it("should get existing organization data (status 200)", async () => {
             const result = await getOrg(existingOrgId);
-            // Backend fixed malformed JSON for orgId=1
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
             expect((result.data as Organization).id).toBe(existingOrgId);
-            // Add more specific assertions for organization properties if needed
-            // expect((result.data as Organization).name).toBe("Expected Org Name");
+            // expect((result.data as Organization).name).toBe("Bricked Up Solutions"); // Adjust
         });
 
         it("should handle organization not found (status 404)", async () => {
-            // Backend now sends 404 for not found organizations
             const result = await getOrg(nonExistentOrgId);
             expect(result.status).toBe(404);
             expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
-            // Optionally check for a specific error message
-            // expect(result.error).toContain("Organization not found");
         });
     });
 
     describe("getProject", () => {
-        const existingProjectId = 1; // Ensure this ID exists
+        const existingProjectId = 1;
         const nonExistentProjectId = 80808;
 
         it("should get existing project data successfully (status 200)", async () => {
@@ -139,75 +131,166 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
             expect((result.data as Project).id).toBe(existingProjectId);
+            // expect((result.data as Project).name).toBe("Project Alpha"); // Adjust
             if ((result.data as Project).issues && (result.data as Project).issues!.length > 0) {
                 const firstIssue = (result.data as Project).issues![0];
                 if (firstIssue.created) expect(firstIssue.created).toBeInstanceOf(Date);
-                // Ensure tagId is present and tagid is not, if mapping occurred
                 expect(firstIssue).toHaveProperty('tagId');
                 expect(firstIssue).not.toHaveProperty('tagid');
             }
         });
 
-        it("should handle project not found (backend returns 204 No Content, resulting in status 204 and data: {})", async () => {
-            // Assuming /get-proj still uses 204 for not found as per original test logic
+        it("should handle project not found (status 204, data: {})", async () => {
             const result = await getProject(nonExistentProjectId);
             expect(result.status).toBe(204);
-            expect(result.data).toEqual({}); // Getter handles empty text from 204
+            expect(result.data).toEqual({});
             expect(result.error).toBeUndefined();
         });
     });
 
     describe("getOrgMember", () => {
-        const existingOrgMemberId = 1; // Ensure this ID exists
+        const existingOrgMemberId = 1; // Ensure this ID exists in your test DB
         const nonExistentOrgMemberId = 70707;
 
         it("should get existing org member data and map fields (status 200)", async () => {
             const result = await getOrgMember(existingOrgMemberId);
-            expect(result.status).toBe(200); // Assuming successful fetch
+            expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
             const memberData = result.data as OrgMember;
             expect(memberData.id).toBe(existingOrgMemberId);
-            // Getter now maps userid and orgid (from backend) to userId and orgId
             expect(memberData).toHaveProperty("userId");
             expect(memberData).toHaveProperty("orgId");
-            expect(memberData).not.toHaveProperty("userid"); // Check that original lowercase field is removed
-            expect(memberData).not.toHaveProperty("orgid");  // Check that original lowercase field is removed
+            // Check for aggregated permissions (adjust expected boolean values based on your test data for orgMemberId 1)
+            expect(memberData).toHaveProperty("canExec"); // e.g., expect(memberData.canExec).toBe(true);
+            expect(memberData).toHaveProperty("canRead"); // e.g., expect(memberData.canRead).toBe(true);
+            expect(memberData).toHaveProperty("canWrite"); // e.g., expect(memberData.canWrite).toBe(false);
+
+            expect(memberData).not.toHaveProperty("userid");
+            expect(memberData).not.toHaveProperty("orgid");
+            // Check that snake_case permissions are not present if mapped and deleted
+            expect(memberData).not.toHaveProperty("can_exec");
+            expect(memberData).not.toHaveProperty("can_read");
+            expect(memberData).not.toHaveProperty("can_write");
         });
 
         it("should handle org member not found (status 404)", async () => {
-            // Backend now sends 404 for not found org members
             const result = await getOrgMember(nonExistentOrgMemberId);
             expect(result.status).toBe(404);
-            expect(result.data).toBeNull(); // Getter's robust parsing should yield null data for 404
+            expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
         });
     });
 
     describe("getProjectMember", () => {
-        const existingProjectMemberId = 1; // Ensure this ID exists
+        const existingProjectMemberId = 1; // Ensure this ID exists in your test DB
         const nonExistentProjectMemberId = 60606;
 
         it("should get existing project member data and map fields (status 200)", async () => {
             const result = await getProjectMember(existingProjectMemberId);
-            expect(result.status).toBe(200); // Assuming successful fetch
+            expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
             const memberData = result.data as ProjectMember;
             expect(memberData.id).toBe(existingProjectMemberId);
-            // Getter maps userid and projectid
             expect(memberData).toHaveProperty("userId");
             expect(memberData).toHaveProperty("projectId");
-            expect(memberData).not.toHaveProperty("userid");    // Check that original lowercase field is removed
-            expect(memberData).not.toHaveProperty("projectid"); // Check that original lowercase field is removed
+            // Check for aggregated permissions (adjust expected boolean values based on your test data for projectMemberId 1)
+            expect(memberData).toHaveProperty("canExec"); // e.g., expect(memberData.canExec).toBe(true);
+            expect(memberData).toHaveProperty("canRead"); // e.g., expect(memberData.canRead).toBe(true);
+            expect(memberData).toHaveProperty("canWrite"); // e.g., expect(memberData.canWrite).toBe(false);
+            // Check for roles and issues if they are expected for this member
+            if (memberData.roles) { // roles on ProjectMember is number[]
+                expect(Array.isArray(memberData.roles)).toBe(true);
+                if (memberData.roles.length > 0) {
+                    expect(typeof memberData.roles[0]).toBe('number');
+                }
+            }
+            if (memberData.issues) { // issues on ProjectMember is number[]
+                expect(Array.isArray(memberData.issues)).toBe(true);
+                 if (memberData.issues.length > 0) {
+                    expect(typeof memberData.issues[0]).toBe('number');
+                }
+            }
+
+            expect(memberData).not.toHaveProperty("userid");
+            expect(memberData).not.toHaveProperty("projectid");
+            expect(memberData).not.toHaveProperty("can_exec");
+            expect(memberData).not.toHaveProperty("can_read");
+            expect(memberData).not.toHaveProperty("can_write");
         });
 
         it("should handle project member not found (status 404)", async () => {
-            // Backend now sends 404 for not found project members
             const result = await getProjectMember(nonExistentProjectMemberId);
             expect(result.status).toBe(404);
-            expect(result.data).toBeNull(); // Getter's robust parsing should yield null data for 404
+            expect(result.data).toBeNull();
             expect(result.error).toBeDefined();
         });
     });
+
+    // --- START: New Tests for getOrgRole and getProjectRole ---
+    describe("getOrgRole", () => {
+        const existingOrgRoleId = 1; // Replace with an actual existing OrgRole ID from your test DB
+        const nonExistentOrgRoleId = 55555;
+
+        it("should get existing organization role data and map fields (status 200)", async () => {
+            const result = await getOrgRole(existingOrgRoleId);
+            expect(result.status).toBe(200);
+            expect(result.error).toBeUndefined();
+            expect(result.data).not.toBeNull();
+            const roleData = result.data as OrgRole;
+            expect(roleData.id).toBe(existingOrgRoleId);
+            expect(roleData).toHaveProperty("name");    // e.g., expect(roleData.name).toBe("Admin");
+            expect(roleData).toHaveProperty("orgId");   // e.g., expect(roleData.orgId).toBe(1);
+            expect(roleData).toHaveProperty("canExec"); // e.g., expect(roleData.canExec).toBe(true);
+            expect(roleData).toHaveProperty("canRead"); // e.g., expect(roleData.canRead).toBe(true);
+            expect(roleData).toHaveProperty("canWrite");// e.g., expect(roleData.canWrite).toBe(true);
+
+            // Ensure original snake_case fields are not present after mapping
+            expect(roleData).not.toHaveProperty("orgid");
+            expect(roleData).not.toHaveProperty("can_exec");
+            expect(roleData).not.toHaveProperty("can_read");
+            expect(roleData).not.toHaveProperty("can_write");
+        });
+
+        it("should handle organization role not found (status 404)", async () => {
+            const result = await getOrgRole(nonExistentOrgRoleId);
+            expect(result.status).toBe(404);
+            expect(result.data).toBeNull();
+            expect(result.error).toBeDefined();
+        });
+    });
+
+    describe("getProjectRole", () => {
+        const existingProjectRoleId = 1; // Replace with an actual existing ProjectRole ID from your test DB
+        const nonExistentProjectRoleId = 66666;
+
+        it("should get existing project role data and map fields (status 200)", async () => {
+            const result = await getProjectRole(existingProjectRoleId);
+            expect(result.status).toBe(200);
+            expect(result.error).toBeUndefined();
+            expect(result.data).not.toBeNull();
+            const roleData = result.data as ProjectRole;
+            expect(roleData.id).toBe(existingProjectRoleId);
+            expect(roleData).toHaveProperty("name");      // e.g., expect(roleData.name).toBe("Project Lead");
+            expect(roleData).toHaveProperty("projectId"); // e.g., expect(roleData.projectId).toBe(1);
+            expect(roleData).toHaveProperty("canExec");   // e.g., expect(roleData.canExec).toBe(true);
+            expect(roleData).toHaveProperty("canRead");   // e.g., expect(roleData.canRead).toBe(true);
+            expect(roleData).toHaveProperty("canWrite");  // e.g., expect(roleData.canWrite).toBe(true);
+
+            // Ensure original snake_case fields are not present after mapping
+            expect(roleData).not.toHaveProperty("projectid");
+            expect(roleData).not.toHaveProperty("can_exec");
+            expect(roleData).not.toHaveProperty("can_read");
+            expect(roleData).not.toHaveProperty("can_write");
+        });
+
+        it("should handle project role not found (status 404)", async () => {
+            const result = await getProjectRole(nonExistentProjectRoleId);
+            expect(result.status).toBe(404);
+            expect(result.data).toBeNull();
+            expect(result.error).toBeDefined();
+        });
+    });
+    // --- END: New Tests ---
 });

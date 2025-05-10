@@ -6,14 +6,17 @@ import {
   Project,
   OrgMember,
   ProjectMember,
+  OrgRole,      // Added for new getter
+  ProjectRole,  // Added for new getter
   GetUserResult,
   GetIssueResult,
-  // GetUsersResult, // This type in types.ts might need to change to GetResult<number[]>
-  GetResult, // Using GetResult directly for getAllUsers to specify number[]
+  GetResult,    // Using GetResult for getAllUsers
   GetOrganizationResult,
   GetOrgMemberResult,
   GetProjectResult,
   GetProjectMemberResult,
+  GetOrgRoleResult,     // Added for new getter
+  GetProjectRoleResult, // Added for new getter
   SQLNullTime,
 } from "./types";
 
@@ -52,17 +55,13 @@ export const getUser = async (userId: number): Promise<GetUserResult> => {
     const params = new URLSearchParams({ userid: String(userId) });
     const response = await fetch(`${API_BASE}/get-user?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404, 500. Note: 204 is response.ok = true
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching user ${userId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
     const text = await response.text();
-    // For getUser, the test expects data: {} for 204 when user not found,
-    // so we explicitly create an empty User object if text is empty.
     const data: User = text ? JSON.parse(text) : ({} as User);
-
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
     console.error(`Network or parsing error in getUser for ID ${userId}:`, error.message, error);
@@ -75,17 +74,12 @@ export const getIssue = async (issueId: number): Promise<GetIssueResult> => {
     const params = new URLSearchParams({ issueid: String(issueId) });
     const response = await fetch(`${API_BASE}/get-issue?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 for "Issue not found"
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching issue ${issueId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
-    // Assuming if response.ok, a valid JSON body is expected for an existing issue.
-    // If "not found" is a 404 (handled above), then 200/204 with empty body shouldn't occur for an *existing* issue.
-    // If a 204 could mean "found but no content to describe it specifically", more logic would be needed.
-    // For now, keeping response.json() as per original for existing issues.
-    const rawData = await response.json();
+    const rawData = await response.json(); // Consider robust parsing if issues can be "not found" with 200/empty
     const data: Issue = {
       ...rawData,
       tagId: rawData.tagid !== undefined ? rawData.tagid : rawData.tagId,
@@ -100,7 +94,6 @@ export const getIssue = async (issueId: number): Promise<GetIssueResult> => {
   }
 };
 
-// UPDATED for /get-all-users returning number[]
 export const getAllUsers = async (): Promise<GetResult<number[]>> => {
   try {
     const response = await fetch(`${API_BASE}/get-all-users`, { method: "GET" });
@@ -109,8 +102,7 @@ export const getAllUsers = async (): Promise<GetResult<number[]>> => {
       console.error(`Error fetching all users: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-    // Backend confirmed to return an array of user IDs
-    const data: number[] = await response.json();
+    const data: number[] = await response.json(); // Expects number[] now
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
     console.error("Network or parsing error in getAllUsers:", error.message, error);
@@ -123,15 +115,12 @@ export const getOrg = async (orgId: number): Promise<GetOrganizationResult> => {
     const params = new URLSearchParams({ orgid: String(orgId) });
     const response = await fetch(`${API_BASE}/get-org?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 if org not found (backend fix) or 500 for other errors
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching organization ${orgId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
-    // Assuming if response.ok, a valid JSON body is expected for an existing org.
-    // Backend fixed malformed JSON for orgId=1.
-    const data: Organization = await response.json();
+    const data: Organization = await response.json(); // Backend fixed malformed JSON for orgId=1
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
     console.error(`Network or parsing error in getOrg for ID ${orgId}:`, error.message, error);
@@ -139,28 +128,21 @@ export const getOrg = async (orgId: number): Promise<GetOrganizationResult> => {
   }
 };
 
-// UPDATED for orgid mapping and robust parsing
 export const getOrgMember = async (memberId: number): Promise<GetOrgMemberResult> => {
   try {
     const params = new URLSearchParams({ memberid: String(memberId) });
     const response = await fetch(`${API_BASE}/get-org-member?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 if member not found (backend fix)
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching organization member ${memberId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
-    // Since 404 is handled, a 204 here would be less likely for "not found",
-    // but could mean "found, no specific content to return beyond existence".
-    // For now, assuming successful .ok response (and not 404) means valid data or an empty body that JSON.parse handles.
-    // If 200 OK + empty body is possible for "not found" still, text check is better:
     const text = await response.text();
-    if (!text && response.status !== 204) { // 204 implies empty body is intended.
-                                           // If 200 OK with empty text, treat as no data.
+    if (!text && response.status !== 204) {
       return { status: response.status, data: null, error: undefined };
     }
-    if (response.status === 204) { // Successfully processed, no content to return
+    if (response.status === 204) {
         return { status: response.status, data: null, error: undefined };
     }
 
@@ -168,10 +150,20 @@ export const getOrgMember = async (memberId: number): Promise<GetOrgMemberResult
     const data: OrgMember = {
       ...rawData,
       userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
-      orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId, // Backend now sends orgid
+      orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId,
+      // Map aggregated permissions if backend sends them (as per OrgMember struct in backend docs)
+      canExec: rawData.can_exec,
+      canRead: rawData.can_read,
+      canWrite: rawData.can_write,
+      roles: rawData.roles, // This will be number[] as per backend struct
     };
     delete (data as any).userid;
     delete (data as any).orgid;
+    // Optionally delete raw can_exec etc. if you only want camelCase from types.ts
+    delete (data as any).can_exec; // Assuming these are present on rawData if true
+    delete (data as any).can_read;
+    delete (data as any).can_write;
+
 
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -185,14 +177,12 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
     const params = new URLSearchParams({ projectid: String(projectId) });
     const response = await fetch(`${API_BASE}/get-proj?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 (if backend sends it for not found) or 500
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching project ${projectId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
     const text = await response.text();
-    // For getProject, test expects data: {} if not found (which it handles via 204 from backend)
     const parsedData = text ? JSON.parse(text) : {};
     const data: Project = parsedData as Project;
 
@@ -203,7 +193,6 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
             completed: parseSQLNullTime(issue.completed as any),
             tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : issue.tagId,
         }));
-        // Clean up original tagid from issues if present after mapping
         if (data.issues) {
             data.issues.forEach(issue => delete (issue as any).tagid);
         }
@@ -215,18 +204,17 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
   }
 };
 
-// UPDATED for robust parsing
+// UPDATED: Mapped can_exec, can_read, can_write from backend
 export const getProjectMember = async (memberId: number): Promise<GetProjectMemberResult> => {
   try {
     const params = new URLSearchParams({ memberid: String(memberId) });
     const response = await fetch(`${API_BASE}/get-proj-member?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 if member not found (backend fix)
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching project member ${memberId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-
     const text = await response.text();
     if (!text && response.status !== 204) {
       return { status: response.status, data: null, error: undefined };
@@ -237,12 +225,30 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
 
     const rawData = JSON.parse(text);
     const data: ProjectMember = {
-        ...rawData,
+        ...rawData, // Spread first to include id and any other direct fields
         userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
         projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId,
+        // Map aggregated permissions from backend (can_exec, etc.)
+        canExec: rawData.can_exec,
+        canRead: rawData.can_read,
+        canWrite: rawData.can_write,
+        roles: rawData.roles,    // This will be number[] from backend (array of role IDs)
+        issues: rawData.issues,  // This will be number[] from backend (array of issue IDs)
     };
+    // Clean up original lowercase keys
     delete (data as any).userid;
     delete (data as any).projectid;
+    // Optionally delete raw can_exec etc. if you only want camelCase from types.ts
+    // and if they were included by the spread of rawData.
+    // However, the explicit mapping above should create the camelCase versions.
+    // If rawData has can_exec, it will be on `data` too. If type `ProjectMember` expects `canExec`
+    // (camelCase) then we are good. If `types.ts` has `can_exec` (snake_case) then no mapping needed for these.
+    // Your `types.ts` was updated to expect camelCase `canExec` etc.
+    // Let's delete the snake_case versions if they were spread from rawData.
+    delete (data as any).can_exec;
+    delete (data as any).can_read;
+    delete (data as any).can_write;
+
 
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -250,3 +256,103 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
     return { status: 0, data: null, error: error.message || "Network or parsing error" };
   }
 };
+
+// --- START: New Getter Functions for OrgRole and ProjectRole ---
+
+/**
+ * Fetches a specific organization role by its ID.
+ * Corresponds to backend GetOrgRoleHandler.
+ */
+export const getOrgRole = async (roleId: number): Promise<GetOrgRoleResult> => {
+  try {
+    const params = new URLSearchParams({ roleid: String(roleId) });
+    const response = await fetch(`${API_BASE}/get-org-role?${params.toString()}`, { method: "GET" });
+
+    if (!response.ok) { // Handles 404 if role not found
+      const error = await parseErrorResponse(response);
+      console.error(`Error fetching organization role ${roleId}: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, data: null, error };
+    }
+    const text = await response.text();
+    if (!text && response.status !== 204) {
+      return { status: response.status, data: null, error: undefined };
+    }
+    if (response.status === 204) {
+        return { status: response.status, data: null, error: undefined };
+    }
+
+    const rawData = JSON.parse(text);
+    // Backend OrgRole struct has: OrgID `json:"orgid"`, Name `json:"name"`,
+    // CanExec `json:"can_exec"`, CanWrite `json:"can_write"`, CanRead `json:"can_read"`
+    // Frontend OrgRole type expects: orgId, name, canExec, canWrite, canRead (all camelCase or matching)
+    const data: OrgRole = {
+      ...rawData, // id, name, can_exec, can_write, can_read would be spread
+      orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId, // Map orgid
+      // Ensure permissions are mapped to camelCase if types.ts expects it
+      // and backend sends snake_case (which it does as per utils.pdf)
+      canExec: rawData.can_exec,
+      canRead: rawData.can_read,
+      canWrite: rawData.can_write,
+    };
+    delete (data as any).orgid; // Clean up original lowercase field if it was on rawData
+    // Delete snake_case permissions if they were spread and types.ts expects camelCase
+    delete (data as any).can_exec;
+    delete (data as any).can_read;
+    delete (data as any).can_write;
+
+
+    return { status: response.status, data: data, error: undefined };
+  } catch (error: any) {
+    console.error(`Network or parsing error in getOrgRole for ID ${roleId}:`, error.message, error);
+    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+  }
+};
+
+/**
+ * Fetches a specific project role by its ID.
+ * Corresponds to backend GetProjRoleHandler.
+ */
+export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResult> => {
+  try {
+    const params = new URLSearchParams({ roleid: String(roleId) });
+    const response = await fetch(`${API_BASE}/get-proj-role?${params.toString()}`, { method: "GET" });
+
+    if (!response.ok) { // Handles 404 if role not found
+      const error = await parseErrorResponse(response);
+      console.error(`Error fetching project role ${roleId}: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, data: null, error };
+    }
+    const text = await response.text();
+    if (!text && response.status !== 204) {
+      return { status: response.status, data: null, error: undefined };
+    }
+    if (response.status === 204) {
+        return { status: response.status, data: null, error: undefined };
+    }
+
+    const rawData = JSON.parse(text);
+    // Backend ProjectRole struct has: ProjectID `json:"projectid"`, Name `json:"name"`,
+    // CanExec `json:"can_exec"`, CanWrite `json:"can_write"`, CanRead `json:"can_read"`
+    // Frontend ProjectRole type expects: projectId, name, canExec, canWrite, canRead
+    const data: ProjectRole = {
+      ...rawData, // id, name, can_exec, can_write, can_read would be spread
+      projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId, // Map projectid
+      // Ensure permissions are mapped to camelCase
+      canExec: rawData.can_exec,
+      canRead: rawData.can_read,
+      canWrite: rawData.can_write,
+    };
+    delete (data as any).projectid; // Clean up original lowercase field
+    // Delete snake_case permissions if they were spread
+    delete (data as any).can_exec;
+    delete (data as any).can_read;
+    delete (data as any).can_write;
+
+    return { status: response.status, data: data, error: undefined };
+  } catch (error: any) {
+    console.error(`Network or parsing error in getProjectRole for ID ${roleId}:`, error.message, error);
+    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+  }
+};
+
+// --- END: New Getter Functions ---
