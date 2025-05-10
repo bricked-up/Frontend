@@ -1,58 +1,30 @@
-
 import { specialChars } from "@testing-library/user-event";
 import React, { useState } from "react";
-//using a custom react hook for validating password confirmation
 import usePasswordValidation from "../hooks/usePasswordValidation";
 import { red } from "@mui/material/colors";
 import NavBar from "../Components/Navbar/NavBar";
 import { useTheme } from "@mui/material/styles";
-import authUser from "../utils/loginPage.utils";
+import { authUser } from "../utils/loginPage.utils";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 
-/**
- * provides the UI for logging into an existing account or signing up for a new account.
- *
- * It toggles between the login and sign-up forms based on the state (`isLoginActive`).
- *
- * For the signup form, it checks for password requirements (minimum nr of chars,
- *  uppercase/lowercase symbols, special chars etc) as well as validates the
- *  confirm password choice.
- *
- * The component uses a custom React hook (`usePasswordValidation`) for validating
- *  the password against required criteria.
- *
- * In case user forgets password, it first checks if they input an account, then
- *  they can go to forget password link.
- *
- * @component
- * @example
- * return(
- *  <Login />
- * );
- */
 const Login = () => {
   const { user, setUser } = useUser();
 
   const [password, setPassword] = useState("");
-  const [confirmpwd, setConfirmpwd] = useState(""); //for checking if password and confirmation are =
-
-  //to toggle over login and sign up forms i'm using usestate
+  const [confirmpwd, setConfirmpwd] = useState("");
   const [isLoginActive, setisLoginActive] = useState(true);
   const [registerAttempt, setRegisterAttempt] = useState(false);
-
-  const [account, setAccount] = useState(""); //for checking if user has input an email for verification
+  const [account, setAccount] = useState("");
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
 
-  const toggle = () => {
-    setisLoginActive(!isLoginActive);
-  };
+  const toggle = () => setisLoginActive(!isLoginActive);
 
   const { isValid, errors } = usePasswordValidation({
-    password: password,
-    confirmpwd: confirmpwd,
+    password,
+    confirmpwd,
     minLength: 8,
     uppercase: true,
     lowercase: true,
@@ -60,14 +32,9 @@ const Login = () => {
     specialChar: true,
   });
 
-  const handleRegisterSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setRegisterAttempt(true);
-  };
-
   const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if (!account) {
-      e.preventDefault(); //stopping navigation if there's no account (email) written
+      e.preventDefault();
       setError("No account registered!");
     } else {
       setError("");
@@ -87,9 +54,14 @@ const Login = () => {
       <NavBar />
       <p>{account}</p>
       <section className="forms-section">
-        <h1 className="section-title" style={{ color: theme.palette.text.primary }}>Welcome to Bricked Up!</h1>
+        <h1
+          className="section-title"
+          style={{ color: theme.palette.text.primary }}
+        >
+          Welcome to Bricked Up!
+        </h1>
         <div className="forms">
-          {/*dynamically switching between the css classes*/}
+          {/* Login Form */}
           <div className={`form-wrapper ${isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -115,7 +87,13 @@ const Login = () => {
                 </div>
                 <div className="input-block">
                   <label htmlFor="login-password">Password</label>
-                  <input id="login-password" type="password" required />
+                  <input
+                    id="login-password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
                 </div>
 
                 <div className="forgotpwd">
@@ -129,8 +107,7 @@ const Login = () => {
                       textAlign: "center",
                     }}
                   >
-                    {" "}
-                    Forgot password?{" "}
+                    Forgot password?
                   </a>
                   {error && (
                     <p
@@ -146,22 +123,27 @@ const Login = () => {
                 </div>
               </fieldset>
 
-              <button type="submit" className="btn-login"
-                onClick={async () => {
-                  const response = await authUser(account, password, "login")
+              <button
+                type="submit"
+                className="btn-login"
+                onClick={async (e) => {
+                  e.preventDefault();
+                  const response = await authUser(account, password, "login");
                   if (response === 500) {
                     navigate("/500");
                   }
                   if (response === 200) {
                     setUser({ ...user, email: account });
-                    navigate("/dashboard");
+                    navigate("/");
                   }
-                }}>
+                }}
+              >
                 Login
               </button>
             </form>
           </div>
 
+          {/* Signup Form */}
           <div className={`form-wrapper ${!isLoginActive ? "is-active" : ""}`}>
             <button
               type="button"
@@ -186,7 +168,12 @@ const Login = () => {
                 </legend>
                 <div className="input-block">
                   <label htmlFor="signup-email">E-mail</label>
-                  <input id="signup-email" type="email" onChange={(e) => setAccount(e.target.value)} required />
+                  <input
+                    id="signup-email"
+                    type="email"
+                    onChange={(e) => setAccount(e.target.value)}
+                    required
+                  />
                 </div>
                 <div className="input-block">
                   <label htmlFor="signup-password">Password</label>
@@ -224,17 +211,21 @@ const Login = () => {
                   </ul>
                 )}
               </fieldset>
-              <button type="submit" className="btn-signup"
+
+              <button
+                type="submit"
+                className="btn-signup"
                 onClick={async () => {
-                  const response = await authUser(account, password, "signup")
+                  const response = await authUser(account, password, "signup");
                   if (response === 500) {
                     navigate("/500");
                   }
                   if (response === 200) {
                     setUser({ ...user, email: account });
-                    navigate("/dashboard");
+                    navigate("/");
                   }
-                }}>
+                }}
+              >
                 Register
               </button>
             </form>
