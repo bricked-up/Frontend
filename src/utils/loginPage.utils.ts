@@ -61,7 +61,7 @@ export const authUser = async (
       console.log(document.cookie);
   
       // Redirect on success
-      window.location.href = "/";
+      window.location.href = "/dashboard";
       return { status: 200};
     } catch (error: any) {
       console.error("Network error:", error.message);
