@@ -1,4 +1,3 @@
-// CreateProject.tsx
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
@@ -43,11 +42,11 @@ const CreateProject: React.FC = () => {
         const mockOrganizations = [
           { id: 1, name: 'Tech Innovators Inc.' },
           { id: 2, name: 'Design Studio Co.' },
-          { id: 3, name: 'Marketing Professionals LLC' },
+          { id: 3, name: 'Marketing Professionals LLC' }
         ];
         setOrganizations(mockOrganizations);
       } catch (err) {
-        console.error("Failed to load organizations:", err);
+        console.error('Failed to load organizations:', err);
         setError('Failed to load organizations. Please try refreshing the page.');
       } finally {
         setLoading(false);
@@ -83,7 +82,7 @@ const CreateProject: React.FC = () => {
       charter: charter.trim(),
       archived: false,
       members: [],
-      issues: [],
+      issues: []
     };
 
     try {
@@ -92,7 +91,7 @@ const CreateProject: React.FC = () => {
 
       if (result.project) {
         setSuccessMessage('Project created successfully! Redirecting...');
-        setTimeout(() => navigate(`/projects/${result.project.id}`), 2000);
+        setTimeout(() => navigate('/viewProject'), 2000);
       } else {
         setError(`Failed to create project: ${result.error || 'An unknown error occurred.'}`);
       }
@@ -175,7 +174,7 @@ const CreateProject: React.FC = () => {
             <Button
               variant="outlined"
               onClick={() => navigate(-1)}
-              disabled={formSubmitting}
+              disabled={formSubmitting} 
             >
               Cancel
             </Button>

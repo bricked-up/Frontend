@@ -76,13 +76,13 @@
   transform: translateY(-3px);
 }
 
-.create-project-form .MuiFormControl-root {
+.create-project-form .MuiFormControl-root { 
   background-color: var(--current-background-form-element);
-  border-radius: 8px;
+  border-radius: 8px; 
 }
-
+   
 .create-project-form .MuiOutlinedInput-root {
-  border-radius: 8px;
+  border-radius: 8px; 
 }
 
 .create-project-form .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
