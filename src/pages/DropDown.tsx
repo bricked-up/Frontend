@@ -1,19 +1,22 @@
+import React from "react";
 import {
   FormControl,
   MenuItem,
   Select,
   SelectChangeEvent,
+  InputLabel,
 } from "@mui/material";
-import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 
 type DropDownProps = {
   value: string;
   onSelect: (value: string) => void;
+  options: string[];
+  label?: string;
 };
 
-const DropDown = ({ value, onSelect }: DropDownProps) => {
+const DropDown = ({ value, onSelect, options, label }: DropDownProps) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -33,14 +36,18 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
         borderRadius: 1,
       }}
     >
+      {label && <InputLabel id="dropdown-label">{label}</InputLabel>}
       <Select
+        labelId="dropdown-label"
+        id="dropdown"
         value={value}
         onChange={handleChange}
+        label={label}
+        size="medium"
         displayEmpty
-        size="small"
         renderValue={(selected) => {
           if (!selected) {
-            return <span style={{ color: "#aaa" }}>Select Organization</span>;
+            return <span style={{ color: "#aaa" }}>Select</span>;
           }
           return selected;
         }}
@@ -61,13 +68,14 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
         MenuProps={{
           PaperProps: {
             sx: {
+              width: 200,
               backgroundColor:
                 theme.palette.mode === "light"
                   ? colors.primary[900]
                   : colors.primary[400],
               color: "#fff",
-              borderRadius: 2,
               mt: 1,
+              borderRadius: 2,
               "& .MuiMenuItem-root": {
                 paddingY: 1,
                 paddingX: 2,
@@ -84,10 +92,11 @@ const DropDown = ({ value, onSelect }: DropDownProps) => {
           },
         }}
       >
-        <MenuItem value="">All</MenuItem>
-        <MenuItem value="Bricked-Up">Bricked-Up</MenuItem>
-        <MenuItem value="George King IT">George King IT</MenuItem>
-        <MenuItem value="SAP">SAP</MenuItem>
+        {options.map((option) => (
+          <MenuItem key={option} value={option}>
+            {option}
+          </MenuItem>
+        ))}
       </Select>
     </FormControl>
   );
