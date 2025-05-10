@@ -98,7 +98,7 @@ export type Issue = {
   tagId?: number | null;
   // tagid?: number; // We map and delete this, so it's not part of the final type
   priority?: number | null;
-  created: Date;
+  created: Date | null; // Ensure it's Date or null after parsing
   completed?: Date | null;
   cost: number;
   dependencies?: Dependency[];
@@ -350,7 +350,7 @@ export interface GetResult<T> {
  * @description Result type for fetching a single User.
  * Wraps the User type within the generic GetResult structure.
  */
-export type GetUserResult = GetResult<User>;
+export type GetUserResult = GetResult<User>; // User type might contain number[] for relations from this getter
 
 /**
  * @description Result type for fetching a single Issue.
