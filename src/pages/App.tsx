@@ -17,10 +17,7 @@ import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
-import EmailVerification from "./EmailVerification";
-import React from "react";
-import Faq from "./Faq";
-
+import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
 function App() {
   const [theme, colorMode] = useMode();
 
@@ -87,12 +84,8 @@ function App() {
                 <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/vieworg" element={<ViewOrg />} />
-                <Route path="/faq" element={<Faq />} />
-                <Route
-                  path="/createIssue"
-                  element={<CreateTask board={mockBoard} />}
-                />
+                <Route path="/viewOrg" element={<ViewOrg />} />
+                <Route path="/createorg" element={<CreateOrg/>} />
               </Route>
 
               {/* routes for 404 and server errors */}
