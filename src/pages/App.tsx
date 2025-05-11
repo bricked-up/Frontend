@@ -22,14 +22,11 @@ import EmailVerification from "./EmailVerification";
 import React from "react";
 import { set } from "date-fns";
 
-
-import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
-
 function App() {
   const [theme, colorMode] = useMode();
-  
+
   let sessionId = localStorage.getItem("sessionid");
-  const [moew, setMeow] = React.useState<string|null>(sessionId);
+  const [moew, setMeow] = React.useState<string | null>(sessionId);
   console.log(moew)
 
   return (
@@ -41,8 +38,8 @@ function App() {
             {/* set up Routes */}
             <Routes>
 
-              
-              {! (moew === null || moew === undefined) ? (
+
+              {!(moew === null || moew === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
@@ -109,7 +106,7 @@ function App() {
             </Routes>
           </div>
 
-          
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
