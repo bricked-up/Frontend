@@ -8,14 +8,15 @@ import React from "react";
 import "../css/index.css"; // Import your CSS file
 
 type DropDownProps = {
-    value: string;
-    onSelect: (value: string) => void;
-    options?: string[];
+    value: string | number;
+    onSelect: (value: string | number) => void;
+    options?: Array<string | number>;
+    label?: string;
 };
 
 const DropDown: React.FC<DropDownProps> = ({ value, onSelect, options = [] }) => {
-    const handleChange = (event: SelectChangeEvent) => {
-        onSelect(event.target.value as string);
+    const handleChange = (event: SelectChangeEvent<unknown>) => {
+        onSelect(event.target.value as string | number);
     };
 
     return (

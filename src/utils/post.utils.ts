@@ -54,7 +54,6 @@ export interface TagResult {
   error?: string;
 }
 
-
 export interface DeleteTagParams {
   sessionId: number;
   tagId: number;
@@ -85,7 +84,7 @@ async function parseErrorResponse(response: Response): Promise<string> {
 
 /**
  * Creates a new issue on the server.
- * If successful, returns the HTTP status and the created Issue object.
+ * If successful, returns only the HTTP status (no JSON body).
  *
  * 201 – Created: issue was successfully created
  * 400 – Bad Request: invalid input data
@@ -99,15 +98,15 @@ async function parseErrorResponse(response: Response): Promise<string> {
  *   { name: "Bug #123", description: "Crash on load", priority: 1, cost: 0 },
  *   "issues"
  * );
- * if (issue) {
- *   console.log("Created:", issue.id);
+ * if (issue === null && status === 201) {
+ *   console.log("Issue created!");
  * } else {
  *   console.error(`Error ${status}: ${error}`);
  * }
  *
  * @param {IssueParams} paramsObj - The data for the new issue
  * @param {string} endpoint - The API endpoint (e.g. "issues")
- * @returns {Promise<Result>} Promise resolving to status, Issue (or null), and optional error
+ * @returns {Promise<Result>} Promise resolving to status, null issue, and optional error
  */
 export const createNewIssue = async (
   paramsObj: IssueParams,
@@ -132,22 +131,8 @@ export const createNewIssue = async (
       return { status: response.status, issue: null, error };
     }
 
-    const rawJson: any = await response.json();
-
-    const issue: Issue = {
-      id: rawJson.id,
-      title: rawJson.title,
-      desc: rawJson.desc ?? null,
-      tagId: rawJson.tagId ?? null,
-      priority: rawJson.priority ?? null,
-      cost: rawJson.cost,
-      created: new Date(rawJson.created),
-      completed: rawJson.completed ? new Date(rawJson.completed) : null,
-      dependencies: rawJson.dependencies ?? [],
-      reminders: rawJson.reminders ?? [],
-    };
-
-    return { status: response.status, issue };
+    // no JSON body returned on success
+    return { status: response.status, issue: null };
   } catch (err: any) {
     return { status: 0, issue: null, error: err.message || "Unknown error" };
   }
@@ -155,6 +140,7 @@ export const createNewIssue = async (
 
 /**
  * Creates a new organization, optionally linking existing project IDs.
+ * Returns only the HTTP status (no JSON body).
  *
  * 201 – Created: organization was successfully created
  * 400 – Bad Request: invalid organization data
@@ -168,15 +154,15 @@ export const createNewIssue = async (
  *   { name: "Acme Corp", projects: ["proj1", "proj2"] },
  *   "organizations"
  * );
- * if (organization) {
- *   console.log("Created org:", organization.id);
+ * if (organization === null && status === 201) {
+ *   console.log("Organization created!");
  * } else {
  *   console.error(`Error ${status}: ${error}`);
  * }
  *
  * @param {NewOrganizationParams} paramsObj - The data for the new organization
  * @param {string} endpoint - The API endpoint (e.g. "organizations")
- * @returns {Promise<CreateOrganizationResult>} status, Organization (or null), and optional error
+ * @returns {Promise<CreateOrganizationResult>} status, null organization, and optional error
  */
 export const createOrganization = async (
   paramsObj: NewOrganizationParams,
@@ -204,17 +190,8 @@ export const createOrganization = async (
       return { status: response.status, organization: null, error };
     }
 
-    const rawJson: any = await response.json();
-
-    const organization: Organization = {
-      id: rawJson.id,
-      name: rawJson.name,
-      projects: rawJson.projects ?? [],
-      members: rawJson.members ?? [],
-      roles: rawJson.roles ?? [],
-    };
-
-    return { status: response.status, organization };
+    // no JSON body returned on success
+    return { status: response.status, organization: null };
   } catch (err: any) {
     return {
       status: 0,
@@ -226,6 +203,7 @@ export const createOrganization = async (
 
 /**
  * Creates a new project within a given organization.
+ * Returns only the HTTP status (no JSON body).
  *
  * 201 – Created: project was successfully created
  * 400 – Bad Request: invalid project data
@@ -248,15 +226,15 @@ export const createOrganization = async (
  *   },
  *   "projects"
  * );
- * if (project) {
- *   console.log("Created project:", project.id);
+ * if (project === null && status === 201) {
+ *   console.log("Project created!");
  * } else {
  *   console.error(`Error ${status}: ${error}`);
  * }
  *
  * @param {NewProjectParams} paramsObj - The data for the new project
  * @param {string} endpoint - The API endpoint (e.g. "projects")
- * @returns {Promise<CreateProjectResult>} status, Project (or null), and optional error
+ * @returns {Promise<CreateProjectResult>} status, null project, and optional error
  */
 export const createProject = async (
   paramsObj: NewProjectParams,
@@ -284,21 +262,8 @@ export const createProject = async (
       return { status: response.status, project: null, error };
     }
 
-    const rawJson: any = await response.json();
-
-    const project: Project = {
-      id: rawJson.id,
-      name: rawJson.name,
-      orgId: rawJson.orgId,
-      budget: rawJson.budget,
-      charter: rawJson.charter,
-      archived: rawJson.archived,
-      members: rawJson.members ?? [],
-      issues: rawJson.issues ?? [],
-      tags: rawJson.tags ?? [],
-    };
-
-    return { status: response.status, project };
+    // no JSON body returned on success
+    return { status: response.status, project: null };
   } catch (err: any) {
     return { status: 0, project: null, error: err.message || "Unknown error" };
   }

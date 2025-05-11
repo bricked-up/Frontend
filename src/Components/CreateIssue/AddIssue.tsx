@@ -18,17 +18,17 @@ import {
   Grid,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import { Issue, Member } from "../../utils/types"; 
+import { Issue, Member } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
-import DropDown from "../DropDown";           // import dropdown for assignees
+import DropDown from "../DropDown"; // import dropdown for assignees
 
 export interface AddIssueProps {
   show: boolean;
   onClose: () => void;
   boardId: number;
-  onAdd: (issue: Issue) => void;             // renamed Task->Issue
-  initialData?: Issue;                       // renamed Task->Issue
-  members: Member[];  // new prop for project members
+  onAdd: (issue: Issue) => void; // renamed Task->Issue
+  initialData?: Issue; // renamed Task->Issue
+  members: Member[]; // new prop for project members
 }
 
 /**
@@ -43,17 +43,17 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   boardId,
   onAdd,
   initialData,
-  members,           // destructure members
+  members, // destructure members
 }) => {
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState<string | null>(""); // issue.desc is optional
   const [priority, setPriority] = useState<number | null>(1);
-  const [tagId, setTagId] = useState<number | null>(1);    // renamed tagid->tagId
+  const [tagId, setTagId] = useState<number | null>(1); // renamed tagid->tagId
   const [cost, setCost] = useState(0);
 
   // new state: selected assignee ID
-  const [assignedToId, setAssignedToId] = useState<string>(
-    initialData?.assignedToId || ""
+  const [assignedToId, setAssignedToId] = useState<number | undefined>(
+    initialData?.assignedToId
   );
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       setTagId(initialData.tagId ?? 1);
       setCost(initialData.cost);
       // sync existing assignee on edit
-      setAssignedToId(initialData.assignedToId || "");
+      setAssignedToId(initialData.assignedToId ?? 0);
     } else {
       setTitle("");
       setDesc("");
@@ -72,7 +72,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       setTagId(1);
       setCost(0);
       // clear assignee on new
-      setAssignedToId("");
+      setAssignedToId(0);
     }
   }, [initialData]);
 
@@ -87,9 +87,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
     }
     const newIssue: Issue = {
       ...(initialData || {}),
-      id: initialData
-        ? initialData.id
-        : Date.now(),        // generate a numeric ID if none
+      id: initialData ? initialData.id : Date.now(), // generate a numeric ID if none
       title,
       desc: desc || null,
       tagId,
@@ -193,8 +191,18 @@ export const AddIssue: React.FC<AddIssueProps> = ({
           {/* Assignee dropdown */}
           <Grid item xs={12}>
             <DropDown
-              value={assignedToId}
-              onSelect={setAssignedToId}
+              label="Asignee"
+              value={assignedToId ?? ""}
+              onSelect={(val) => {
+                if (val === "") {
+                  // user picked “None”
+                  setAssignedToId(undefined);
+                } else {
+                  // could be either a number or a string
+                  const id = typeof val === "number" ? val : Number(val);
+                  setAssignedToId(id);
+                }
+              }}
               options={members.map((m) => m.id)}
             />
           </Grid>

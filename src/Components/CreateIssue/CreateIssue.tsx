@@ -305,7 +305,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                       <Grow in timeout={300}>
                         <Box>
                           <TaskCard
-                            task={t}
+                            issue={t}
                             boardId={board.id}
                             onDelete={handleDeleteTask}
                             onComplete={handleCompleteTask}

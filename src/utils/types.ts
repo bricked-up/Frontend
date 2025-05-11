@@ -104,7 +104,7 @@ export type Issue = {
   cost: number;
   dependencies?: Dependency[];
   reminders?: Reminder[];
-  assignedToId?: string;
+  assignedToId?: number;
   assignedToName?: string;
 };
 
@@ -392,6 +392,6 @@ export type GetTaskResult = GetResult<Task>;
 export type GetTasksResult = GetResult<Task[]>;
 
 export interface Member {
-  id: string;
+  id: number;
   name: string;
 }
