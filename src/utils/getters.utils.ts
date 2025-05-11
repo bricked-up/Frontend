@@ -394,10 +394,19 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
     try {
       const userResult = await getUser(userId);
       if (userResult.status !== 200 || !userResult.data) {
-        return { status: userResult.status, data: null, error: userResult.error || "User not found" };
+        return {
+          status: userResult.status,
+          data: null,
+          error: userResult.error || "User not found",
+        };
       }
   
-      const projectIds = userResult.data.projects ?? [];
+      const rawProjects = userResult.data.projects ?? [];
+  
+      // Only include number IDs from (number | ProjectMember)[]
+      const projectIds = rawProjects.filter(
+        (p): p is number => typeof p === "number"
+      );
   
       const projects: Project[] = [];
   
@@ -406,7 +415,6 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
         if (projectResult.status === 200 && projectResult.data) {
           const raw = projectResult.data;
   
-          // Handle snake_case → camelCase if necessary (based on your error)
           const transformedProject: Project = {
             ...raw,
             orgId: (raw as any).orgid !== undefined ? (raw as any).orgid : raw.orgId,

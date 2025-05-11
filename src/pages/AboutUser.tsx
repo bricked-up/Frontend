@@ -247,7 +247,11 @@ const AboutUser: React.FC = () => {
             </Typography>
             {org.roles && org.roles.length > 0 && (
               <Typography variant="body2" sx={{ ml: 2 }}>
-                Roles: {org.roles.map((role) => role.name).join(", ")}
+                Roles: {org.roles.map((role) =>
+                  typeof role === "object" && role !== null && "name" in role
+                  ? role.name
+                  : `Role ID: ${role}`
+                  ).join(", ")}
               </Typography>
             )}
           </Box>
@@ -281,10 +285,17 @@ const AboutUser: React.FC = () => {
               Project ID (from member record): {proj.projectId} — Membership ID: {proj.id}
             </Typography>
             {proj.roles && proj.roles.length > 0 && (
-              <Typography variant="body2" sx={{ ml: 2 }}>
-                Roles: {proj.roles.map((role) => role.name).join(", ")}
-              </Typography>
-            )}
+            <Typography variant="body2" sx={{ ml: 2 }}>
+              Roles: {
+              proj.roles.map((role) =>
+              typeof role === "object" && role !== null && "name" in role
+              ? role.name
+              : `Role ID: ${role}`
+              ).join(", ")
+              }
+            </Typography>
+)}
+
           </Box>
         ));
       }
