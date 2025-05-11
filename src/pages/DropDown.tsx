@@ -38,7 +38,7 @@ const DropDown = ({ value, onSelect, options, label }: DropDownProps) => {
     >
       {label && <InputLabel id="dropdown-label">{label}</InputLabel>}
       <Select
-        labelId={label ? "dropdown-label" : undefined}
+        labelId="dropdown-label"
         id="dropdown"
         value={value}
         onChange={handleChange}
