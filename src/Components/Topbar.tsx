@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { Box, IconButton, useTheme } from "@mui/material";
 import { ColorModeContext, tokens } from "../theme";
 import InputBase from "@mui/material/InputBase";
@@ -9,7 +9,13 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
-import { logout } from "../utils/account.utils";
+import { getAllUsers, getUser } from "../utils/getters.utils";
+import { User } from "../utils/types";
+
+interface TopbarProps {
+  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
+}
 
 /**
  * The topbar component
@@ -30,33 +36,73 @@ import { logout } from "../utils/account.utils";
  *
  * @returns {JSX.Element} The Topbar component.
  */
-interface TopbarProps {
-  setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
-  setIsCollapsed: React.Dispatch<React.SetStateAction<boolean>>;
-}
-
 const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
-
-  // State to control visibility of the logout popup
+  const [rawResponse, setRawResponse] = useState<any>(null);
+  const [rawUser, setRawUser] = useState<any>(null);
   const [showLogout, setShowLogout] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [userSuggestions, setUserSuggestions] = useState<User[]>([]);
+  const [test, setTest] = useState<String[]>([]);
 
-  // For redirecting the user after logout (if desired)
   const navigate = useNavigate();
 
-  /**
-   * Calls the `logout()` function to remove user data (e.g., from localStorage/cookies),
-   * then navigates the user back to the home page ("/").
-   *
-   * @function handleLogout
-   * @returns {void}
-   */
-  const handleLogout = (): void => {
-    logout();
-    navigate("/");
+  const viewProfile = (): void => {
+    navigate("/user/$(user.id)/aboutUser"); 
   };
+
+ useEffect(() => {
+  const delayDebounce = setTimeout(async () => {
+    console.log("[Search effect triggered] query:", searchQuery);
+    
+    if (searchQuery.trim() === "") {
+      console.log("Query empty after trim. Clearing suggestions.");
+      setUserSuggestions([]);
+      return;
+    }
+
+    try {
+      const result = await getAllUsers();
+      console.log("Fetched user IDs:", result.data);
+
+      if (!Array.isArray(result.data)) {
+        navigate("/500");
+        return;
+      }
+
+      const fullUsers: User[] = [];
+
+      for (const userId of result.data) {
+        try {
+          const userRes = await getUser(userId);
+          if (userRes?.data) {
+            fullUsers.push(userRes.data);
+          }
+        } catch (err) {
+          console.error(`Error getting user ${userId}`, err);
+        }
+      }
+
+
+      let filtered = fullUsers.filter((user) => {
+        return user.name.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+
+      setUserSuggestions(filtered);
+    } catch (error) {
+      console.error("Error in search:", error);
+      setUserSuggestions([]);
+    }
+  }, 300);
+
+  return () => clearTimeout(delayDebounce);
+}, [searchQuery, navigate]);
+
+  
+   console.log("userSuggestions:", userSuggestions[0]);
+   
 
   return (
     <Box
@@ -68,18 +114,75 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
     >
       {/* SEARCH BAR */}
       <Box
+        position="relative"
         display="flex"
+        flexDirection="column"
         sx={{
           backgroundColor: colors.primary[400],
+          color: theme.palette.text.primary,
           borderRadius: "3px",
           ml: 5,
           paddingX: 1,
         }}
       >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
-        <IconButton type="button" sx={{ p: 1 }}>
-          <SearchIcon />
-        </IconButton>
+        <Box display="flex">
+          <InputBase
+            sx={{
+              ml: 2,
+              flex: 1,
+              color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
+            }}
+            placeholder="Search users..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+          />
+
+          <IconButton type="button" sx={{ p: 1 }}>
+            <SearchIcon />
+          </IconButton>
+        </Box>
+
+        {/* Suggestions dropdown */}
+        {userSuggestions.length > 0 && (
+          <Box
+            sx={{
+              position: "absolute",
+              top: "48px",
+              left: 0,
+              width: "100%",
+              bgcolor: "background.paper",
+              borderRadius: "0 0 4px 4px",
+              boxShadow: 3,
+              zIndex: 5,
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+           {userSuggestions.map((user) => (
+  <Box
+    key={user.id}
+    sx={{
+      py: "8px",      // vertical padding
+      pl: "16px",     // left padding for text alignment
+      cursor: "pointer",
+      textAlign: "left",
+      color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
+      "&:hover": {
+        backgroundColor: colors.primary[300],
+      },
+    }}
+    onClick={() => {
+      setSearchQuery("");
+      setUserSuggestions([]);
+      navigate(`/user/${user.id}/aboutUser`);
+    }}
+  >
+    {user.name}
+  </Box>
+))}
+
+          </Box>
+        )}
       </Box>
 
       {/* ICONS */}
@@ -100,8 +203,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           <SettingsOutlinedIcon />
         </IconButton>
 
-        {/* Container holding Person Icon + Logout Menu.
-            Mouse leaves this box => hide the menu. */}
         <Box
           position="relative"
           onMouseEnter={() => setShowLogout(true)}
@@ -111,17 +212,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
             <PersonOutlinedIcon />
           </IconButton>
 
-          {/**
-           * Logout button dropdown:
-           *
-           * Displays a red "Logout" button with curved edges when the user
-           * hovers over the Person icon. Clicking it triggers handleLogout().
-           *
-           * @name LogoutButton
-           * @description
-           *   A hover-triggered button that clears session data via `logout()`
-           *   and redirects the user to the homepage.
-           */}
           {showLogout && (
             <Box
               position="absolute"
@@ -132,7 +222,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
               bgcolor="transparent"
             >
               <button
-                onClick={handleLogout}
+                onClick={viewProfile}
                 style={{
                   backgroundColor: "red",
                   color: "white",
@@ -142,7 +232,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
                   borderRadius: "4px",
                 }}
               >
-                Logout
+                View Profile
               </button>
             </Box>
           )}

@@ -1,30 +1,37 @@
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import { JSX } from "react";
 
-/**
- * This checks if the user is logged in, if he/she is not connected
- * allow them to go to the child otherwise it redirects to the login page or if you
- * specify to another page
- * 
- * @example
- * <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
- * <Route path="/Edit-Account" element={<ProtectedRoute><Edit-Account /></ProtectedRoute>} />
- * <Route path="/Teams" element={<ProtectedRoute><Teams /></ProtectedRoute>} />
- * 
- * @param {JSX.Element} children  
- * @param {string} backup 
- * @returns {JSX.Element} children 
- */
-const ProtectedRoute = ({ children }: { children: JSX.Element }) => {
-    const navigate = useNavigate();
-    const { user } = useUser();
-
-    if ((!user) || (!user.email)) {
-        navigate("/login");
-    }
-
-    return user ? children : <Navigate to="/login" replace />
+interface ProtectedRouteProps {
+  children: JSX.Element;
+  backup?: string; // Optional redirect path (default is /login)
+  requireVerified?: boolean; // If true, only allow verified users
 }
+
+/**
+ * A route wrapper that protects pages from unauthenticated or unverified users.
+ *
+ * - Redirects to /login if user is not logged in
+ * - Redirects to /verify-email if `requireVerified` is true and email is not verified
+ * - Otherwise, renders the protected children
+ *
+ * @example
+ * <Route path="/dashboard" element={
+ *   <ProtectedRoute requireVerified={true}><Dashboard /></ProtectedRoute>
+ * } />
+ */
+const ProtectedRoute = ({ children, backup = "/login", requireVerified = false }: ProtectedRouteProps) => {
+  const { user } = useUser();
+
+  if (!user || !user.email) {
+    return <Navigate to={backup} replace />;
+  }
+
+  if (requireVerified && !user.verified) {
+    return <Navigate to="/verify-email" replace />;
+  }
+
+  return children;
+};
 
 export default ProtectedRoute;

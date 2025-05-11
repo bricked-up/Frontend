@@ -3,20 +3,28 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
-import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
 import Dashboard from "./DashBoard";
 import Layout from "../Components/Layout";
 import AboutUser from "./AboutUser";
-import ViewTeams from "../Components/ViewProject";
+import ViewProject from "../Components/ViewProject";
 import { useUser } from "../hooks/UserContext";
 import Error500Page from "./Error500Page";
+import Activity from "../pages/Activity";
+import CalendarPage from "../pages/Calendar";
+import ViewOrg from "./ViewOrganization";
+import CreateTask from "../Components/CreateIssue/CreateIssue";
+import { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import EmailVerification from "./EmailVerification";
+import React from "react";
 
 function App() {
   const [theme, colorMode] = useMode();
-  const { user } = useUser();
+
+  let sessionId = localStorage.getItem("sessionid");
+  const [loggedIn] = React.useState<string | null>(sessionId);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -24,30 +32,32 @@ function App() {
         <CssBaseline />
         <Router>
           <div className="App">
-            {/*set up Routes */}
+            {/* set up Routes */}
             <Routes>
-              {user ?
+
+              {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
-                :
+              ) : (
                 <Route path="/" element={<LandingPage />} />
-              }
+              )}
 
-              {/*route for login and signup */}
+              {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
-              <Route path="/forgot_pwd" element={<ForgotPwd />} />
+              <Route path="/testt" element={<LandingPage />} />
+              <Route path="/testt" element={<LandingPage />} />
+              <Route path="/verification" element={<EmailVerification />} />
+
+              {/* route for email verification */}
 
               {/* user related routes */}
-              <Route path="/user" >
-                {/* all of these routes are subroutes of :userId*/}
-                <Route path=":userId">
-                  <Route index path="about" element={<ProtectedRoute><AboutUser /></ProtectedRoute>} />
-                  <Route element={<Layout />}>
-                    <Route path="organizations" />
-                    <Route path="projects" />
-                    <Route path="issues" />
-                  </Route>
+              <Route path="/user/:userId">
+                <Route element={<Layout />}>
+                  <Route path="aboutUser" element={<AboutUser />} />
+                  <Route path="organizations" />
+                  <Route path="projects" />
+                  <Route path="issues" />
                 </Route>
               </Route>
 
@@ -70,25 +80,28 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
-                <Route
-                  path="/dashboard"
-                  element={
-                    <ProtectedRoute>
-                      <Dashboard />
-                    </ProtectedRoute>
-                  }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
 
-                <Route path="/view_team" element={<ViewTeams />} />
+                <Route path="/viewProject" element={<ViewProject />} />
                 <Route path="/about_user" element={<AboutUser />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/calendar" element={<CalendarPage />} />
+                <Route path="/vieworg" element={<ViewOrg />} />
+                <Route
+                  path="/createIssue"
+                  element={<CreateTask board={mockBoard} />}
+                />
               </Route>
 
               {/* routes for 404 and server errors */}
-              <Route path="*" element={<Page404 />} />
+              <Route element={<Layout />}>
+                <Route path="*" element={<Page404 />} />
+              </Route>
               <Route path="/500" element={<Error500Page />} />
-
             </Routes>
           </div>
+
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -96,3 +109,4 @@ function App() {
 }
 
 export default App;
+

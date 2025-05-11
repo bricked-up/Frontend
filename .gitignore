@@ -4,12 +4,23 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
+
+
+
+Dockerfile
+
+#VS Code
+.vscode
 
 # documentation
 /docs
 
 # testing
 /coverage
+
+# port
+.env
 
 # production
 /build

@@ -11,6 +11,7 @@ body {
   align-items: center;
   height: 100vh;
   flex-direction: column;
+  overflow: auto; /*added for adjustable page when scrolling*/
 }
 
 .form-wrapper {
@@ -36,11 +37,6 @@ body {
   }
 
   
-.forgot-pwd-link {
-	font-family: Verdana;
-	font-size: 13px;
-	color: #3b4465
-}
 
 .msgFrame{
 	background: #F6F6DF;
@@ -347,6 +343,8 @@ li {
 }
 
 
+
+
 /*for the PageNotFound script: */
 :root {
 	--purple: #28254C;
@@ -379,6 +377,7 @@ html, body {
   top: 50%;
   transform: translate(-50%, -50%);
   padding: 30px 50px;
+  overflow: auto;
   
   .box__ghost {
     padding: 15px 25px 25px;
@@ -612,6 +611,7 @@ html, body {
       transition: background .5s ease;
       overflow: hidden;
       -webkit-mask-image: -webkit-radial-gradient(white, black);
+      mask-image: radial-gradient(white, black);
       
       &:before {
         content: '';
@@ -656,4 +656,3 @@ html, body {
   50% {opacity: .2;}
   100% {opacity: .2;}
 }
-
