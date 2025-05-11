@@ -16,10 +16,18 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import CreateTask from "../Components/CreateIssue/CreateIssue";
+import { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import EmailVerification from "./EmailVerification";
+import React from "react";
+import { set } from "date-fns";
+
 function App() {
   const [theme, colorMode] = useMode();
-  const { user } = useUser();
+
+  let sessionId = localStorage.getItem("sessionid");
+  const [moew, setMeow] = React.useState<string | null>(sessionId);
+  console.log(moew)
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -29,7 +37,9 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-              {user ? (
+
+
+              {!(moew === null || moew === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
@@ -41,6 +51,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
+              <Route path="/testt" element={<LandingPage />} />
+              <Route path="/verification" element={<EmailVerification />} />
+
+              {/* route for email verification */}
 
               {/* user related routes */}
               <Route path="/user/:userId">
@@ -91,6 +105,8 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
+
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -98,3 +114,4 @@ function App() {
 }
 
 export default App;
+
