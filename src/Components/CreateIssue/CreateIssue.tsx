@@ -19,7 +19,8 @@ import AddIcon from "@mui/icons-material/Add";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
 import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
-
+import { useEffect } from "react";
+import { getUser, getIssue } from "../../utils/getters.utils";
 interface CreateIssuePageProps {
   board: Board;
 }
@@ -95,9 +96,31 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
   // Import necessary components
   const { Grid } = require("@mui/material");
   const [showAddIssue, setShowAddIssue] = useState(false);
-  const [issues, setIssues] = useState<Issue[]>(board.issues);
+  const [issues, setIssues] = useState<Issue[]>([]);
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+
+  useEffect(() => {
+    const loadIssuesFromBackend = async () => {
+      const userId = Number(localStorage.getItem("userid"));
+      if (!userId) return;
+
+      const userRes = await getUser(userId);
+      if (!userRes.data || !userRes.data.issues) return;
+
+      const issuesFetched = await Promise.all(
+        userRes.data.issues.map((issueId) => getIssue(issueId))
+      );
+
+      const validIssues = issuesFetched
+        .filter((res) => res.status === 200 && res.data)
+        .map((res) => res.data as Issue);
+
+      setIssues(validIssues);
+    };
+
+    loadIssuesFromBackend();
+  }, []);
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);

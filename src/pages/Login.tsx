@@ -99,9 +99,9 @@ const Login = () => {
 
     try {
       const { status } = await authUser(account, password, "login");
-      
+
       if (status === 200) {
-        navigate("/");
+        navigate("/dashbourd");
       } else if (status === 401) {
         setError("Invalid email or password");
       } else if (status === 500) {
@@ -122,7 +122,7 @@ const Login = () => {
 
     try {
       const { status } = await authUser(account, password, "signup");
-      
+
       if (status === 200) {
         // Redirect to verification page after successful signup
         navigate("/verification");
@@ -317,10 +317,10 @@ const Login = () => {
                 </Box>
 
                 {error && (
-                  <Alert 
-                    severity="error" 
-                    sx={{ 
-                      mt: 2, 
+                  <Alert
+                    severity="error"
+                    sx={{
+                      mt: 2,
                       bgcolor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
                       color: isDark ? '#fca5a5' : '#b91c1c',
                       '& .MuiAlert-icon': {
@@ -406,9 +406,9 @@ const Login = () => {
                 />
 
                 {registerAttempt && errors.length > 0 && (
-                  <Alert 
-                    severity="warning" 
-                    sx={{ 
+                  <Alert
+                    severity="warning"
+                    sx={{
                       mt: 2,
                       bgcolor: isDark ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.08)',
                       color: isDark ? '#fcd34d' : '#92400e',
@@ -417,7 +417,7 @@ const Login = () => {
                       }
                     }}
                   >
-                    <Typography 
+                    <Typography
                       variant="subtitle2"
                       sx={{
                         color: isDark ? '#fcd34d' : '#92400e',
@@ -428,8 +428,8 @@ const Login = () => {
                     <List dense disablePadding>
                       {errors.map((err, index) => (
                         <ListItem key={index} disablePadding sx={{ py: 0.5 }}>
-                          <ListItemText 
-                            primary={err} 
+                          <ListItemText
+                            primary={err}
                             sx={{
                               '& .MuiListItemText-primary': {
                                 color: isDark ? '#fcd34d' : '#92400e',
@@ -443,9 +443,9 @@ const Login = () => {
                 )}
 
                 {registerAttempt && isValid && (
-                  <Alert 
+                  <Alert
                     severity="success"
-                    sx={{ 
+                    sx={{
                       mt: 2,
                       bgcolor: isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.08)',
                       color: isDark ? '#86efac' : '#166534',
