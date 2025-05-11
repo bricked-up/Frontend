@@ -20,7 +20,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import LoadingPage from "./LoadingPage";
 import { motion } from "framer-motion";
-import { ImagePlus, LogOut, CheckCircle, XCircle, Pencil, Save } from "lucide-react";
+import { ImagePlus, LogOut, CheckCircle, XCircle, Pencil, Save, Trash2 } from "lucide-react";
 import { getUser, getOrg, getProject } from "../utils/getters.utils";
 import {
   User,
@@ -39,6 +39,32 @@ function isOrgMember(item: any): item is OrgMember {
 function isProjectMember(item: any): item is ProjectMember {
   return typeof item === 'object' && item !== null && 'projectId' in item && 'id' in item;
 }
+
+/**  
+ * Deletes a user based on their ID.  
+ * Returns 200 on success, or appropriate error code.  
+ *   
+ * @example  
+ * const status = await deleteUserData(userId);  
+ * if (status === 200) { console.log("User deleted successfully"); }  
+ */ 
+export const deleteUserData = async (userId: string): Promise<number> => {
+  try {
+    const params = new URLSearchParams();
+    params.append("userId", userId);
+    const response = await fetch("/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params
+    });
+    return response.status;
+  } catch (error: any) {
+    console.log(error.message);
+    return 500;
+  }
+};
 
 // Helper function for logout
 const handleLogout = () => {
@@ -74,6 +100,7 @@ const AboutUser: React.FC = () => {
   
   // State for dialog confirmations
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [notificationDialog, setNotificationDialog] = useState({
     open: false,
     title: "",
@@ -293,6 +320,38 @@ const AboutUser: React.FC = () => {
   
   const handleLogoutCancel = () => {
     setLogoutDialogOpen(false);
+  };
+
+  // Delete user handlers
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+  
+  const handleDeleteConfirm = async () => {
+    if (userId) {
+      try {
+        const status = await deleteUserData(userId);
+        if (status === 200) {
+          showNotification("Success", "User account deleted successfully.");
+          // Remove user data from local storage and redirect
+          localStorage.removeItem('userid');
+          localStorage.removeItem('sessionid');
+          setTimeout(() => {
+            window.location.href = '/';
+          }, 2000);
+        } else {
+          window.location.href = '/';
+        }
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        showNotification("Error", "An unexpected error occurred while deleting account.");
+      }
+    }
+    setDeleteDialogOpen(false);
+  };
+  
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
   };
 
   if (!isLoaded && !viewedUser) return <LoadingPage />; // Show loading page until initial fetch attempt is done
@@ -575,6 +634,32 @@ const AboutUser: React.FC = () => {
                     mb: 4,
                   }}
                 >
+                  {/* Delete User Button - Left */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<Trash2 size={20} />}
+                    onClick={handleDeleteClick}
+                    sx={{
+                      color: "#757575", // Gray color
+                      borderColor: "#757575",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: "rgba(117, 117, 117, 0.08)",
+                        borderColor: "#616161", 
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      flex: 1, // Take equal space
+                      maxWidth: "30%", // Limit width
+                    }}
+                  >
+                    Delete
+                  </Button>
+                  
+                  {/* Update Profile Button - Center */}
                   <Button
                     variant="contained"
                     startIcon={<Save size={20} />}
@@ -592,11 +677,15 @@ const AboutUser: React.FC = () => {
                       py: 1.5,
                       px: 3,
                       boxShadow: `0 4px 10px ${theme.palette.primary.main}40`,
+                      mx: 2, // margin on both sides
+                      flex: 1, // Take equal space
+                      maxWidth: "34%", // Slightly wider
                     }}
                   >
                     Update Profile
                   </Button>
                   
+                  {/* Logout Button - Right */}
                   <Button
                     variant="outlined"
                     startIcon={<LogOut size={20} />}
@@ -614,6 +703,8 @@ const AboutUser: React.FC = () => {
                       borderRadius: "8px",
                       py: 1.5,
                       px: 3,
+                      flex: 1, // Take equal space
+                      maxWidth: "30%", // Limit width
                     }}
                   >
                     Logout
@@ -650,84 +741,71 @@ const AboutUser: React.FC = () => {
         </DialogActions>
       </Dialog>
       
-      {/* Notification Dialog for user feedback */}
+      {/* Delete User Confirmation Dialog */}
       <Dialog
-        open={notificationDialog.open}
-        onClose={handleCloseNotification}
-        aria-labelledby="notification-dialog-title"
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
       >
-        <DialogTitle id="notification-dialog-title">
-          {notificationDialog.title}
+        <DialogTitle id="delete-dialog-title">
+          {"Are you sure you want to delete your account?"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText>
-            {notificationDialog.message}
+          <DialogContentText id="delete-dialog-description">
+            This action cannot be undone. All your data will be permanently removed.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseNotification} color="primary" autoFocus>
-            OK
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
           </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
-  );
-};
+                    <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+                      Delete Account
+                    </Button>
+                  </DialogActions>
+                </Dialog>
+          
+                {/* Notification Dialog */}
+                <Dialog
+                  open={notificationDialog.open}
+                  onClose={handleCloseNotification}
+                  aria-labelledby="notification-dialog-title"
+                >
+                  <DialogTitle id="notification-dialog-title">{notificationDialog.title}</DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>{notificationDialog.message}</DialogContentText>
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleCloseNotification} color="primary">OK</Button>
+                  </DialogActions>
+                </Dialog>
+              </Box>
+            );
+          };
+          
+          export default AboutUser;
 
-export default AboutUser;
+          async function getParsedUserById(numericUserId: number): Promise<User | null> {
+            try {
+              const response = await getUser(numericUserId);
+              if (response.status === 200 && response.data) {
+                return {
+                  id: response.data.id,
+                  name: response.data.name,
+                  displayName: response.data.displayName,
+                  email: response.data.email,
+                  avatar: response.data.avatar,
+                  verified: response.data.verified,
+                  organizations: response.data.organizations || [],
+                  projects: response.data.projects || []
+                };
+              }
+              return null;
+            } catch (error) {
+              console.error("Error fetching user:", error);
+              return null;
+            }
+          }
 
-/**
- * Fetches and parses user data by user ID.
- * Wraps the getUser API call and maps response to expected structure.
- *
- * @param userId - ID of the user to fetch.
- * @returns Parsed user object or null if not found or error.
- */
-export const getParsedUserById = async (userId: number): Promise<User | null> => {
-  console.log(`getParsedUserById called for ID: ${userId}`);
-  if (isNaN(userId)) {
-    console.error("getParsedUserById received NaN for userId");
-    return null;
-  }
-  try {
-    const result = await getUser(userId);
-    console.log(`getUser result for ID ${userId}:`, result);
 
-
-    if (!result || result.status !== 200 || !result.data || Object.keys(result.data).length === 0) {
-        if (result && result.status === 204) { // Specifically handle 204 No Content as user not found
-             console.warn(`User with ID ${userId} not found (204 No Content).`);
-        } else if (result && result.data && Object.keys(result.data).length === 0 && result.status === 200){
-            // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
-            console.warn(`User with ID ${userId} not found (200 with empty data object).`);
-        } else {
-            console.error(`Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`);
-        }
-      return null;
-    }
-
-    const userData = result.data as User; // Assume data matches User type if status is 200 and data is present
-
-    // Ensure default values for potentially missing fields to match User type strictly
-    // The `getUser` should ideally return data that already conforms to `User` or needs minimal parsing here.
-    return {
-      id: userData.id,
-      displayName: userData.displayName || userData.name || '', // Fallback for displayName
-      email: userData.email || '',
-      name: userData.name || '',
-      password: userData.password, // Password should ideally not be part of this response
-      verified: userData.verified ?? false,
-      avatar: userData.avatar || null, // Ensure it can be null as per User type
-      // These will be arrays of numbers if `getUser` returns IDs, or arrays of objects if it returns full details.
-      // The component logic above will handle fetching details if they are IDs.
-      organizations: userData.organizations || [],
-      projects: userData.projects || [],
-      issues: userData.issues || [], // Added issues
-      sessions: userData.sessions || [], // Added sessions
-      verifyId: userData.verifyId === undefined ? null : userData.verifyId // ensure it can be null
-    };
-  } catch (error) {
-    console.error(`Error in getParsedUserById for ID ${userId}:`, error);
-    return null;
-  }
-};
