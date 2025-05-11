@@ -62,6 +62,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
     if (initialData) {
       setTitle(initialData.title || "");
       setDesc(initialData.desc || "");
+      
       setPriority(initialData.priority || 1);
       setIssueid(initialData.id || 1);
       setCost(initialData.cost || 0);
