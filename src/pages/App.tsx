@@ -16,9 +16,7 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateTask from "../Components/CreateIssue/CreateIssue";
-import { mockBoard } from "../Components/CreateIssue/CreateIssue";
-
+import CreateTask, { mockBoard } from "../Components/CreateIssue/CreateIssue";
 function App() {
   const [theme, colorMode] = useMode();
   const { user } = useUser();
@@ -54,7 +52,6 @@ function App() {
                 </Route>
               </Route>
 
-
               {/* project related routes */}
               <Route path="/project">
                 <Route path=":projectId">
@@ -74,18 +71,17 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
-                <Route
-                  path="/dashboard"
-                  element={
-                    <Dashboard />
-                  }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
+
                 <Route path="/viewProject" element={<ViewProject />} />
-                <Route path="/aboutUser" element={<AboutUser />} />
+                <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/viewOrg" element={<ViewOrg />} />
-                <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
+                <Route path="/vieworg" element={<ViewOrg />} />
+                <Route
+                  path="/createIssue"
+                  element={<CreateTask board={mockBoard} />}
+                />
               </Route>
 
               {/* routes for 404 and server errors */}
