@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -25,7 +25,7 @@ interface SidebarProps {
   isSidebar: boolean;
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
+const userid = localStorage.getItem("userid");
 const Item: React.FC<ItemProps> = ({
   title,
   to,
@@ -35,7 +35,7 @@ const Item: React.FC<ItemProps> = ({
 }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+ 
   return (
     <Link
       to={to}
@@ -70,6 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState<string>("Dashboard");
+  const navigate = useNavigate();
 
   return (
     <>
@@ -153,7 +154,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             />
             <Item
               title="View Your Profile"
-              to="/user/:userId/aboutUser"
+              to={`/user/${userid}/aboutUser`}
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}

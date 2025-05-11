@@ -6,23 +6,28 @@ import {
   Paper,
   useTheme,
   Divider,
-  CircularProgress, // Added for loading states of details
-  Alert,            // Added for error display of details
+  CircularProgress,
+  Alert,
+  TextField,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import LoadingPage from "./LoadingPage";
-import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
-import { ImagePlus } from "lucide-react";
-import { getUser, getOrg, getProject } from "../utils/getters.utils"; // Ensure getOrg and getProject are correctly imported
+import { ImagePlus, LogOut, CheckCircle, XCircle, Pencil, Save } from "lucide-react";
+import { getUser, getOrg, getProject } from "../utils/getters.utils";
 import {
   User,
   OrgMember,
   ProjectMember,
-  Organization as OrgDetailsType, // Renamed to avoid conflict if OrgMember is different
-  Project as ProjectDetailsType,   // Renamed to avoid conflict
-  Issue, // Assuming you might want to fetch Issue details later
+  Organization as OrgDetailsType,
+  Project as ProjectDetailsType,
 } from "../utils/types";
 
 // Helper function to check if an item is an OrgMember (and not a number)
@@ -35,25 +40,49 @@ function isProjectMember(item: any): item is ProjectMember {
   return typeof item === 'object' && item !== null && 'projectId' in item && 'id' in item;
 }
 
+// Helper function for logout
+const handleLogout = () => {
+  // Remove user.id and session.id from localStorage
+  localStorage.removeItem('userid');
+  localStorage.removeItem('sessionid');
+  
+  // Reload the page to reset application state
+  window.location.href = '/';
+};
 
 const AboutUser: React.FC = () => {
+  const userid = localStorage.getItem("userid");
+
   const navigate = useNavigate();
   const theme = useTheme();
   const { user, setUser } = useUser();
-  const { userId } = useParams<{ userId: string }>(); // Ensure userId is typed
+  const { userId } = useParams<{ userId: string }>();
   const [viewedUser, setViewedUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isOwnProfile] = useState(userid === userId);
   const confirmationShown = useRef(false);
+  
+  // State for editing username
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [editedUsername, setEditedUsername] = useState("");
 
   // State for fetched organization and project details
   const [organizationDetails, setOrganizationDetails] = useState<OrgDetailsType[]>([]);
   const [projectDetails, setProjectDetails] = useState<ProjectDetailsType[]>([]);
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
-
+  
+  // State for logout confirmation dialog
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
 
   const isDark = theme.palette.mode === "dark";
+
+  // Text color based on theme to ensure proper contrast - black in light mode, white in dark mode
+  const textColor = isDark ? "white" : "black";
+  const secondaryTextColor = isDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)";
+  
+  // Text color for the text field based on theme
+  const textFieldTextColor = isDark ? "white" : "black";
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -65,7 +94,6 @@ const AboutUser: React.FC = () => {
         if (confirmed) {
           navigate("/");
         }
-        // setIsLoaded(true); // Don't set isLoaded true here, let fetchAndSetUser handle it
       }
     }, 5000); // 5 seconds timeout
 
@@ -84,7 +112,6 @@ const AboutUser: React.FC = () => {
         clearTimeout(timeoutId);
         return;
     }
-
 
     const fetchAndSetUser = async () => {
       setIsLoaded(false); // Reset loading state for new fetch
@@ -112,7 +139,7 @@ const AboutUser: React.FC = () => {
 
         console.log("User data fetched:", fetchedUser);
         setViewedUser(fetchedUser);
-        setIsOwnProfile(!!user && fetchedUser.id === user.id); // Ensure user is not null
+        setEditedUsername(fetchedUser.displayName || fetchedUser.name || '');
 
         // Now fetch organization and project details
         setIsLoadingDetails(true);
@@ -130,20 +157,7 @@ const AboutUser: React.FC = () => {
             setOrganizationDetails(successfulOrgs);
             console.log("Fetched organization details:", successfulOrgs);
           } else if (isOrgMember(fetchedUser.organizations[0])) {
-             // This case implies that getUser already returned full OrgMember details.
-             // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
-             // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
-             // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
-             // The current map in the JSX expects OrgMember structure if this path is taken.
-             // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
-             // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
-            console.warn("Organizations are already objects, type check needed for mapping or further fetching.");
-            // If `WorkspaceedUser.organizations` are `OrgMember[]` and you need `OrgDetailsType[]`
-            // you might need to iterate and call `getOrg(org.orgId)` for each.
-            // For simplicity, if your JSX for orgs can work with `OrgMember[]`, you can cast it:
-            // setOrganizationDetails(fetchedUser.organizations as OrgDetailsType[]); // This might be incorrect if types differ
-            // For now, let's assume if it's not numbers, the current JSX is expecting OrgMember[] which is already there.
-            // So, no separate state update for 'organizationDetails' if 'viewedUser.organizations' are already full objects.
+             console.warn("Organizations are already objects, type check needed for mapping or further fetching.");
           }
         } else {
           setOrganizationDetails([]);
@@ -162,8 +176,6 @@ const AboutUser: React.FC = () => {
             console.log("Fetched project details:", successfulProjects);
           } else if (isProjectMember(fetchedUser.projects[0])) {
             console.warn("Projects are already objects, type check needed for mapping or further fetching.");
-             // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
-             // the JSX mapping needs to handle ProjectMember[] directly.
           }
         } else {
           setProjectDetails([]);
@@ -178,13 +190,6 @@ const AboutUser: React.FC = () => {
         setDetailsError("Failed to load associated details.");
         if (!confirmationShown.current) {
           confirmationShown.current = true;
-          // const confirmed = window.confirm( // Avoid window.confirm in catch block of async
-          // "Error loading user data. Click OK to return to home page."
-          // );
-          // if (confirmed) {
-          // navigate("/");
-          // }
-          // Better to show an error message on the page
         }
         setIsLoadingDetails(false);
         setIsLoaded(true); // Still loaded, but with an error
@@ -197,7 +202,7 @@ const AboutUser: React.FC = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [userId, user, navigate]); // Removed isLoaded from dependencies to avoid re-triggering fetch unnecessarily
+  }, [userId, user, navigate]); // end of useEffect
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile || !viewedUser) return;
@@ -213,8 +218,57 @@ const AboutUser: React.FC = () => {
       // and update the user's avatar URL in the database.
       // e.g., sendUserData({...viewedUser, avatarFile: file}, "update-user-avatar");
       console.log("New avatar selected (locally):", imageUrl);
-      alert("Avatar updated locally. Backend integration for upload needed.");
+      alert("Avatar updated, please save to apply changes.");
     }
+  };
+
+  const handleEditUsername = () => {
+    setIsEditingUsername(true);
+  };
+
+  const handleSaveUsername = () => {
+    if (viewedUser && editedUsername.trim() !== "") {
+      // Update local state
+      const updatedUser = { ...viewedUser, displayName: editedUsername };
+      setViewedUser(updatedUser);
+      
+      // Also update global user context if it's the same user
+      if (user && user.id === viewedUser.id) {
+        setUser({ ...user, displayName: editedUsername });
+      }
+      
+      // TODO: Send update to backend
+      // e.g., api.updateUser(viewedUser.id, { displayName: editedUsername });
+      
+      console.log("Username updated locally:", editedUsername);
+      alert("Username updated locally, please save to apply changes.");
+      setIsEditingUsername(false);
+    } else {
+      // Reset to current username if empty
+      setEditedUsername(viewedUser?.displayName || viewedUser?.name || '');
+      setIsEditingUsername(false);
+    }
+  };
+
+  const handleUpdateProfile = () => {
+    // This would handle the complete profile update to backend
+    alert("Profile update functionality would be implemented here.");
+    // In a real implementation, this would call your API
+    // e.g., api.updateUser(viewedUser.id, viewedUser);
+  };
+  
+  // Logout dialog handlers
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+  
+  const handleLogoutConfirm = () => {
+    setLogoutDialogOpen(false);
+    handleLogout();
+  };
+  
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
   };
 
   if (!isLoaded && !viewedUser) return <LoadingPage />; // Show loading page until initial fetch attempt is done
@@ -222,7 +276,7 @@ const AboutUser: React.FC = () => {
     return (
         <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
             <Paper elevation={3} sx={{p:3}}>
-                <Typography variant="h6">User profile could not be loaded or does not exist.</Typography>
+                <Typography variant="h6" color={textColor}>User profile could not be loaded or does not exist.</Typography>
                 <Button onClick={() => navigate('/')} sx={{mt: 2}}>Go to Home</Button>
             </Paper>
         </Box>
@@ -242,11 +296,11 @@ const AboutUser: React.FC = () => {
       if (isOrgMember(viewedUser.organizations[0])) {
         return (viewedUser.organizations as OrgMember[]).map((org, index) => (
           <Box key={`org-member-${org.id}-${index}`} sx={{ mb: 1 }}>
-            <Typography>
+            <Typography color={textColor}>
               Organization ID (from member record): {org.orgId} — Membership ID: {org.id}
             </Typography>
             {org.roles && org.roles.length > 0 && (
-              <Typography variant="body2" sx={{ ml: 2 }}>
+              <Typography variant="body2" sx={{ ml: 2 }} color={secondaryTextColor}>
                 Roles: {org.roles.map((role) =>
                   typeof role === "object" && role !== null && "name" in role
                   ? role.name
@@ -260,15 +314,15 @@ const AboutUser: React.FC = () => {
       // Case 2: We fetched full Organization details based on IDs
       if (organizationDetails.length > 0) {
         return organizationDetails.map((orgDetail, index) => (
-          <Box key={`org-detail-${orgDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
-            <Typography variant="subtitle1"><strong>{orgDetail.name}</strong> (ID: {orgDetail.id})</Typography>
+          <Box key={`org-detail-${orgDetail.id}-${index}`} sx={{ mb: 1, p:1, border: `1px solid ${theme.palette.divider}`, borderRadius: 1}}>
+            <Typography variant="subtitle1" color={textColor}><strong>{orgDetail.name}</strong> (ID: {orgDetail.id})</Typography>
             {/* Here you might want to show roles if you fetch OrgMember entries associated with this viewedUser and orgDetail.id */}
             {/* For now, just listing the organization name and ID */}
           </Box>
         ));
       }
     }
-    return <Typography>No organization memberships found or details not loaded.</Typography>;
+    return <Typography color={textColor}>No organizations found :( </Typography>;
   };
 
   // Helper to render project list
@@ -281,11 +335,11 @@ const AboutUser: React.FC = () => {
       if (isProjectMember(viewedUser.projects[0])) {
         return (viewedUser.projects as ProjectMember[]).map((proj, index) => (
           <Box key={`proj-member-${proj.id}-${index}`} sx={{ mb: 1 }}>
-            <Typography>
+            <Typography color={textColor}>
               Project ID (from member record): {proj.projectId} — Membership ID: {proj.id}
             </Typography>
             {proj.roles && proj.roles.length > 0 && (
-            <Typography variant="body2" sx={{ ml: 2 }}>
+            <Typography variant="body2" sx={{ ml: 2 }} color={secondaryTextColor}>
               Roles: {
               proj.roles.map((role) =>
               typeof role === "object" && role !== null && "name" in role
@@ -294,23 +348,22 @@ const AboutUser: React.FC = () => {
               ).join(", ")
               }
             </Typography>
-)}
-
+            )}
           </Box>
         ));
       }
       // Case 2: We fetched full Project details based on IDs
       if (projectDetails.length > 0) {
         return projectDetails.map((projDetail, index) => (
-           <Box key={`proj-detail-${projDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
-            <Typography variant="subtitle1"><strong>{projDetail.name}</strong> (ID: {projDetail.id})</Typography>
-            <Typography variant="body2">Budget: ${projDetail.budget}</Typography>
-            <Typography variant="caption">Charter: {projDetail.charter || "N/A"}</Typography>
+           <Box key={`proj-detail-${projDetail.id}-${index}`} sx={{ mb: 1, p:1, border: `1px solid ${theme.palette.divider}`, borderRadius: 1}}>
+            <Typography variant="subtitle1" color={textColor}><strong>{projDetail.name}</strong> (ID: {projDetail.id})</Typography>
+            <Typography variant="body2" color={secondaryTextColor}>Budget: ${projDetail.budget}</Typography>
+            <Typography variant="caption" color={secondaryTextColor}>Charter: {projDetail.charter || "N/A"}</Typography>
           </Box>
         ));
       }
     }
-    return <Typography>No project memberships found or details not loaded.</Typography>;
+    return <Typography color={textColor}>No projects found :( </Typography>;
   };
 
 
@@ -351,6 +404,7 @@ const AboutUser: React.FC = () => {
               : "0 8px 20px rgba(0,194,255,0.2)",
             overflowY: "auto",
             maxHeight: "calc(100vh - 100px)", // Ensure it doesn't go off-screen
+            position: "relative", // Add position relative for absolute positioned elements
           }}
         >
           <motion.div
@@ -403,27 +457,69 @@ const AboutUser: React.FC = () => {
                   </Button>
                 </Box>
               )}
-              <Typography variant="h4" fontWeight={700} sx={{ mt: 2, color: theme.palette.text.primary }}> {/* Adjusted h variant */}
-                {viewedUser.displayName || viewedUser.name}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">{viewedUser.email}</Typography> {/* Adjusted variant */}
+              <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {isEditingUsername && isOwnProfile ? (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <TextField
+                      value={editedUsername}
+                      onChange={(e) => setEditedUsername(e.target.value)}
+                      variant="standard"
+                      size="small"
+                      sx={{ 
+                        mr: 1,
+                        '& .MuiInputBase-input': {
+                          color: textFieldTextColor,
+                        },
+                        '& .MuiInput-underline:before': {
+                          borderBottomColor: isDark ? 'rgba(255, 255, 255, 0.3)' : 'rgba(0, 0, 0, 0.3)',
+                        },
+                        '& .MuiInput-underline:hover:not(.Mui-disabled):before': {
+                          borderBottomColor: theme.palette.primary.main,
+                        },
+                        '& .MuiInput-underline:after': {
+                          borderBottomColor: theme.palette.primary.main,
+                        }
+                      }}
+                    />
+                    <IconButton onClick={handleSaveUsername} color="primary" size="small">
+                      <Save size={20} />
+                    </IconButton>
+                  </Box>
+                ) : (
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Typography variant="h4" fontWeight={700} color={textColor}>
+                      {viewedUser.displayName || viewedUser.name}
+                    </Typography>
+                    {isOwnProfile && (
+                      <IconButton onClick={handleEditUsername} size="small" sx={{ ml: 1 }}>
+                        <Pencil size={18} color={theme.palette.primary.main} />
+                      </IconButton>
+                    )}
+                  </Box>
+                )}
+              </Box>
+              <Typography variant="body1" color={secondaryTextColor}>{viewedUser.email}</Typography>
             </Box>
 
             <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{mb: 2}}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography variant="h6" fontWeight="600" gutterBottom color={textColor}>
                 Verification
               </Typography>
-              <Typography variant="body1"> {/* Adjusted variant */}
-                {viewedUser.verified ? "Email Verified ✅" : "Not Verified ❌"}
-              </Typography>
+              <Box display="flex" justifyContent="center" width="100%" py={1}>
+                {viewedUser.verified ? (
+                  <CheckCircle size={24} color={theme.palette.success.main} />
+                ) : (
+                  <XCircle size={24} color={theme.palette.error.main} />
+                )}
+              </Box>
             </Box>
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{mb: 2}}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography variant="h6" fontWeight="600" gutterBottom color={textColor}>
                 Organizations
               </Typography>
               {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
@@ -433,25 +529,112 @@ const AboutUser: React.FC = () => {
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{mb: 2}}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography variant="h6" fontWeight="600" gutterBottom color={textColor}>
                 Projects
               </Typography>
               {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
               {renderProjects()}
             </Box>
 
+            {/* Actions Section */}
             {isOwnProfile && (
-              <Box mt={4}> {/* Increased margin */}
-                <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
-                <Typography variant="h5" fontWeight="bold" gutterBottom> {/* Adjusted variant */}
-                  Edit Your Profile
-                </Typography>
-                <Form />
-              </Box>
+              <>
+                <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
+                
+                {/* Update Button */}
+                <Box 
+                  sx={{ 
+                    display: "flex",
+                    justifyContent: "space-between", // Changed to space-between
+                    width: "100%",
+                    mt: 2,
+                    mb: 4, // Added more bottom margin
+                  }}
+                >
+                  <Button
+                    variant="contained"
+                    startIcon={<Save size={20} />}
+                    onClick={handleUpdateProfile}
+                    sx={{
+                      backgroundColor: theme.palette.primary.main, // Blue color
+                      color: "white",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.dark,
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      boxShadow: `0 4px 10px ${theme.palette.primary.main}40`,
+                    }}
+                  >
+                    Update Profile
+                  </Button>
+                </Box>
+                
+                {/* Centered Logout Button */}
+                <Box 
+                  sx={{ 
+                    display: "flex",
+                    justifyContent: "center", // Centered
+                    width: "100%",
+                    mb: 2,
+                  }}
+                >
+                  <Button
+                    variant="outlined"
+                    startIcon={<LogOut size={20} />}
+                    onClick={handleLogoutClick} // Changed to open dialog
+                    sx={{
+                      color: "#f44336", // Red color
+                      borderColor: "#f44336",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: "rgba(244, 67, 54, 0.08)",
+                        borderColor: "#d32f2f", 
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                    }}
+                  >
+                    Logout
+                  </Button>
+                </Box>
+              </>
             )}
           </motion.div>
         </Paper>
       </Box>
+      
+      {/* Logout Confirmation Dialog */}
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={handleLogoutCancel}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+      >
+        <DialogTitle id="logout-dialog-title">
+          {"Are you sure that you want to logout?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="logout-dialog-description">
+            You will need to log in again to access your account.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel} color="primary">
+            No
+          </Button>
+          <Button onClick={handleLogoutConfirm} color="error" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
