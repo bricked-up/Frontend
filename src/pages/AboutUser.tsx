@@ -72,14 +72,22 @@ const AboutUser: React.FC = () => {
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
   
-  // State for logout confirmation dialog
+  // State for dialog confirmations
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [notificationDialog, setNotificationDialog] = useState({
+    open: false,
+    title: "",
+    message: ""
+  });
 
   const isDark = theme.palette.mode === "dark";
 
   // Text color based on theme to ensure proper contrast - black in light mode, white in dark mode
   const textColor = isDark ? "white" : "black";
   const secondaryTextColor = isDark ? "rgba(255, 255, 255, 0.7)" : "rgba(0, 0, 0, 0.7)";
+  
+  // Icon color based on theme
+  const iconColor = isDark ? "white" : "black";
   
   // Text color for the text field based on theme
   const textFieldTextColor = isDark ? "white" : "black";
@@ -204,6 +212,22 @@ const AboutUser: React.FC = () => {
     };
   }, [userId, user, navigate]); // end of useEffect
 
+  // Show notification dialog instead of alert
+  const showNotification = (title: string, message: string) => {
+    setNotificationDialog({
+      open: true,
+      title,
+      message
+    });
+  };
+
+  const handleCloseNotification = () => {
+    setNotificationDialog({
+      ...notificationDialog,
+      open: false
+    });
+  };
+
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile || !viewedUser) return;
     if (e.target.files && e.target.files[0]) {
@@ -218,7 +242,7 @@ const AboutUser: React.FC = () => {
       // and update the user's avatar URL in the database.
       // e.g., sendUserData({...viewedUser, avatarFile: file}, "update-user-avatar");
       console.log("New avatar selected (locally):", imageUrl);
-      alert("Avatar updated, please save to apply changes.");
+      showNotification("Avatar Updated", "Avatar updated, please save to apply changes.");
     }
   };
 
@@ -241,7 +265,7 @@ const AboutUser: React.FC = () => {
       // e.g., api.updateUser(viewedUser.id, { displayName: editedUsername });
       
       console.log("Username updated locally:", editedUsername);
-      alert("Username updated locally, please save to apply changes.");
+      showNotification("Username Updated", "Username updated locally, please save to apply changes.");
       setIsEditingUsername(false);
     } else {
       // Reset to current username if empty
@@ -252,7 +276,7 @@ const AboutUser: React.FC = () => {
 
   const handleUpdateProfile = () => {
     // This would handle the complete profile update to backend
-    alert("Profile update functionality would be implemented here.");
+    showNotification("Profile Update", "Profile update functionality would be implemented here.");
     // In a real implementation, this would call your API
     // e.g., api.updateUser(viewedUser.id, viewedUser);
   };
@@ -431,13 +455,13 @@ const AboutUser: React.FC = () => {
                   <Button
                     component="label"
                     variant="outlined"
-                    startIcon={<ImagePlus size={18} />} // Adjusted icon size
+                    startIcon={<ImagePlus size={18} color={iconColor} />} // Using dynamic iconColor
                     sx={{
                       mt: 1,
                       borderRadius: "8px",
                       textTransform: "none",
                       fontWeight: 600, // Slightly bolder
-                      color: theme.palette.primary.main,
+                      color: textColor, // Using dynamic textColor
                       borderColor: theme.palette.primary.main,
                       py: 0.8, // Padding adjustment
                       px: 2,
@@ -492,7 +516,7 @@ const AboutUser: React.FC = () => {
                     </Typography>
                     {isOwnProfile && (
                       <IconButton onClick={handleEditUsername} size="small" sx={{ ml: 1 }}>
-                        <Pencil size={18} color={theme.palette.primary.main} />
+                        <Pencil size={18} color={iconColor} />
                       </IconButton>
                     )}
                   </Box>
@@ -541,14 +565,14 @@ const AboutUser: React.FC = () => {
               <>
                 <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
                 
-                {/* Update Button */}
+                {/* Buttons in the same row */}
                 <Box 
                   sx={{ 
                     display: "flex",
-                    justifyContent: "space-between", // Changed to space-between
+                    justifyContent: "space-between", // Place buttons at the ends
                     width: "100%",
                     mt: 2,
-                    mb: 4, // Added more bottom margin
+                    mb: 4,
                   }}
                 >
                   <Button
@@ -572,21 +596,11 @@ const AboutUser: React.FC = () => {
                   >
                     Update Profile
                   </Button>
-                </Box>
-                
-                {/* Centered Logout Button */}
-                <Box 
-                  sx={{ 
-                    display: "flex",
-                    justifyContent: "center", // Centered
-                    width: "100%",
-                    mb: 2,
-                  }}
-                >
+                  
                   <Button
                     variant="outlined"
                     startIcon={<LogOut size={20} />}
-                    onClick={handleLogoutClick} // Changed to open dialog
+                    onClick={handleLogoutClick}
                     sx={{
                       color: "#f44336", // Red color
                       borderColor: "#f44336",
@@ -632,6 +646,27 @@ const AboutUser: React.FC = () => {
           </Button>
           <Button onClick={handleLogoutConfirm} color="error" autoFocus>
             Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* Notification Dialog for user feedback */}
+      <Dialog
+        open={notificationDialog.open}
+        onClose={handleCloseNotification}
+        aria-labelledby="notification-dialog-title"
+      >
+        <DialogTitle id="notification-dialog-title">
+          {notificationDialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            {notificationDialog.message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotification} color="primary" autoFocus>
+            OK
           </Button>
         </DialogActions>
       </Dialog>
