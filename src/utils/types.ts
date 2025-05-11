@@ -50,7 +50,6 @@ export type Organization = {
  * @description Represents a user account in the application.
  * Note: For `getUser` endpoint, `organizations`, `projects`, and `issues` are expected to be number arrays (IDs)
  * based on current test expectations and backend User struct.
- * @property {string} displayName - The user's preferred display name.
  * @property {number} id - The unique identifier for the user.
  * @property {string} email - The user's email address, used for login and communication.
  * @property {string} name - The user's full name or given name.
@@ -65,7 +64,6 @@ export type Organization = {
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
 export type User = {
-  displayName: string;
   id: number;
   email: string;
   name: string;
