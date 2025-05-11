@@ -41,6 +41,9 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
+import { GetProjectResult, Project, ProjectMember } from "../utils/types";
+import { getUser, getProject, getProjectMember } from "../utils/getters.utils";
+import { a2 } from "framer-motion/dist/types.d-DDSxwf0n";
 
 // Mock data for project members with roles based on the ER diagram
 const mockProjectMembers = [
@@ -282,6 +285,15 @@ const RoleIcon = ({
     return <VisibilityIcon sx={{ color: "#9c27b0", mr: 1 }} />;
   }
 };
+
+function isProjectMember(item: any): item is ProjectMember {
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "projectId" in item &&
+    "id" in item
+  );
+}
 
 // Custom component for project details
 const ProjectDetails = ({ project }: { project: any }) => {
@@ -715,18 +727,54 @@ const ViewProject = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const [projectOptions, setProjectOptions] = useState<string[]>([]);
   const [selectedProject, setSelectedProject] = useState("");
-  const [currentProjectData, setCurrentProjectData] = useState<any>(null);
+  const [currentProjectData, setCurrentProjectData] = useState<Project | null>(
+    null
+  );
 
   // Update current project data when selection changes
   useEffect(() => {
-    if (selectedProject) {
-      const projectData = mockProjects.find((p) => p.name === selectedProject);
-      setCurrentProjectData(projectData);
-    } else {
-      setCurrentProjectData(null);
-    }
-  }, [selectedProject]);
+    const fetchUserProjects = async () => {
+      const userId = localStorage.getItem("userid");
+      if (!userId) return;
+
+      const { data: user } = await getUser(Number(userId));
+      if (!user || !user.projects) return;
+
+      const projectIds = user.projects;
+      var numberProjectIds: number[] = [];
+      var projectResponses: any = [];
+
+      if (
+        Array.isArray(projectIds) &&
+        projectIds.length > 0 &&
+        typeof projectIds[0] === "object" &&
+        projectIds[0] !== null &&
+        "projectid" in projectIds[0]
+      ) {
+        numberProjectIds = (projectIds as ProjectMember[]).map(
+          (pm) => pm.projectId
+        );
+
+        projectResponses = await Promise.all(
+          numberProjectIds.map((id) => getProject(id))
+        );
+      } else {
+        projectResponses = await Promise.all(
+          projectIds.map((id) => getProject(id as number))
+        );
+      }
+
+      const validProjects = projectResponses
+        .filter((p: any) => p.data !== null)
+        .map((p: any) => p.data!);
+
+      setProjectOptions(validProjects.map((p: any) => p.name));
+    };
+
+    fetchUserProjects();
+  }, []);
 
   // Define columns based on the ER diagram
   const columns: GridColDef[] = [
@@ -827,7 +875,6 @@ const ViewProject = () => {
     return projects;
   };
 
-  const projectOptions = getUniqueProjects();
   return (
     <Box
       sx={{

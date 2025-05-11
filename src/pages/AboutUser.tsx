@@ -7,7 +7,7 @@ import {
   useTheme,
   Divider,
   CircularProgress, // Added for loading states of details
-  Alert,            // Added for error display of details
+  Alert, // Added for error display of details
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
@@ -21,20 +21,26 @@ import {
   OrgMember,
   ProjectMember,
   Organization as OrgDetailsType, // Renamed to avoid conflict if OrgMember is different
-  Project as ProjectDetailsType,   // Renamed to avoid conflict
+  Project as ProjectDetailsType, // Renamed to avoid conflict
   Issue, // Assuming you might want to fetch Issue details later
 } from "../utils/types";
 
 // Helper function to check if an item is an OrgMember (and not a number)
 function isOrgMember(item: any): item is OrgMember {
-  return typeof item === 'object' && item !== null && 'orgId' in item && 'id' in item;
+  return (
+    typeof item === "object" && item !== null && "orgId" in item && "id" in item
+  );
 }
 
 // Helper function to check if an item is a ProjectMember (and not a number)
 function isProjectMember(item: any): item is ProjectMember {
-  return typeof item === 'object' && item !== null && 'projectId' in item && 'id' in item;
+  return (
+    typeof item === "object" &&
+    item !== null &&
+    "projectId" in item &&
+    "id" in item
+  );
 }
-
 
 const AboutUser: React.FC = () => {
   const navigate = useNavigate();
@@ -47,11 +53,14 @@ const AboutUser: React.FC = () => {
   const confirmationShown = useRef(false);
 
   // State for fetched organization and project details
-  const [organizationDetails, setOrganizationDetails] = useState<OrgDetailsType[]>([]);
-  const [projectDetails, setProjectDetails] = useState<ProjectDetailsType[]>([]);
+  const [organizationDetails, setOrganizationDetails] = useState<
+    OrgDetailsType[]
+  >([]);
+  const [projectDetails, setProjectDetails] = useState<ProjectDetailsType[]>(
+    []
+  );
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
-
 
   const isDark = theme.palette.mode === "dark";
 
@@ -78,13 +87,12 @@ const AboutUser: React.FC = () => {
 
     const numericUserId = parseInt(userId, 10);
     if (isNaN(numericUserId)) {
-        console.error("Invalid userId format:", userId);
-        // Optionally navigate or show an error
-        setIsLoaded(true);
-        clearTimeout(timeoutId);
-        return;
+      console.error("Invalid userId format:", userId);
+      // Optionally navigate or show an error
+      setIsLoaded(true);
+      clearTimeout(timeoutId);
+      return;
     }
-
 
     const fetchAndSetUser = async () => {
       setIsLoaded(false); // Reset loading state for new fetch
@@ -120,24 +128,36 @@ const AboutUser: React.FC = () => {
 
         // Fetch Organization Details
         if (fetchedUser.organizations && fetchedUser.organizations.length > 0) {
-          if (typeof fetchedUser.organizations[0] === 'number') {
-            console.log("Fetching organization details for IDs:", fetchedUser.organizations);
-            const orgPromises = (fetchedUser.organizations as number[]).map(id => getOrg(id));
+          if (typeof fetchedUser.organizations[0] === "number") {
+            console.log(
+              "Fetching organization details for IDs:",
+              fetchedUser.organizations
+            );
+            const orgPromises = (fetchedUser.organizations as number[]).map(
+              (id) => getOrg(id)
+            );
             const orgResults = await Promise.all(orgPromises);
             const successfulOrgs = orgResults
-              .filter(res => res.status === 200 && res.data && Object.keys(res.data).length > 0)
-              .map(res => res.data as OrgDetailsType);
+              .filter(
+                (res) =>
+                  res.status === 200 &&
+                  res.data &&
+                  Object.keys(res.data).length > 0
+              )
+              .map((res) => res.data as OrgDetailsType);
             setOrganizationDetails(successfulOrgs);
             console.log("Fetched organization details:", successfulOrgs);
           } else if (isOrgMember(fetchedUser.organizations[0])) {
-             // This case implies that getUser already returned full OrgMember details.
-             // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
-             // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
-             // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
-             // The current map in the JSX expects OrgMember structure if this path is taken.
-             // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
-             // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
-            console.warn("Organizations are already objects, type check needed for mapping or further fetching.");
+            // This case implies that getUser already returned full OrgMember details.
+            // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
+            // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
+            // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
+            // The current map in the JSX expects OrgMember structure if this path is taken.
+            // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
+            // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
+            console.warn(
+              "Organizations are already objects, type check needed for mapping or further fetching."
+            );
             // If `WorkspaceedUser.organizations` are `OrgMember[]` and you need `OrgDetailsType[]`
             // you might need to iterate and call `getOrg(org.orgId)` for each.
             // For simplicity, if your JSX for orgs can work with `OrgMember[]`, you can cast it:
@@ -151,19 +171,31 @@ const AboutUser: React.FC = () => {
 
         // Fetch Project Details
         if (fetchedUser.projects && fetchedUser.projects.length > 0) {
-          if (typeof fetchedUser.projects[0] === 'number') {
-            console.log("Fetching project details for IDs:", fetchedUser.projects);
-            const projPromises = (fetchedUser.projects as number[]).map(id => getProject(id));
+          if (typeof fetchedUser.projects[0] === "number") {
+            console.log(
+              "Fetching project details for IDs:",
+              fetchedUser.projects
+            );
+            const projPromises = (fetchedUser.projects as number[]).map((id) =>
+              getProject(id)
+            );
             const projResults = await Promise.all(projPromises);
             const successfulProjects = projResults
-              .filter(res => res.status === 200 && res.data && Object.keys(res.data).length > 0)
-              .map(res => res.data as ProjectDetailsType);
+              .filter(
+                (res) =>
+                  res.status === 200 &&
+                  res.data &&
+                  Object.keys(res.data).length > 0
+              )
+              .map((res) => res.data as ProjectDetailsType);
             setProjectDetails(successfulProjects);
             console.log("Fetched project details:", successfulProjects);
           } else if (isProjectMember(fetchedUser.projects[0])) {
-            console.warn("Projects are already objects, type check needed for mapping or further fetching.");
-             // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
-             // the JSX mapping needs to handle ProjectMember[] directly.
+            console.warn(
+              "Projects are already objects, type check needed for mapping or further fetching."
+            );
+            // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
+            // the JSX mapping needs to handle ProjectMember[] directly.
           }
         } else {
           setProjectDetails([]);
@@ -172,7 +204,6 @@ const AboutUser: React.FC = () => {
         setIsLoadingDetails(false);
         setIsLoaded(true);
         clearTimeout(timeoutId); // Clear timeout once successfully loaded
-
       } catch (error) {
         console.error("Error loading user data or details:", error);
         setDetailsError("Failed to load associated details.");
@@ -218,23 +249,37 @@ const AboutUser: React.FC = () => {
   };
 
   if (!isLoaded && !viewedUser) return <LoadingPage />; // Show loading page until initial fetch attempt is done
-  if (!viewedUser && isLoaded) { // Fetch attempt done, but no user
+  if (!viewedUser && isLoaded) {
+    // Fetch attempt done, but no user
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-            <Paper elevation={3} sx={{p:3}}>
-                <Typography variant="h6">User profile could not be loaded or does not exist.</Typography>
-                <Button onClick={() => navigate('/')} sx={{mt: 2}}>Go to Home</Button>
-            </Paper>
-        </Box>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="80vh"
+      >
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <Typography variant="h6">
+            User profile could not be loaded or does not exist.
+          </Typography>
+          <Button onClick={() => navigate("/")} sx={{ mt: 2 }}>
+            Go to Home
+          </Button>
+        </Paper>
+      </Box>
     );
   }
   if (!viewedUser) return null; // Should be covered by above, but as a fallback
 
-
   // --- Render Logic ---
   // Helper to render organization list
   const renderOrganizations = () => {
-    if (isLoadingDetails && organizationDetails.length === 0 && (!viewedUser.organizations || typeof viewedUser.organizations[0] === 'number')) {
+    if (
+      isLoadingDetails &&
+      organizationDetails.length === 0 &&
+      (!viewedUser.organizations ||
+        typeof viewedUser.organizations[0] === "number")
+    ) {
       return <CircularProgress size={24} />;
     }
     if (viewedUser.organizations && viewedUser.organizations.length > 0) {
@@ -243,15 +288,19 @@ const AboutUser: React.FC = () => {
         return (viewedUser.organizations as OrgMember[]).map((org, index) => (
           <Box key={`org-member-${org.id}-${index}`} sx={{ mb: 1 }}>
             <Typography>
-              Organization ID (from member record): {org.orgId} — Membership ID: {org.id}
+              Organization ID (from member record): {org.orgId} — Membership ID:{" "}
+              {org.id}
             </Typography>
             {org.roles && org.roles.length > 0 && (
               <Typography variant="body2" sx={{ ml: 2 }}>
-                Roles: {org.roles.map((role) =>
-                  typeof role === "object" && role !== null && "name" in role
-                  ? role.name
-                  : `Role ID: ${role}`
-                  ).join(", ")}
+                Roles:{" "}
+                {org.roles
+                  .map((role) =>
+                    typeof role === "object" && role !== null && "name" in role
+                      ? role.name
+                      : `Role ID: ${role}`
+                  )
+                  .join(", ")}
               </Typography>
             )}
           </Box>
@@ -260,20 +309,33 @@ const AboutUser: React.FC = () => {
       // Case 2: We fetched full Organization details based on IDs
       if (organizationDetails.length > 0) {
         return organizationDetails.map((orgDetail, index) => (
-          <Box key={`org-detail-${orgDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
-            <Typography variant="subtitle1"><strong>{orgDetail.name}</strong> (ID: {orgDetail.id})</Typography>
+          <Box
+            key={`org-detail-${orgDetail.id}-${index}`}
+            sx={{ mb: 1, p: 1, border: "1px solid #eee", borderRadius: 1 }}
+          >
+            <Typography variant="subtitle1">
+              <strong>{orgDetail.name}</strong> (ID: {orgDetail.id})
+            </Typography>
             {/* Here you might want to show roles if you fetch OrgMember entries associated with this viewedUser and orgDetail.id */}
             {/* For now, just listing the organization name and ID */}
           </Box>
         ));
       }
     }
-    return <Typography>No organization memberships found or details not loaded.</Typography>;
+    return (
+      <Typography>
+        No organization memberships found or details not loaded.
+      </Typography>
+    );
   };
 
   // Helper to render project list
   const renderProjects = () => {
-    if (isLoadingDetails && projectDetails.length === 0 && (!viewedUser.projects || typeof viewedUser.projects[0] === 'number')) {
+    if (
+      isLoadingDetails &&
+      projectDetails.length === 0 &&
+      (!viewedUser.projects || typeof viewedUser.projects[0] === "number")
+    ) {
       return <CircularProgress size={24} />;
     }
     if (viewedUser.projects && viewedUser.projects.length > 0) {
@@ -282,37 +344,50 @@ const AboutUser: React.FC = () => {
         return (viewedUser.projects as ProjectMember[]).map((proj, index) => (
           <Box key={`proj-member-${proj.id}-${index}`} sx={{ mb: 1 }}>
             <Typography>
-              Project ID (from member record): {proj.projectId} — Membership ID: {proj.id}
+              Project ID (from member record): {proj.projectId} — Membership ID:{" "}
+              {proj.id}
             </Typography>
             {proj.roles && proj.roles.length > 0 && (
-            <Typography variant="body2" sx={{ ml: 2 }}>
-              Roles: {
-              proj.roles.map((role) =>
-              typeof role === "object" && role !== null && "name" in role
-              ? role.name
-              : `Role ID: ${role}`
-              ).join(", ")
-              }
-            </Typography>
-)}
-
+              <Typography variant="body2" sx={{ ml: 2 }}>
+                Roles:{" "}
+                {proj.roles
+                  .map((role) =>
+                    typeof role === "object" && role !== null && "name" in role
+                      ? role.name
+                      : `Role ID: ${role}`
+                  )
+                  .join(", ")}
+              </Typography>
+            )}
           </Box>
         ));
       }
       // Case 2: We fetched full Project details based on IDs
       if (projectDetails.length > 0) {
         return projectDetails.map((projDetail, index) => (
-           <Box key={`proj-detail-${projDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
-            <Typography variant="subtitle1"><strong>{projDetail.name}</strong> (ID: {projDetail.id})</Typography>
-            <Typography variant="body2">Budget: ${projDetail.budget}</Typography>
-            <Typography variant="caption">Charter: {projDetail.charter || "N/A"}</Typography>
+          <Box
+            key={`proj-detail-${projDetail.id}-${index}`}
+            sx={{ mb: 1, p: 1, border: "1px solid #eee", borderRadius: 1 }}
+          >
+            <Typography variant="subtitle1">
+              <strong>{projDetail.name}</strong> (ID: {projDetail.id})
+            </Typography>
+            <Typography variant="body2">
+              Budget: ${projDetail.budget}
+            </Typography>
+            <Typography variant="caption">
+              Charter: {projDetail.charter || "N/A"}
+            </Typography>
           </Box>
         ));
       }
     }
-    return <Typography>No project memberships found or details not loaded.</Typography>;
+    return (
+      <Typography>
+        No project memberships found or details not loaded.
+      </Typography>
+    );
   };
-
 
   return (
     <Box
@@ -360,7 +435,12 @@ const AboutUser: React.FC = () => {
           >
             <Box sx={{ textAlign: "center", mb: 3 }}>
               <img
-                src={viewedUser.avatar || `https://avatar.iran.liara.run/username?username=${encodeURIComponent(viewedUser.displayName || viewedUser.name || "default")}`}
+                src={
+                  viewedUser.avatar ||
+                  `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
+                    viewedUser.displayName || viewedUser.name || "default"
+                  )}`
+                }
                 alt="Profile"
                 style={{
                   width: 120, // Larger avatar
@@ -369,7 +449,7 @@ const AboutUser: React.FC = () => {
                   objectFit: "cover",
                   border: `4px solid ${theme.palette.primary.main}`, // Use theme primary color
                   marginBottom: "1rem",
-                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)"
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.15)",
                 }}
               />
               {isOwnProfile && (
@@ -403,47 +483,70 @@ const AboutUser: React.FC = () => {
                   </Button>
                 </Box>
               )}
-              <Typography variant="h4" fontWeight={700} sx={{ mt: 2, color: theme.palette.text.primary }}> {/* Adjusted h variant */}
+              <Typography
+                variant="h4"
+                fontWeight={700}
+                sx={{ mt: 2, color: theme.palette.text.primary }}
+              >
+                {" "}
+                {/* Adjusted h variant */}
                 {viewedUser.displayName || viewedUser.name}
               </Typography>
-              <Typography variant="body1" color="textSecondary">{viewedUser.email}</Typography> {/* Adjusted variant */}
+              <Typography variant="body1" color="textSecondary">
+                {viewedUser.email}
+              </Typography>{" "}
+              {/* Adjusted variant */}
             </Box>
 
             <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Verification
               </Typography>
-              <Typography variant="body1"> {/* Adjusted variant */}
+              <Typography variant="body1">
+                {" "}
+                {/* Adjusted variant */}
                 {viewedUser.verified ? "Email Verified ✅" : "Not Verified ❌"}
               </Typography>
             </Box>
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Organizations
               </Typography>
-              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
+              {detailsError && !isLoadingDetails && (
+                <Alert severity="warning" sx={{ mb: 1 }}>
+                  {detailsError}
+                </Alert>
+              )}
               {renderOrganizations()}
             </Box>
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Projects
               </Typography>
-              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
+              {detailsError && !isLoadingDetails && (
+                <Alert severity="warning" sx={{ mb: 1 }}>
+                  {detailsError}
+                </Alert>
+              )}
               {renderProjects()}
             </Box>
 
             {isOwnProfile && (
-              <Box mt={4}> {/* Increased margin */}
+              <Box mt={4}>
+                {" "}
+                {/* Increased margin */}
                 <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
-                <Typography variant="h5" fontWeight="bold" gutterBottom> {/* Adjusted variant */}
+                <Typography variant="h5" fontWeight="bold" gutterBottom>
+                  {" "}
+                  {/* Adjusted variant */}
                   Edit Your Profile
                 </Typography>
                 <Form />
@@ -465,7 +568,9 @@ export default AboutUser;
  * @param userId - ID of the user to fetch.
  * @returns Parsed user object or null if not found or error.
  */
-export const getParsedUserById = async (userId: number): Promise<User | null> => {
+export const getParsedUserById = async (
+  userId: number
+): Promise<User | null> => {
   console.log(`getParsedUserById called for ID: ${userId}`);
   if (isNaN(userId)) {
     console.error("getParsedUserById received NaN for userId");
@@ -475,16 +580,30 @@ export const getParsedUserById = async (userId: number): Promise<User | null> =>
     const result = await getUser(userId);
     console.log(`getUser result for ID ${userId}:`, result);
 
-
-    if (!result || result.status !== 200 || !result.data || Object.keys(result.data).length === 0) {
-        if (result && result.status === 204) { // Specifically handle 204 No Content as user not found
-             console.warn(`User with ID ${userId} not found (204 No Content).`);
-        } else if (result && result.data && Object.keys(result.data).length === 0 && result.status === 200){
-            // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
-            console.warn(`User with ID ${userId} not found (200 with empty data object).`);
-        } else {
-            console.error(`Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`);
-        }
+    if (
+      !result ||
+      result.status !== 200 ||
+      !result.data ||
+      Object.keys(result.data).length === 0
+    ) {
+      if (result && result.status === 204) {
+        // Specifically handle 204 No Content as user not found
+        console.warn(`User with ID ${userId} not found (204 No Content).`);
+      } else if (
+        result &&
+        result.data &&
+        Object.keys(result.data).length === 0 &&
+        result.status === 200
+      ) {
+        // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
+        console.warn(
+          `User with ID ${userId} not found (200 with empty data object).`
+        );
+      } else {
+        console.error(
+          `Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`
+        );
+      }
       return null;
     }
 
@@ -494,9 +613,9 @@ export const getParsedUserById = async (userId: number): Promise<User | null> =>
     // The `getUser` should ideally return data that already conforms to `User` or needs minimal parsing here.
     return {
       id: userData.id,
-      displayName: userData.displayName || userData.name || '', // Fallback for displayName
-      email: userData.email || '',
-      name: userData.name || '',
+      displayName: userData.displayName || userData.name || "", // Fallback for displayName
+      email: userData.email || "",
+      name: userData.name || "",
       password: userData.password, // Password should ideally not be part of this response
       verified: userData.verified ?? false,
       avatar: userData.avatar || null, // Ensure it can be null as per User type
@@ -506,7 +625,7 @@ export const getParsedUserById = async (userId: number): Promise<User | null> =>
       projects: userData.projects || [],
       issues: userData.issues || [], // Added issues
       sessions: userData.sessions || [], // Added sessions
-      verifyId: userData.verifyId === undefined ? null : userData.verifyId // ensure it can be null
+      verifyId: userData.verifyId === undefined ? null : userData.verifyId, // ensure it can be null
     };
   } catch (error) {
     console.error(`Error in getParsedUserById for ID ${userId}:`, error);
