@@ -48,6 +48,8 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   const [priority, setPriority] = useState(1);
   const [issueid, setIssueid] = useState(1);
   const [cost, setCost] = useState(0);
+  const [projectid, setProjectid] = useState(0);
+  const [tagid, setTagid] = useState(0);
 
   useEffect(() => {
     if (initialData) {
@@ -76,15 +78,16 @@ export const AddIssue: React.FC<AddIssueProps> = ({
     }
 
     const issueParams = {
-      name: title,
-      description: desc || null,
+      title: title,
+      desc: desc || null,
       priority,
       cost,
+      projectid,
+      tagid,
     };
 
     const result = await createNewIssue(issueParams, "create-issue");
-    if (result.status === 200 && result.issue) {
-      onAdd(result.issue); // Add issue to UI
+    if (result.status === 200 || result.status === 201) {
       onClose(); // Close the dialog
     } else {
       alert(`Error creating issue: ${result.error || "Unknown error"}`);
