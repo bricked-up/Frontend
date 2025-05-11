@@ -122,7 +122,7 @@ describe("Getter Utility Functions (Integration Tests)", () => {
     });
 
     describe("getProject", () => {
-        const existingProjectId = 1;
+        const existingProjectId = 2;
         const nonExistentProjectId = 80808;
 
         it("should get existing project data successfully (status 200)", async () => {
