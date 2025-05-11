@@ -139,6 +139,35 @@ const Login = () => {
     }
   };
 
+  // Inverted text field styling for both light and dark modes
+  const textFieldSx = {
+    '& .MuiOutlinedInput-root': {
+      backgroundColor: isDark ? '#0f172a' : '#f1f5f9',
+      color: isDark ? '#f1f5f9' : '#0f172a',
+      '& fieldset': {
+        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
+      },
+      '&:hover fieldset': {
+        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
+      },
+      '&.Mui-focused fieldset': {
+        borderColor: isDark ? '#60a5fa' : '#2563eb',
+      },
+    },
+    '& .MuiInputLabel-root': {
+      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
+    },
+    '& .MuiInputLabel-root.Mui-focused': {
+      color: isDark ? '#60a5fa' : '#2563eb',
+    },
+    '& .MuiInputBase-input': {
+      '&::placeholder': {
+        color: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.5)',
+        opacity: 1,
+      },
+    },
+  };
+
   return (
     <Box
       sx={{
@@ -253,19 +282,7 @@ const Login = () => {
                   margin="normal"
                   value={account}
                   onChange={(e) => setAccount(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
+                  sx={textFieldSx}
                 />
                 <TextField
                   fullWidth
@@ -277,19 +294,7 @@ const Login = () => {
                   margin="normal"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
+                  sx={textFieldSx}
                 />
 
                 {/* Forgot Password link - functionality from first file */}
@@ -366,19 +371,7 @@ const Login = () => {
                   margin="normal"
                   value={account}
                   onChange={(e) => setAccount(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
+                  sx={textFieldSx}
                 />
                 <TextField
                   fullWidth
@@ -390,19 +383,7 @@ const Login = () => {
                   margin="normal"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
-                  }}
+                  sx={textFieldSx}
                 />
                 <TextField
                   fullWidth
@@ -417,17 +398,10 @@ const Login = () => {
                   error={registerAttempt && !isValid && password !== confirmpwd}
                   helperText={registerAttempt && password !== confirmpwd ? "Passwords don't match" : ""}
                   sx={{
-                    '& .MuiOutlinedInput-root': {
-                      '& fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
-                      },
-                      '&:hover fieldset': {
-                        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
-                      },
-                    },
-                    '& .MuiInputLabel-root': {
-                      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
-                    },
+                    ...textFieldSx,
+                    '& .MuiFormHelperText-root': {
+                      color: isDark ? '#f87171' : '#ef4444',
+                    }
                   }}
                 />
 
