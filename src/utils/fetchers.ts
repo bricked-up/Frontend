@@ -106,31 +106,37 @@ export async function createNewIssue(
 /**
  * Create a new organization via backend
  */
-export async function createOrganization(
+export const createOrganization = async (
   paramsObj: NewOrganizationParams,
   endpoint: string
-): Promise<CreateOrganizationResult> {
+): Promise<CreateOrganizationResult> => {
   try {
     const params = new URLSearchParams();
     Object.entries(paramsObj).forEach(([key, value]) => {
       if (value == null) return;
       if (Array.isArray(value)) {
-        value.forEach(v => params.append(key, String(v)));
+        value.forEach((v) => params.append(key, String(v)));
       } else {
         params.append(key, String(value));
       }
     });
-    const res = await fetch(`${API_BASE}/${endpoint}`, {
+    const sessionid = localStorage.getItem("sessionid")!;
+    params.append("sessionid", sessionid)
+
+    console.log(paramsObj, endpoint)
+    const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params.toString(),
-      credentials: "include",
+      body: params,
     });
-    if (!res.ok) {
-      const err = await parseErrorResponse(res);
-      return { status: res.status, organization: null, error: err };
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      return { status: response.status, organization: null, error };
     }
-    const rawJson: any = await res.json();
+
+    const rawJson: any = await response.json();
+
     const organization: Organization = {
       id: rawJson.id,
       name: rawJson.name,
@@ -138,11 +144,16 @@ export async function createOrganization(
       members: rawJson.members ?? [],
       roles: rawJson.roles ?? [],
     };
-    return { status: res.status, organization };
+
+    return { status: response.status, organization };
   } catch (err: any) {
-    return { status: 0, organization: null, error: err.message || "Unknown error" };
+    return {
+      status: 0,
+      organization: null,
+      error: err.message || "Unknown error",
+    };
   }
-}
+};
 
 /**
  * Delete an organization via backend

@@ -3,7 +3,7 @@
 
 import { API_BASE } from "../../../src/config";
 import { Link as RouterLink } from "react-router-dom";
-import { Project, OrgMember, OrgRole, Organization } from "../../../src/utils/types";
+import { Project, OrgMember, OrgRole, Organization, User } from "../../../src/utils/types";
 import { useEffect, useState } from "react";
 import {
     Box,
@@ -30,9 +30,10 @@ import { useTheme } from "@mui/material/styles";
 
 import OrganizationCard from "./OrganizationCard";
 import { tokens } from "../../theme";
-import { createOrganization as CreateOrg, /*updateOrg*/ deleteOrganization as DeleteOrg, fetchAllOrgsForUser } from "../../utils/fetchers";
+import { createOrganization as CreateOrg, /*updateOrg*/ } from "../../utils/post.utils";
+import { getAllUsers, fetchAllOrgsForUser, getUser, getOrg } from "../../utils/getters.utils";
 
-
+const sessionUserId = localStorage.getItem("userid"); // assuming you saved this at login
 
 
 
@@ -148,25 +149,21 @@ const CreateOrganization: React.FC = () => {
     const colors = tokens(theme.palette.mode);
 
 
+    const userId = sessionUserId ? parseInt(sessionUserId, 10) : -1;
+
+    const [user, setUser] = useState<User | null>(null);
+
+
     useEffect(() => {
+        const sessionUserId = localStorage.getItem("userid");
+        const userId = sessionUserId ? parseInt(sessionUserId, 10) : -1;
+
+        if (userId <= 0) return;
+
         (async () => {
-            try {
-                console.log("🛰️ Loading all orgs for user #2 …");
-                const liveOrgs = await fetchAllOrgsForUser(1);
-                console.log("🛰️ raw liveOrgs:", liveOrgs);
-
-                liveOrgs.forEach((org, idx) => {
-                    console.group(`Org[${idx}] id=${org.id}`);
-                    console.log("  name:", org.name);
-                    console.log("  members:", org.members);
-                    console.log("  projects:", org.projects);
-                    console.groupEnd();
-                });
-
-                setOrganizations(liveOrgs);
-            } catch (err) {
-                console.error("❌ fetchAllOrgsForUser error:", err);
-            }
+            const orgs = await fetchAllOrgsForUser(userId);
+            console.log("🛰️ Loaded orgs:", orgs);
+            setOrganizations(orgs);
         })();
     }, []);
 
@@ -193,27 +190,20 @@ const CreateOrganization: React.FC = () => {
         }));
 
         const orgRoles: OrgRole[] = [];
+        const numericProjectIds = projects.map(p =>
+            parseInt(p.replace(/\D+/g, ""), 10)
+        ).filter(id => !isNaN(id));
+        const result = await CreateOrg(
+            {
+                orgName: orgName,
+                projects: numericProjectIds, // now an array of numbers/IDs
+            },
+            "create-org"
+        );
+        window.location.reload();
 
-        try {
-            await CreateOrg(
-                {
-                    orgName,          // matches r.FormValue("orgName")
-                    projects,
-                },
-                "create-org"        // the endpoint suffix you use with API_BASE
-            );
-            // reload list after create
-            const liveOrgs = await fetchAllOrgsForUser(2);
-            setOrganizations(liveOrgs);
-            closeDialog();
-        } catch (err) {
-            console.error("❌ createOrg failed:", err);
-            alert("Create failed: " + err);
-        }
-
-
-        closeDialog();
     };
+
 
 
     // src/components/organizations/CreateOrganization.tsx
@@ -341,12 +331,43 @@ const CreateOrganization: React.FC = () => {
                         <IconButton onClick={handleAddMember}><AddIcon /></IconButton>
                     </Box>
                     <List>
-                        {members.map((m, i) => (
-                            <ListItem key={i} secondaryAction={<IconButton onClick={() => handleRemoveMember(i)}><RemoveIcon /></IconButton>}>
-                                <ListItemText primary={m} />
-                            </ListItem>
-                        ))}
+                        {members.map((m, i) => {
+                            const memberName = m;
+
+                            return (
+                                <ListItem
+                                    key={i}
+                                    secondaryAction={
+                                        <IconButton onClick={() => handleRemoveMember(i)}>
+                                            <RemoveIcon />
+                                        </IconButton>
+                                    }
+
+                                >
+                                    <Button
+                                        variant="contained"
+                                        color="primary"
+                                        fullWidth
+                                        sx={{
+                                            justifyContent: "flex-start",
+                                            textTransform: "none",
+                                            borderRadius: 2,
+                                            my: 0.5,
+                                            py: 1.5,
+                                            boxShadow: 3,
+                                            "&:hover": {
+                                                boxShadow: 6,
+                                                backgroundColor: "primary.dark",
+                                            },
+                                        }}
+                                    >
+                                        {memberName}
+                                    </Button>
+                                </ListItem>
+                            );
+                        })}
                     </List>
+
 
                     <Typography variant="h6" sx={{ mt: 2, color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}>Projects</Typography>
                     <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: 1 }}>

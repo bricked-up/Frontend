@@ -99,7 +99,7 @@ export const getUser = async (userId: number): Promise<GetUserResult> => {
 
     if (!response.ok) {
       const error = await parseErrorResponse(response);
-      console.error(`Error fetching user ${userId}: Status ${response.status}, Message: ${error}`);
+      console.error(`Error fetching user ${userId}: Status ${response.status}, Message: ${error}`); 
       return { status: response.status, data: null, error };
     }
     const text = await response.text();

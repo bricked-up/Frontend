@@ -17,7 +17,7 @@ export interface Result {
 
 export interface NewOrganizationParams {
   orgName: string;
-  projects?: string[];
+  projects?: number[];
 }
 
 export interface CreateOrganizationResult {
@@ -180,13 +180,19 @@ export const createOrganization = async (
         params.append(key, String(value));
       }
     });
+    const sessionid = localStorage.getItem("sessionid");
+    if (sessionid){
+      params.append("sessionid", sessionid);
+    }
 
+    
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params,
+      body: params.toString(),
     });
-
+    const errorText = await response.text();
+    console.log("Response body:",errorText);
     if (!response.ok) {
       const error = await parseErrorResponse(response);
       return { status: response.status, organization: null, error };

@@ -62,7 +62,7 @@ describe("createOrganization", () => {
     });
 
     const res: CreateOrganizationResult = await createOrganization(
-      { name: "Org", projects: ["p1"] },
+      { orgName: "Org", projects: [1] },
       "orgs"
     );
     expect(res.status).toBe(201);
