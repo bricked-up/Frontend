@@ -18,22 +18,24 @@ import {
   Grid,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import { Task } from "../../utils/types";
+import { Issue, Member } from "../../utils/types"; 
 import { useTheme } from "@mui/material/styles";
+import DropDown from "../DropDown";           // import dropdown for assignees
 
 export interface AddIssueProps {
   show: boolean;
   onClose: () => void;
   boardId: number;
-  onAdd: (task: Task) => void;
-  initialData?: Task; // optional: if passed = editing
+  onAdd: (issue: Issue) => void;             // renamed Task->Issue
+  initialData?: Issue;                       // renamed Task->Issue
+  members: Member[];  // new prop for project members
 }
 
 /**
  * AddIssue Component
  *
  * Renders a modal (Dialog) that allows users to create a new issue
- * or edit an existing one. Handles all form input states and submission.
+ * or edit an existing issue. Handles all form input states and submission.
  */
 export const AddIssue: React.FC<AddIssueProps> = ({
   show,
@@ -41,59 +43,72 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   boardId,
   onAdd,
   initialData,
+  members,           // destructure members
 }) => {
   const [title, setTitle] = useState("");
-  const [desc, setDesc] = useState("");
-  const [priority, setPriority] = useState(1);
-  const [tagid, setTagid] = useState(1);
+  const [desc, setDesc] = useState<string | null>(""); // issue.desc is optional
+  const [priority, setPriority] = useState<number | null>(1);
+  const [tagId, setTagId] = useState<number | null>(1);    // renamed tagid->tagId
   const [cost, setCost] = useState(0);
+
+  // new state: selected assignee ID
+  const [assignedToId, setAssignedToId] = useState<string>(
+    initialData?.assignedToId || ""
+  );
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || "");
-      setDesc(initialData.desc || "");
-      setPriority(initialData.priority || 1);
-      setTagid(initialData.tagid || 1);
-      setCost(initialData.cost || 0);
+      setDesc(initialData.desc ?? "");
+      setPriority(initialData.priority ?? 1);
+      setTagId(initialData.tagId ?? 1);
+      setCost(initialData.cost);
+      // sync existing assignee on edit
+      setAssignedToId(initialData.assignedToId || "");
     } else {
       setTitle("");
       setDesc("");
       setPriority(1);
-      setTagid(1);
+      setTagId(1);
       setCost(0);
+      // clear assignee on new
+      setAssignedToId("");
     }
   }, [initialData]);
 
   /**
    * Handles the form submission.
-   * Constructs a Task object and calls onAdd.
+   * Constructs an Issue object and calls onAdd.
    */
   const handleSubmit = () => {
     if (!title.trim()) {
       alert("Title is missing :p");
       return;
     }
-    const newTask: Task = {
+    const newIssue: Issue = {
       ...(initialData || {}),
       id: initialData
         ? initialData.id
-        : Math.random().toString(36).substr(2, 9),
+        : Date.now(),        // generate a numeric ID if none
       title,
-      desc,
-      tagid,
+      desc: desc || null,
+      tagId,
       priority,
       cost,
       created: initialData?.created || new Date(),
-      createdBy: initialData?.createdBy || "You",
-      completed: initialData?.completed,
+      completed: initialData?.completed ?? null,
+      // include assignment fields
+      assignedToId,
+      assignedToName: members.find((m) => m.id === assignedToId)?.name,
     };
 
-    onAdd(newTask);
+    onAdd(newIssue);
     onClose();
   };
 
   const theme = useTheme();
   const textColor = theme.palette.mode === "light" ? "black" : "white";
+
   return (
     <Dialog open={show} onClose={onClose} fullWidth maxWidth="sm">
       <DialogTitle>{initialData ? "Edit Issue" : "Add New Issue"}</DialogTitle>
@@ -119,7 +134,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               fullWidth
               multiline
               rows={4}
-              value={desc}
+              value={desc ?? ""}
               onChange={(e) => setDesc(e.target.value)}
               InputProps={{
                 style: { color: textColor },
@@ -134,7 +149,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               label="Priority"
               type="number"
               fullWidth
-              value={priority}
+              value={priority ?? 1}
               onChange={(e) => setPriority(Number(e.target.value))}
               InputProps={{
                 style: { color: textColor },
@@ -149,8 +164,8 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               label="Tag ID"
               type="number"
               fullWidth
-              value={tagid}
-              onChange={(e) => setTagid(Number(e.target.value))}
+              value={tagId ?? 1}
+              onChange={(e) => setTagId(Number(e.target.value))}
               InputProps={{
                 style: { color: textColor },
               }}
@@ -172,6 +187,15 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               InputLabelProps={{
                 style: { color: textColor },
               }}
+            />
+          </Grid>
+
+          {/* Assignee dropdown */}
+          <Grid item xs={12}>
+            <DropDown
+              value={assignedToId}
+              onSelect={setAssignedToId}
+              options={members.map((m) => m.id)}
             />
           </Grid>
         </Grid>

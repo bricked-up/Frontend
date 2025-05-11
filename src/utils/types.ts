@@ -26,7 +26,7 @@ export type Project = {
   members?: ProjectMember[];
   issues?: Issue[];
   tags?: Tag[];
-}
+};
 
 /**
  * @description Represents an organization within the application.
@@ -43,7 +43,7 @@ export type Organization = {
   projects?: Project[];
   members?: OrgMember[];
   roles?: OrgRole[];
-}
+};
 
 /**
  * @description Represents a user account in the application.
@@ -78,7 +78,7 @@ export type User = {
   projects?: ProjectMember[];
   issues?: Issue[];
   sessions?: Session[];
-}
+};
 
 /**
  * @description Represents an issue or task within a project.
@@ -104,7 +104,9 @@ export type Issue = {
   cost: number;
   dependencies?: Dependency[];
   reminders?: Reminder[];
-}
+  assignedToId?: string;
+  assignedToName?: string;
+};
 
 /**
  * @description Represents the membership of a user within an organization, linking a user to an organization.
@@ -118,7 +120,7 @@ export type OrgMember = {
   userId: number;
   orgId: number;
   roles?: OrgRole[];
-}
+};
 
 /**
  * @description Defines a role within an organization, specifying permissions.
@@ -136,7 +138,7 @@ export type OrgRole = {
   canRead: boolean;
   canWrite: boolean;
   canExec: boolean;
-}
+};
 
 /**
  * @description Represents the membership of a user within a project, linking a user to a project.
@@ -150,7 +152,7 @@ export type ProjectMember = {
   userId: number;
   projectId: number;
   roles?: ProjectRole[];
-}
+};
 
 /**
  * @description Defines a role within a project, specifying permissions specific to that project.
@@ -168,7 +170,7 @@ export type ProjectRole = {
   canRead: boolean;
   canWrite: boolean;
   canExec: boolean;
-}
+};
 
 /**
  * @description Represents a tag that can be applied to issues within a project.
@@ -182,7 +184,7 @@ export type Tag = {
   projectId: number;
   name: string;
   color: string;
-}
+};
 
 /**
  * @description Represents a dependency relationship between two issues.
@@ -194,7 +196,7 @@ export type Dependency = {
   id: number;
   issueId: number;
   dependency: number;
-}
+};
 
 /**
  * @description Represents a reminder associated with an issue for a specific user.
@@ -206,7 +208,7 @@ export type Reminder = {
   id: number;
   issueId: number;
   userId: number;
-}
+};
 
 /**
  * @description Represents an active user session.
@@ -218,7 +220,7 @@ export type Session = {
   id: number;
   userId: number;
   expires: Date;
-}
+};
 
 /**
  * @description Represents a record used for user email verification.
@@ -230,8 +232,7 @@ export type VerifyUser = {
   id: number;
   code: number;
   expires: Date;
-
-}
+};
 
 /**
  * @description Represents a record used for the password reset process.
@@ -245,7 +246,7 @@ export type ForgotPassword = {
   userId: number;
   code: number;
   expirationDate: Date;
-}
+};
 
 /**
  * @description Represents a board, which can contain multiple tasks.
@@ -262,9 +263,8 @@ export interface Board {
   createdBy: string;
   createdById: string;
   createdAt: Date;
-  tasks: Task[];
+  issues: Issue[];
 }
-
 
 /**
  * @description Represents a task within a board.
@@ -290,7 +290,6 @@ export interface Task {
   completed?: Date;
 }
 
-
 /**
  * @description Represents the data structure for creating a new board.
  * Typically used in POST requests.
@@ -307,18 +306,18 @@ export interface NewBoard {
 // --- Getter Result Types ---
 
 /**
-* @interface GetResult
-* @template T The type of the data payload.
-* @description Generic interface for the result of a getter function.
-* Contains the HTTP status, the data payload (or null), and an optional error message.
-* @property {number} status - The HTTP status code of the response (or a client-side error code, e.g., 0).
-* @property {T | null} data - The data payload of type T if the request was successful, otherwise null.
-* @property {string} [error] - An optional error message if the request failed or an error occurred.
-*/
+ * @interface GetResult
+ * @template T The type of the data payload.
+ * @description Generic interface for the result of a getter function.
+ * Contains the HTTP status, the data payload (or null), and an optional error message.
+ * @property {number} status - The HTTP status code of the response (or a client-side error code, e.g., 0).
+ * @property {T | null} data - The data payload of type T if the request was successful, otherwise null.
+ * @property {string} [error] - An optional error message if the request failed or an error occurred.
+ */
 export interface GetResult<T> {
-status: number;
-data: T | null;
-error?: string;
+  status: number;
+  data: T | null;
+  error?: string;
 }
 
 /**
@@ -334,11 +333,11 @@ export type GetUserResult = GetResult<User>;
 export type GetIssueResult = GetResult<Issue>;
 
 /**
-* @description Result type for fetching project members.
-* Currently defined as `string[]` based on the hypothetical endpoint's expectation.
-* This might change to `GetResult<ProjectMember[]>` or `GetResult<User[]>` if the
-* endpoint is implemented to return richer member objects.
-*/
+ * @description Result type for fetching project members.
+ * Currently defined as `string[]` based on the hypothetical endpoint's expectation.
+ * This might change to `GetResult<ProjectMember[]>` or `GetResult<User[]>` if the
+ * endpoint is implemented to return richer member objects.
+ */
 export type GetProjectMembersResult = GetResult<string[]>;
 
 /**
@@ -354,16 +353,16 @@ export type GetProjectIssuesResult = GetResult<Issue[]>;
 export type GetOrgIssuesResult = GetResult<Issue[]>;
 
 /**
-* @interface SQLNullTime
-* @description Represents the raw structure of a nullable time value often returned
-* by Go backends when using `sql.NullTime`. This interface is useful for parsing
-* such data before converting it to a JavaScript `Date` object or `null`.
-* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
-* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
-*/
+ * @interface SQLNullTime
+ * @description Represents the raw structure of a nullable time value often returned
+ * by Go backends when using `sql.NullTime`. This interface is useful for parsing
+ * such data before converting it to a JavaScript `Date` object or `null`.
+ * @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
+ * @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
+ */
 export interface SQLNullTime {
-Time: string;
-Valid: boolean;
+  Time: string;
+  Valid: boolean;
 }
 
 // --- New Getter Result Types for Board and Task ---
@@ -391,3 +390,8 @@ export type GetTaskResult = GetResult<Task>;
  * Wraps an array of Task types within the generic GetResult structure.
  */
 export type GetTasksResult = GetResult<Task[]>;
+
+export interface Member {
+  id: string;
+  name: string;
+}

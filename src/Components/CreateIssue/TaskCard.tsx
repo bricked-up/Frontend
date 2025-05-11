@@ -15,15 +15,15 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { Task } from "../../utils/types";
+import { Task, Issue } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
 
 interface TaskCardProps {
   task: Task;
   boardId: number;
-  onDelete: (taskId: string) => void;
-  onComplete: (taskId: string) => void;
-  onEdit: (task: Task) => void; // <-- Added for opening the edit modal
+  onDelete: (taskId: number) => void;
+  onComplete: (taskId: number) => void;
+  onEdit: (task: Issue) => void; // <-- Added for opening the edit modal
 }
 
 /**
@@ -82,7 +82,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             cursor: "pointer",
           },
         }}
-        onClick={() => onEdit(task)} // <-- clicking the card triggers edit
+        onClick={() => onEdit(Issue)} // <-- clicking the card triggers edit
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight={700} noWrap>
