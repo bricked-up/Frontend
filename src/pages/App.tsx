@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
-import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
@@ -46,7 +45,6 @@ function App() {
 
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
-              <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
               <Route path="/testt" element={<LandingPage />} />
               <Route path="/verification" element={<EmailVerification />} />
@@ -102,6 +100,8 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
+
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -109,3 +109,4 @@ function App() {
 }
 
 export default App;
+
