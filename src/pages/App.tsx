@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
-import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
@@ -18,10 +17,14 @@ import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import EmailVerification from "./EmailVerification";
+import React from "react";
 
 function App() {
   const [theme, colorMode] = useMode();
-  const { user } = useUser();
+
+  let sessionId = localStorage.getItem("sessionid");
+  const [loggedIn] = React.useState<string | null>(sessionId);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -31,7 +34,8 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-              {user ? (
+
+              {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
@@ -41,8 +45,11 @@ function App() {
 
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
-              <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
+              <Route path="/testt" element={<LandingPage />} />
+              <Route path="/verification" element={<EmailVerification />} />
+
+              {/* route for email verification */}
 
               {/* user related routes */}
               <Route path="/user/:userId">
@@ -53,7 +60,6 @@ function App() {
                   <Route path="issues" />
                 </Route>
               </Route>
-
 
               {/* project related routes */}
               <Route path="/project">
@@ -74,18 +80,17 @@ function App() {
 
               {/* Protected Routes */}
               <Route element={<Layout />}>
-                <Route
-                  path="/dashboard"
-                  element={
-                    <Dashboard />
-                  }
-                />
+                <Route path="/dashboard" element={<Dashboard />} />
+
                 <Route path="/viewProject" element={<ViewProject />} />
-                <Route path="/aboutUser" element={<AboutUser />} />
+                <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
-                <Route path="/viewOrg" element={<ViewOrg />} />
-                <Route path="/createIssue" element={<CreateTask board={mockBoard} />} />
+                <Route path="/vieworg" element={<ViewOrg />} />
+                <Route
+                  path="/createIssue"
+                  element={<CreateTask board={mockBoard} />}
+                />
               </Route>
 
               {/* routes for 404 and server errors */}
@@ -95,6 +100,8 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
+
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -102,3 +109,4 @@ function App() {
 }
 
 export default App;
+

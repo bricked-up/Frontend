@@ -37,11 +37,6 @@ body {
   }
 
   
-.forgot-pwd-link {
-	font-family: Verdana;
-	font-size: 13px;
-	color: #3b4465
-}
 
 .msgFrame{
 	background: #F6F6DF;
@@ -348,6 +343,8 @@ li {
 }
 
 
+
+
 /*for the PageNotFound script: */
 :root {
 	--purple: #28254C;
@@ -614,6 +611,7 @@ html, body {
       transition: background .5s ease;
       overflow: hidden;
       -webkit-mask-image: -webkit-radial-gradient(white, black);
+      mask-image: radial-gradient(white, black);
       
       &:before {
         content: '';

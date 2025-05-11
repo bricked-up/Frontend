@@ -80,7 +80,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
    * Handles the form submission.
    * Constructs an Issue object and calls onAdd.
    */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title.trim()) {
       alert("Title is missing :p");
       return;

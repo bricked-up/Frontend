@@ -2,15 +2,16 @@ import { Issue, Organization, Project } from "./types";
 import { API_BASE } from "../config";
 
 export interface IssueParams {
-  name: string;
-  description?: string | null;
+  title: string;
+  desc?: string | null;
   priority: number;
   cost?: number;
+  projectid: number;
+  tagid: number;
 }
 
 export interface Result {
   status: number;
-  issue: Issue | null;
   error?: string;
 }
 
@@ -82,6 +83,13 @@ async function parseErrorResponse(response: Response): Promise<string> {
   }
 }
 
+
+function formatDateForBackend(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
+         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
 /**
  * Creates a new issue on the server.
  * If successful, returns only the HTTP status (no JSON body).
@@ -113,30 +121,45 @@ export const createNewIssue = async (
   endpoint: string
 ): Promise<Result> => {
   try {
+    const sessionid = localStorage.getItem("sessionid") || "";
     const params = new URLSearchParams();
+
     Object.entries(paramsObj).forEach(([key, value]) => {
       if (value != null) {
         params.append(key, String(value));
       }
     });
 
+    params.append("sessionid", sessionid);
+
+    const now = new Date();
+    params.append("date", formatDateForBackend(now));
+    params.append("completed", formatDateForBackend(now));  
+
+
+
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
       body: params,
     });
 
     if (!response.ok) {
       const error = await parseErrorResponse(response);
-      return { status: response.status, issue: null, error };
+      return { status: response.status, error };
     }
 
     // no JSON body returned on success
     return { status: response.status, issue: null };
   } catch (err: any) {
-    return { status: 0, issue: null, error: err.message || "Unknown error" };
+    console.log("meow");
+    return { status: 0, error: err.message || "Unknown error!"};
   }
 };
+
+
 
 /**
  * Creates a new organization, optionally linking existing project IDs.
@@ -244,12 +267,16 @@ export const createProject = async (
     const params = new URLSearchParams();
     Object.entries(paramsObj).forEach(([key, value]) => {
       if (value == null) return;
+      console.log(key);
+      console.log(value);
       if (Array.isArray(value)) {
         value.forEach((v) => params.append(key, String(v)));
       } else {
         params.append(key, String(value));
       }
     });
+
+    console.log(params);
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
