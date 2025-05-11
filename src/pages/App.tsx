@@ -20,18 +20,12 @@ import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import EmailVerification from "./EmailVerification";
 import React from "react";
-import { set } from "date-fns";
 
 function App() {
   const [theme, colorMode] = useMode();
 
   let sessionId = localStorage.getItem("sessionid");
-  const [moew, setMeow] = React.useState<string | null>(sessionId);
-<<<<<<< HEAD
-  console.log(moew);
-=======
-  console.log(moew)
->>>>>>> dev
+  const [loggedIn] = React.useState<string | null>(sessionId);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -41,12 +35,7 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-<<<<<<< HEAD
-=======
-
-
->>>>>>> dev
-              {!(moew === null || moew === undefined) ? (
+              {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
@@ -112,8 +101,6 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
-
-
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -121,4 +108,3 @@ function App() {
 }
 
 export default App;
-
