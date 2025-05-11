@@ -1,5 +1,5 @@
 import { API_BASE } from "../config";
-import User from "./types";
+import {User} from "./types";
 
 
 // --- Update Functions ---
@@ -19,11 +19,11 @@ import User from "./types";
 export const updateUser = async (sessionid :number, user :User): Promise<Error | null> => {
   try {
     const params = new URLSearchParams();
-    params.append("sessionid", sessionid);
+    params.append("sessionid", String(sessionid));
     params.append("name", user.name);
     params.append("email", user.email);
-    params.append("avatar", user.avatar);
-    params.append("password", user.password)
+    params.append("avatar", String(user.avatar));
+    params.append("password", String(user.password))
 
     const response = await fetch(`${API_BASE}/update-user`, {
         method: "PATCH",
@@ -31,7 +31,7 @@ export const updateUser = async (sessionid :number, user :User): Promise<Error |
     });
 
     if (!response.ok) {
-      let msg = response.text()
+      let msg = await response.text();
 
       console.error(
           `Error updating user ${user.id}: Status ${response.status}, Message: ${msg}`);
@@ -41,7 +41,7 @@ export const updateUser = async (sessionid :number, user :User): Promise<Error |
 
     return null
 
-  } catch (error: Error) {
+  } catch (error: any) {
     console.error(`Network or parsing error in getUser for ID ${user.id}:`, error.message);
     return error
 

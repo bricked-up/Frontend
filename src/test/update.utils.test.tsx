@@ -1,3 +1,4 @@
+import { User } from "../utils/types";
 import { updateUser } from "../utils/update.utils"
 
 
@@ -9,10 +10,13 @@ describe("Update Utility Functions (Integration Tests)", () => {
             name: "John Doe",
             email: "john.doe@example.com",
             avatar: "avatar.png",
+            password: "",
+            id: 0,
+            verified: false
         }
 
         it("should update existing user data successfully (status 200)", async () => {
-            const result = await updateUser(139, user);
+            const result = await updateUser(1, user);
             expect(result).toBe(null);
         });
 
