@@ -34,18 +34,18 @@ async function parseErrorResponse(response: Response): Promise<string> {
 
 // --- Helper Function for Parsing Dates ---
 function parseSQLNullTime(sqlTime?: SQLNullTime | string | null): Date | null {
-    if (!sqlTime) return null;
-    if (typeof sqlTime === 'string') {
-        const date = new Date(sqlTime);
-        return isNaN(date.getTime()) ? null : date;
+  if (!sqlTime) return null;
+  if (typeof sqlTime === 'string') {
+    const date = new Date(sqlTime);
+    return isNaN(date.getTime()) ? null : date;
+  }
+  if (typeof sqlTime === 'object' && 'Valid' in sqlTime && 'Time' in sqlTime) {
+    if (sqlTime.Valid && sqlTime.Time) {
+      const date = new Date(sqlTime.Time);
+      return isNaN(date.getTime()) ? null : date;
     }
-    if (typeof sqlTime === 'object' && 'Valid' in sqlTime && 'Time' in sqlTime) {
-        if (sqlTime.Valid && sqlTime.Time) {
-            const date = new Date(sqlTime.Time);
-            return isNaN(date.getTime()) ? null : date;
-        }
-    }
-    return null;
+  }
+  return null;
 }
 
 // --- Getter Functions ---
@@ -143,7 +143,7 @@ export const getOrgMember = async (memberId: number): Promise<GetOrgMemberResult
       return { status: response.status, data: null, error: undefined };
     }
     if (response.status === 404) {
-        return { status: response.status, data: null, error: undefined };
+      return { status: response.status, data: null, error: undefined };
     }
 
     const rawData = JSON.parse(text);
@@ -187,15 +187,15 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
     const data: Project = parsedData as Project;
 
     if (data && data.issues && Object.keys(data).length > 0) {
-        data.issues = data.issues.map(issue => ({
-            ...issue,
-            created: parseSQLNullTime(issue.created as any),
-            completed: parseSQLNullTime(issue.completed as any),
-            tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : issue.tagId,
-        }));
-        if (data.issues) {
-            data.issues.forEach(issue => delete (issue as any).tagid);
-        }
+      data.issues = data.issues.map(issue => ({
+        ...issue,
+        created: parseSQLNullTime(issue.created as any),
+        completed: parseSQLNullTime(issue.completed as any),
+        tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : issue.tagId,
+      }));
+      if (data.issues) {
+        data.issues.forEach(issue => delete (issue as any).tagid);
+      }
     }
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -220,20 +220,20 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
       return { status: response.status, data: null, error: undefined };
     }
     if (response.status === 404) {
-        return { status: response.status, data: null, error: undefined };
+      return { status: response.status, data: null, error: undefined };
     }
 
     const rawData = JSON.parse(text);
     const data: ProjectMember = {
-        ...rawData, // Spread first to include id and any other direct fields
-        userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
-        projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId,
-        // Map aggregated permissions from backend (can_exec, etc.)
-        canExec: rawData.can_exec,
-        canRead: rawData.can_read,
-        canWrite: rawData.can_write,
-        roles: rawData.roles,    // This will be number[] from backend (array of role IDs)
-        issues: rawData.issues,  // This will be number[] from backend (array of issue IDs)
+      ...rawData, // Spread first to include id and any other direct fields
+      userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
+      projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId,
+      // Map aggregated permissions from backend (can_exec, etc.)
+      canExec: rawData.can_exec,
+      canRead: rawData.can_read,
+      canWrite: rawData.can_write,
+      roles: rawData.roles,    // This will be number[] from backend (array of role IDs)
+      issues: rawData.issues,  // This will be number[] from backend (array of issue IDs)
     };
     // Clean up original lowercase keys
     delete (data as any).userid;
@@ -278,7 +278,7 @@ export const getOrgRole = async (roleId: number): Promise<GetOrgRoleResult> => {
       return { status: response.status, data: null, error: undefined };
     }
     if (response.status === 404) {
-        return { status: response.status, data: null, error: undefined };
+      return { status: response.status, data: null, error: undefined };
     }
 
     const rawData = JSON.parse(text);
@@ -327,7 +327,7 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
       return { status: response.status, data: null, error: undefined };
     }
     if (response.status === 404) {
-        return { status: response.status, data: null, error: undefined };
+      return { status: response.status, data: null, error: undefined };
     }
 
     const rawData = JSON.parse(text);
