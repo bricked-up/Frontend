@@ -61,6 +61,7 @@ type CalendarEvent = {
   title: string;
   start: Date;
   end: Date;
+  allDay: boolean;
   resource: Issue; // Keep the original Issue data
 };
 
@@ -305,13 +306,12 @@ const CustomCalendar: React.FC = () => {
       return;
     }
 
-    // Extract issues from projects
     const allIssues: Issue[] = userProjectsResult.data.flatMap((project) => project.issues || []);
     setIssues(allIssues);
   };
 
   fetchUserIssues();
-}, [userId]);
+}, []);
 
   // Function to determine event styling based on due date and settings
   const eventStyleGetter = useCallback(
@@ -409,8 +409,9 @@ const CustomCalendar: React.FC = () => {
   const events: CalendarEvent[] = issues.map((issue) => ({
     id: issue.id,
     title: issue.title,
-    start: issue.created,
-    end: issue.completed ?? issue.created,
+    start: new Date(issue.created),
+    end: new Date(issue.created),
+    allDay: true,
     resource: issue,
   }));
 
