@@ -18,15 +18,16 @@ import {
   Grid,
 } from "@mui/material";
 import SaveIcon from "@mui/icons-material/Save";
-import { Task } from "../../utils/types";
+import { Issue } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
+import { createNewIssue } from "../../utils/post.utils";
 
 export interface AddIssueProps {
   show: boolean;
   onClose: () => void;
   boardId: number;
-  onAdd: (task: Task) => void;
-  initialData?: Task; // optional: if passed = editing
+  onAdd: (issue: Issue) => void;
+  initialData?: Issue; // optional: if passed = editing
 }
 
 /**
@@ -45,51 +46,53 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   const [title, setTitle] = useState("");
   const [desc, setDesc] = useState("");
   const [priority, setPriority] = useState(1);
-  const [tagid, setTagid] = useState(1);
+  const [issueid, setIssueid] = useState(1);
   const [cost, setCost] = useState(0);
+  const [projectid, setProjectid] = useState(0);
+  const [tagid, setTagid] = useState(0);
 
   useEffect(() => {
     if (initialData) {
       setTitle(initialData.title || "");
       setDesc(initialData.desc || "");
       setPriority(initialData.priority || 1);
-      setTagid(initialData.tagid || 1);
+      setIssueid(initialData.id || 1);
       setCost(initialData.cost || 0);
     } else {
       setTitle("");
       setDesc("");
       setPriority(1);
-      setTagid(1);
+      setIssueid(1);
       setCost(0);
     }
   }, [initialData]);
 
   /**
    * Handles the form submission.
-   * Constructs a Task object and calls onAdd.
+   * Constructs a Issue object and calls onAdd.
    */
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title.trim()) {
       alert("Title is missing :p");
       return;
     }
-    const newTask: Task = {
-      ...(initialData || {}),
-      id: initialData
-        ? initialData.id
-        : Math.random().toString(36).substr(2, 9),
-      title,
-      desc,
-      tagid,
+
+    const issueParams = {
+      title: title,
+      desc: desc || null,
       priority,
       cost,
-      created: initialData?.created || new Date(),
-      createdBy: initialData?.createdBy || "You",
-      completed: initialData?.completed,
+      projectid,
+      tagid,
     };
 
-    onAdd(newTask);
-    onClose();
+    const result = await createNewIssue(issueParams, "create-issue");
+    if (result.status === 200 || result.status === 201) {
+      onClose(); // Close the dialog
+    } else {
+      alert(`Error creating issue: ${result.error || "Unknown error"}`);
+      console.error("Create issue failed:", result.error);
+    }
   };
 
   const theme = useTheme();
@@ -149,8 +152,8 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               label="Tag ID"
               type="number"
               fullWidth
-              value={tagid}
-              onChange={(e) => setTagid(Number(e.target.value))}
+              value={issueid}
+              onChange={(e) => setIssueid(Number(e.target.value))}
               InputProps={{
                 style: { color: textColor },
               }}

@@ -34,8 +34,8 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
         const params = new URLSearchParams({
             email: user.email,
             displayName: user.displayName,
-            password: user.password,
-            avatar: user.avatar as string,
+            password: user.password ?? "",
+            avatar: user.avatar ?? "",
         });
         const response = await fetch(`/${endpoint}`, {
             method: "PATCH",
