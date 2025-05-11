@@ -27,7 +27,7 @@ function App() {
 
   let sessionId = localStorage.getItem("sessionid");
   const [moew, setMeow] = React.useState<string | null>(sessionId);
-  console.log(moew)
+  console.log(moew);
 
   return (
     <ColorModeContext.Provider value={colorMode}>
@@ -37,8 +37,6 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-
-
               {!(moew === null || moew === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -105,8 +103,6 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
-
-
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -114,4 +110,3 @@ function App() {
 }
 
 export default App;
-

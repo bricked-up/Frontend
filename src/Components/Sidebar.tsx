@@ -115,14 +115,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         {isSidebar && (
           <Box>
             <Item
-              title="Create Issue"
-              to="/createIssue"
-              icon={<AddTaskIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
-            <Item
               title="View Organizations"
               to="/viewOrg"
               icon={<CorporateFareIcon />}
