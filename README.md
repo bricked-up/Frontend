@@ -144,7 +144,7 @@ This section details the frontend routes defined in `App.tsx`. Routes are groupe
 
 - `/`:
   - Renders the `LandingPage` component if the user is not logged in.
-  - Renders the `Dashboard` component (within the main `Layout`) if the user _is_ logged in.
+  - Renders the `Dashboard` component (within the main `Layout`) if the user _is_ logged in. This redirects you to viewProject page
 - `/login`: Renders the `Login` component for user sign-in and sign-up.
 - `/forgotPwd`: Renders the `ForgotPwd` component for password recovery.
 - `/testt`: Renders the `LandingPage` (Likely a temporary route for testing).

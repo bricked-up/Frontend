@@ -57,8 +57,6 @@ export const authUser = async (
       localStorage.setItem("sessionid", sessionData.sessionid);
       localStorage.setItem("userid", sessionData.userid);
 
-  
-  
       return { status: 200};
     } catch (error: any) {
       console.error("Network error:", error.message);

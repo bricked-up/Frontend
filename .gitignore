@@ -4,6 +4,9 @@
 /node_modules
 /.pnp
 .pnp.js
+package-lock.json
+
+
 
 Dockerfile
 
@@ -15,6 +18,9 @@ Dockerfile
 
 # testing
 /coverage
+
+# port
+.env
 
 # production
 /build
