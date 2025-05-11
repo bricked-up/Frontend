@@ -36,7 +36,6 @@ function App() {
             {/* set up Routes */}
             <Routes>
 
-
               {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -103,8 +102,6 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
-
-
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
