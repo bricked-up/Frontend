@@ -38,9 +38,9 @@ function App() {
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
-                :
+              ) : (
                 <Route path="/" element={<LandingPage />} />
-              }
+              )}
 
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
