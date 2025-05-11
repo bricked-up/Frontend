@@ -278,7 +278,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
                       <Grow in={true} timeout={300}>
                         <Box>
                           <IssueCard
-                            Issue={Issue}
+                            issue={Issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}
@@ -339,7 +339,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
                       <Grow key={Issue.id} in={true} timeout={300}>
                         <Box>
                           <IssueCard
-                            Issue={Issue}
+                            issue={Issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}

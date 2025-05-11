@@ -99,7 +99,7 @@ export type Issue = {
   tagId?: number | null;
   // tagid?: number; // We map and delete this, so it's not part of the final type
   priority?: number | null;
-  created: Date | null;
+  created: Date;
   completed?: Date | null;
   cost: number;
   dependencies?: Dependency[];
@@ -326,8 +326,8 @@ export interface NewBoard {
 * @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
 */
 export interface SQLNullTime {
-Time: string;
-Valid: boolean;
+  Time: string;
+  Valid: boolean;
 }
 
 // --- Getter Result Types ---
@@ -342,9 +342,9 @@ Valid: boolean;
 * @property {string} [error] - An optional error message if the request failed or an error occurred.
 */
 export interface GetResult<T> {
-status: number;
-data: T | null;
-error?: string;
+  status: number;
+  data: T | null;
+  error?: string;
 }
 
 /**

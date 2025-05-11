@@ -18,36 +18,36 @@ import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
 import { Issue } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
 
-interface IssueCardProps {
-  Issue: Issue;
+interface issueCardProps {
+  issue: Issue;
   boardId: number;
-  onDelete: (IssueId: number) => void;
-  onComplete: (IssueId: number) => void;
-  onEdit: (Issue: Issue) => void; // <-- Added for opening the edit modal
+  onDelete: (issueId: number) => void;
+  onComplete: (issueId: number) => void;
+  onEdit: (issue: Issue) => void; // <-- Added for opening the edit modal
 }
 
 /**
- * IssueCard.tsx
+ * issueCard.tsx
  *
- * Card component to display individual Issue/issue.
+ * Card component to display individual issue/issue.
  * Supports delete, complete/incomplete toggle, and edit on click.
  *
  * Props:
- *  - Issue (Issue): Issue data
+ *  - issue (issue): issue data
  *  - boardId (number): ID of the board
- *  - onDelete (function): Callback to delete Issue
- *  - onComplete (function): Callback to complete/un-complete Issue
- *  - onEdit (function): Callback to edit Issue
+ *  - onDelete (function): Callback to delete issue
+ *  - onComplete (function): Callback to complete/un-complete issue
+ *  - onEdit (function): Callback to edit issue
  */
 
-export const IssueCard: React.FC<IssueCardProps> = ({
-  Issue,
+export const IssueCard: React.FC<issueCardProps> = ({
+  issue,
   boardId,
   onDelete,
   onComplete,
   onEdit,
 }) => {
-  const isCompleted = !!Issue.completed;
+  const isCompleted = !!issue.completed;
 
   const getBorderColor = () => {
     return isCompleted ? "#16a34a" : "#dc2626"; // green if complete, red if in progress
@@ -82,17 +82,17 @@ export const IssueCard: React.FC<IssueCardProps> = ({
             cursor: "pointer",
           },
         }}
-        onClick={() => onEdit(Issue)} // <-- clicking the card triggers edit
+        onClick={() => onEdit(issue)} // <-- clicking the card triggers edit
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight={700} noWrap>
-            {Issue.title}
+            {issue.title}
           </Typography>
           <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation(); // prevent card click
-              onDelete(Issue.id);
+              onDelete(issue.id);
             }}
           >
             <DeleteOutlineRoundedIcon color="error" />
@@ -104,57 +104,57 @@ export const IssueCard: React.FC<IssueCardProps> = ({
           color="text.secondary"
           sx={{ fontSize: "1rem", mb: 1 }}
         >
-          {Issue.desc}
+          {issue.desc}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <WarningAmberRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Priority: {Issue.priority}
+            Priority: {issue.priority}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <LoyaltyRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Tag ID: {Issue.tagId}
+            Tag ID: {issue.tagId}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <PaidRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Cost: {Issue.cost}
+            Cost: {issue.cost}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <TodayRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Created: {new Date(Issue.created).toLocaleDateString("en-GB")}
+            Created: {new Date(issue.created).toLocaleDateString("en-GB")}
           </Typography>
         </Box>
 
-        {Issue.completed && (
+        {issue.completed && (
           <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
             <CheckCircleRoundedIcon fontSize="small" />
             <Typography
               variant="caption"
               sx={{ fontSize: "0.9rem", color: "#4ade80" }}
             >
-              Completed: {new Date(Issue.completed).toLocaleDateString("en-GB")}
+              Completed: {new Date(issue.completed).toLocaleDateString("en-GB")}
             </Typography>
           </Box>
         )}
 
-        {Issue.completed ? (
+        {issue.completed ? (
           <Box display="flex" justifyContent="center" mt={1.5}>
             <Button
               variant="outlined"
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(Issue.id);
+                onComplete(issue.id);
               }}
               sx={{
                 color: "#f59e0b",
@@ -181,7 +181,7 @@ export const IssueCard: React.FC<IssueCardProps> = ({
               startIcon={<CheckCircleRoundedIcon />}
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(Issue.id);
+                onComplete(issue.id);
               }}
               sx={{
                 backgroundColor: "#16a34a",
