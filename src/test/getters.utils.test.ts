@@ -123,7 +123,7 @@ describe("Getter Utility Functions (Integration Tests)", () => {
     });
 
     describe("getProject", () => {
-        const existingProjectId = 2;
+        const existingProjectId = 1;
         const nonExistentProjectId = 80808;
 
         it("should get existing project data successfully (status 200)", async () => {
@@ -294,7 +294,7 @@ describe("Getter Utility Functions (Integration Tests)", () => {
         });
     });
     describe("getUserProjects", () => {
-        const existingUserIdWithProjects = 2; // Ensure this user has associated projects in your test DB
+        const existingUserIdWithProjects = 1; // Ensure this user has associated projects in your test DB
         const nonExistentUserId = 999999;
       
         it("should fetch all projects for a valid user (status 200)", async () => {
