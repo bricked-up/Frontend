@@ -15,15 +15,15 @@ import CheckCircleRoundedIcon from "@mui/icons-material/CheckCircleRounded";
 import PaidRoundedIcon from "@mui/icons-material/PaidRounded";
 import LoyaltyRoundedIcon from "@mui/icons-material/LoyaltyRounded";
 import WarningAmberRoundedIcon from "@mui/icons-material/WarningAmberRounded";
-import { Task, Issue } from "../../utils/types";
+import { Task } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
 
 interface TaskCardProps {
-  issue: Issue;
+  task: Task;
   boardId: number;
-  onDelete: (taskId: number) => void;
-  onComplete: (taskId: number) => void;
-  onEdit: (task: Issue) => void; // <-- Added for opening the edit modal
+  onDelete: (taskId: string) => void;
+  onComplete: (taskId: string) => void;
+  onEdit: (task: Task) => void; // <-- Added for opening the edit modal
 }
 
 /**
@@ -41,13 +41,13 @@ interface TaskCardProps {
  */
 
 export const TaskCard: React.FC<TaskCardProps> = ({
-  issue,
+  task,
   boardId,
   onDelete,
   onComplete,
   onEdit,
 }) => {
-  const isCompleted = !!issue.completed;
+  const isCompleted = !!task.completed;
 
   const getBorderColor = () => {
     return isCompleted ? "#16a34a" : "#dc2626"; // green if complete, red if in progress
@@ -80,20 +80,19 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             transform: "translateY(-3px)",
             boxShadow: "0 8px 25px -5px rgba(0, 0, 0, 0.3)",
             cursor: "pointer",
-          }, 
-
+          },
         }}
-        onClick={() => onEdit(issue)} // <-- clicking the card triggers edit
+        onClick={() => onEdit(task)} // <-- clicking the card triggers edit
       >
         <Box display="flex" justifyContent="space-between" alignItems="center">
           <Typography variant="h6" fontWeight={700} noWrap>
-            {issue.title}
+            {task.title}
           </Typography>
           <IconButton
             size="small"
             onClick={(e) => {
               e.stopPropagation(); // prevent card click
-              onDelete(issue.id);
+              onDelete(task.id);
             }}
           >
             <DeleteOutlineRoundedIcon color="error" />
@@ -105,57 +104,57 @@ export const TaskCard: React.FC<TaskCardProps> = ({
           color="text.secondary"
           sx={{ fontSize: "1rem", mb: 1 }}
         >
-          {issue.desc}
+          {task.desc}
         </Typography>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <WarningAmberRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Priority: {issue.priority}
+            Priority: {task.priority}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <LoyaltyRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Tag ID: {issue.tagId}
+            Tag ID: {task.tagid}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <PaidRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Cost: {issue.cost}
+            Cost: {task.cost}
           </Typography>
         </Box>
 
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <TodayRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Created: {new Date(issue.created).toLocaleDateString("en-GB")}
+            Created: {new Date(task.created).toLocaleDateString("en-GB")}
           </Typography>
         </Box>
 
-        {issue.completed && (
+        {task.completed && (
           <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
             <CheckCircleRoundedIcon fontSize="small" />
             <Typography
               variant="caption"
               sx={{ fontSize: "0.9rem", color: "#4ade80" }}
             >
-              Completed: {new Date(issue.completed).toLocaleDateString("en-GB")}
+              Completed: {new Date(task.completed).toLocaleDateString("en-GB")}
             </Typography>
           </Box>
         )}
 
-        {issue.completed ? (
+        {task.completed ? (
           <Box display="flex" justifyContent="center" mt={1.5}>
             <Button
               variant="outlined"
               size="small"
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(issue.id);
+                onComplete(task.id);
               }}
               sx={{
                 color: "#f59e0b",
@@ -182,7 +181,7 @@ export const TaskCard: React.FC<TaskCardProps> = ({
               startIcon={<CheckCircleRoundedIcon />}
               onClick={(e) => {
                 e.stopPropagation();
-                onComplete(issue.id);
+                onComplete(task.id);
               }}
               sx={{
                 backgroundColor: "#16a34a",
@@ -204,6 +203,12 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             </Button>
           </Box>
         )}
+
+        <Box display="flex" justifyContent="flex-end" pt={1}>
+          <Avatar sx={{ width: 28, height: 28, bgcolor: "#475569" }}>
+            {task.createdBy?.[0]?.toUpperCase()}
+          </Avatar>
+        </Box>
       </Card>
     </Grow>
   );

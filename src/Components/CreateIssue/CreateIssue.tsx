@@ -5,12 +5,12 @@
  * It allows adding, editing, completing, and deleting issues.
  * issues are visually divided into 'In Progress' and 'Completed' sections.
  */
-import React, { useEffect, useState } from "react";
-import { Tabs, Tab, Paper, Grow } from "@mui/material";
+import React, { useState } from "react";
+import { Tabs, Tab, Slide, Paper, Grow } from "@mui/material";
 import { Button, Box, Typography, Grid, Fade } from "@mui/material";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
-import { Board, Issue, Member } from "../../utils/types";
-import { TaskCard } from "./TaskCard";
+import { Board, Issue } from "../../utils/types";
+import { IssueCard } from "./IssueCard";
 import { AddIssue } from "./AddIssue";
 import AssignmentIcon from "@mui/icons-material/Assignment";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -85,26 +85,20 @@ export const mockBoard: Board = {
   ],
 };
 
-const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
+/**
+ * CreateIssue Component
+ *
+ * Displays and manages a board's list of issues.
+ * - Allows creating, editing, deleting, and completing issues.
+ * - Supports switching issues between 'In Progress' and 'Completed' states.
+ */
+const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
   // Import necessary components
   const { Grid } = require("@mui/material");
-
-  const [showAddTask, setShowAddTask] = useState(false);
-  const [tasks, setTasks] = useState<Issue[]>(board.issues);
-  const [editingTask, setEditingTask] = useState<Issue | null>(null);
+  const [showAddIssue, setShowAddIssue] = useState(false);
+  const [issues, setIssues] = useState<Issue[]>([]);
+  const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState(0);
-  const [members, setMembers] = useState<Member[]>([]);
-
-  // Load project members once
-  useEffect(() => {
-    fetch(`/api/projects/${board.id}/members`)
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json() as Promise<Member[]>;
-      })
-      .then((data) => setMembers(data))
-      .catch(console.error);
-  }, [board.id]);
 
   useEffect(() => {
     const loadIssuesFromBackend = async () => {
@@ -130,37 +124,44 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const handleAddTask = (task: Issue) => {
-    setTasks((prev) => [...prev, task]);
+
+  const handleAddIssue = (issue: Issue) => {
+    setIssues((prev) => [...prev, issue]);
   };
 
-  const handleDeleteTask = (taskId: number) => {
-    setTasks((prev) => prev.filter((t) => t.id !== taskId));
+  const handleDeleteIssue = (IssueId: number) => {
+    setIssues((prev) => prev.filter((Issue) => Issue.id !== IssueId));
   };
 
-  const handleCompleteTask = (taskId: number) => {
-    setTasks((prev) =>
-      prev.map((t) =>
-        t.id === taskId ? { ...t, completed: t.completed ? null : new Date() } : t
+  const handleCompleteIssue = (IssueId: number) => {
+    setIssues((previssues) =>
+      previssues.map((Issue) =>
+        Issue.id === IssueId
+          ? { ...Issue, completed: Issue.completed ? undefined : new Date() }
+          : Issue
       )
     );
   };
 
-  const handleEditTask = (task: Issue) => {
-    setEditingTask(task);
+  const handleEditIssue = (Issue: Issue) => {
+    setEditingIssue(Issue);
   };
 
-  const handleSaveEdit = (updatedTask: Issue) => {
-    setTasks((prev) => prev.map((t) => (t.id === updatedTask.id ? updatedTask : t)));
-    setEditingTask(null);
+  const handleSaveEdit = (updatedIssue: Issue) => {
+    setIssues((prev) =>
+      prev.map((Issue) => (Issue.id === updatedIssue.id ? updatedIssue : Issue))
+    );
+    setEditingIssue(null);
   };
 
-  const handleChangeTab = (_: React.SyntheticEvent, newValue: number) => {
+  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
     setActiveTab(newValue);
   };
 
-  const inProgressTasks = tasks.filter((t) => !t.completed);
-  const completedTasks = tasks.filter((t) => !!t.completed);
+  const inProgressissues = issues.filter((Issue) => !Issue.completed);
+  const completedissues = issues.filter((Issue) => Issue.completed);
+
+  //        bgcolor: theme.palette.background.default,
 
   return (
     <Box
@@ -194,10 +195,27 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
         </Box>
       </Box>
 
-      <Fade in timeout={1000}>
-        <Box display="flex" flexDirection="column" alignItems="center" padding={4}>
-          <Box sx={{ width: "100%", maxWidth: "1200px", mb: 3 }}>
-            <Box sx={{ width: "100%", backgroundColor: "transparent", mb: 2 }}>
+      <Fade in={true} timeout={1000}>
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="center"
+          padding={4}
+        >
+          <Box
+            sx={{
+              width: "100%",
+              maxWidth: "1200px",
+              mb: 3,
+            }}
+          >
+            <Box
+              sx={{
+                width: "100%",
+                backgroundColor: "transparent",
+                mb: 2,
+              }}
+            >
               <Tabs
                 value={activeTab}
                 onChange={handleChangeTab}
@@ -228,8 +246,11 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                       borderRadius: "3px 3px 0 0",
                     },
                   },
-                  "& .MuiTab-root.Mui-selected::after": {
-                    width: "100%",
+                  "& .MuiTab-root.Mui-selected": {
+                    color: "text.secondary",
+                    "&::after": {
+                      width: "100%",
+                    },
                   },
                   "& .MuiTabs-indicator": {
                     display: "none",
@@ -239,12 +260,22 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                 <Tab
                   icon={<AssignmentIcon />}
                   iconPosition="start"
-                  label={`In Progress (${inProgressTasks.length})`}
+                  label={`In Progress (${inProgressissues.length})`}
+                  sx={{
+                    "&:first-of-type::after": {
+                      width: activeTab === 0 ? "100%" : 0,
+                    },
+                  }}
                 />
                 <Tab
                   icon={<CheckCircleIcon />}
                   iconPosition="start"
-                  label={`Completed (${completedTasks.length})`}
+                  label={`Completed (${completedissues.length})`}
+                  sx={{
+                    "&:nth-of-type(2)::after": {
+                      width: activeTab === 1 ? "100%" : 0,
+                    },
+                  }}
                 />
               </Tabs>
             </Box>
@@ -265,12 +296,12 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
             <TabPanel value={activeTab} index={0}>
               {inProgressissues.length > 0 ? (
                 <Grid container spacing={3}>
-                  {inProgressTasks.map((t) => (
-                    <Grid item xs={12} sm={6} md={4} key={t.id}>
-                      <Grow in timeout={300}>
+                  {inProgressissues.map((Issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
+                      <Grow in={true} timeout={300}>
                         <Box>
-                          <TaskCard
-                            issue={t}
+                          <IssueCard
+                            issue={Issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}
@@ -303,8 +334,12 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
                   <Typography variant="h6" color="text.secondary" gutterBottom>
                     No issues in progress
                   </Typography>
-                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Add your first task to get started
+                  <Typography
+                    variant="body2"
+                    color="text.secondary"
+                    sx={{ mb: 3 }}
+                  >
+                    Add your first Issue to get started
                   </Typography>
                   <Button
                     variant="contained"
@@ -322,12 +357,12 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
             <TabPanel value={activeTab} index={1}>
               {completedissues.length > 0 ? (
                 <Grid container spacing={3}>
-                  {completedTasks.map((t) => (
-                    <Grid item xs={12} sm={6} md={4} key={t.id}>
-                      <Grow in timeout={300}>
+                  {completedissues.map((Issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
+                      <Grow key={Issue.id} in={true} timeout={300}>
                         <Box>
-                          <TaskCard
-                            issue={t}
+                          <IssueCard
+                            issue={Issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}
@@ -387,8 +422,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
           show={showAddIssue}
           onClose={() => setShowAddIssue(false)}
           boardId={board.id}
-          onAdd={handleAddTask}
-          members={members}
+          onAdd={handleAddIssue}
         />
       )}
 
@@ -398,8 +432,7 @@ const CreateTask: React.FC<CreateTaskPageProps> = ({ board }) => {
           onClose={() => setEditingIssue(null)}
           boardId={board.id}
           onAdd={handleSaveEdit}
-          initialData={editingTask}
-          members={members}
+          initialData={editingIssue}
         />
       )}
     </Box>
