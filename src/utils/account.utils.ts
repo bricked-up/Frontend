@@ -33,23 +33,13 @@ import { API_BASE } from "../config"; // Assuming API_BASE is your backend URL
 export const sendUserData = async (user: User, endpoint: string): Promise<number> => {
     // TODO: send the image separately (This often requires FormData instead of URLSearchParams)
     try {
-        const params = new URLSearchParams();
-        params.append("email", user.email); // Email might not be updatable, or used as an identifier
-        params.append("displayName", user.displayName);
-
-        // Conditionally append fields that might be optional or not always sent
-        if (user.name) { // Add name if it's part of the update
-            params.append("name", user.name)
-        }
-        if (user.password) { // Only send password if it's being changed
-            params.append("password", user.password);
-        }
-        if (user.avatar) {
-            params.append("avatar", user.avatar);
-        }
-        // Add other User fields as needed for the update, ensuring they are strings
-
-        const response = await fetch(`${API_BASE}/${endpoint}`, { // Prepend API_BASE
+        const params = new URLSearchParams({
+            email: user.email,
+            displayName: user.displayName,
+            password: user.password ?? "",
+            avatar: user.avatar ?? "",
+        });
+        const response = await fetch(`/${endpoint}`, {
             method: "PATCH",
             headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
             body: params,

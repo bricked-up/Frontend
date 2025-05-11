@@ -99,7 +99,7 @@ export type Issue = {
   tagId?: number | null;
   // tagid?: number; // We map and delete this, so it's not part of the final type
   priority?: number | null;
-  created: Date | null;
+  created: Date;
   completed?: Date | null;
   cost: number;
   dependencies?: Dependency[];
@@ -269,7 +269,7 @@ export type ForgotPassword = {
  * @property {string} createdBy - The name or identifier of the user who created the board.
  * @property {string} createdById - The ID of the user who created the board.
  * @property {Date} createdAt - The date and time when the board was created.
- * @property {Task[]} tasks - An array of tasks belonging to this board.
+ * @property {Issue[]} issues - An array of tasks belonging to this board.
  */
 export interface Board {
   id: number;
@@ -277,7 +277,7 @@ export interface Board {
   createdBy: string;
   createdById: string;
   createdAt: Date;
-  tasks: Task[];
+  issues: Issue[];
 }
 
 /**
@@ -326,8 +326,8 @@ export interface NewBoard {
 * @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
 */
 export interface SQLNullTime {
-Time: string;
-Valid: boolean;
+  Time: string;
+  Valid: boolean;
 }
 
 // --- Getter Result Types ---
@@ -342,9 +342,9 @@ Valid: boolean;
 * @property {string} [error] - An optional error message if the request failed or an error occurred.
 */
 export interface GetResult<T> {
-status: number;
-data: T | null;
-error?: string;
+  status: number;
+  data: T | null;
+  error?: string;
 }
 
 /**
