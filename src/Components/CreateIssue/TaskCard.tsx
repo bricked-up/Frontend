@@ -80,7 +80,8 @@ export const TaskCard: React.FC<TaskCardProps> = ({
             transform: "translateY(-3px)",
             boxShadow: "0 8px 25px -5px rgba(0, 0, 0, 0.3)",
             cursor: "pointer",
-          },
+          }, 
+          
         }}
         onClick={() => onEdit(Issue)} // <-- clicking the card triggers edit
       >
