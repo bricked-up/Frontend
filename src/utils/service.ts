@@ -1,9 +1,9 @@
 // Helper services for issue operations (e.g., add, delete, update)
 
-import { Issue } from './types';
+import { Issue} from './types';
 import { getBoard, updateBoard } from './boards';
 
-export const addTask = (issue: Issue, boardId: number) => {
+export const addissue = (issue: Issue, boardId: number) => {
   const board = getBoard(boardId);
   if (board) {
     board.issues = [...board.issues, issue];
