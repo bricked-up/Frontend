@@ -9,8 +9,8 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
-import { getAllUsers } from "../utils/getters.utils"; 
-import { User } from "../utils/types"; 
+import { getAllUsers, getUser } from "../utils/getters.utils";
+import { User } from "../utils/types";
 
 interface TopbarProps {
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
@@ -40,53 +40,69 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
-
-  // State to control visibility of the logout popup
+  const [rawResponse, setRawResponse] = useState<any>(null);
+  const [rawUser, setRawUser] = useState<any>(null);
   const [showLogout, setShowLogout] = useState(false);
-
-  // For redirecting the user after logout (if desired)
-  const navigate = useNavigate();
-
-  // New states for search functionality
   const [searchQuery, setSearchQuery] = useState("");
   const [userSuggestions, setUserSuggestions] = useState<User[]>([]);
+  const [test, setTest] = useState<String[]>([]);
 
-  /**
-   * Calls the logout() function to remove user data (e.g., from localStorage/cookies),
-   * then navigates the user back to the home page ("/").
-   *
-   * @function viewProfile
-   * @returns {void}
-   */
+  const navigate = useNavigate();
+
   const viewProfile = (): void => {
-    navigate("/user.$(user.id)/aboutUser");
+    navigate("/user/$(user.id)/aboutUser"); 
   };
 
-  // Debounced search effect
-  useEffect(() => {
-    const delayDebounce = setTimeout(async () => {
-      if (searchQuery.trim() !== "") {
-        try {
-          const result = await getAllUsers();
-          const allUsers: User[] = Array.isArray(result?.data) ? result.data.map((item: any): User => item as User) : [];
-          const filtered = allUsers.filter((user) =>
-            user.displayName.toLowerCase().includes(searchQuery.toLowerCase())
-          );
+ useEffect(() => {
+  const delayDebounce = setTimeout(async () => {
+    console.log("[Search effect triggered] query:", searchQuery);
+    
+    if (searchQuery.trim() === "") {
+      console.log("Query empty after trim. Clearing suggestions.");
+      setUserSuggestions([]);
+      return;
+    }
 
-          setUserSuggestions(filtered);
-        } catch (error) {
-          console.error("Search failed:", error);
-          setUserSuggestions([]);
-        }
-      } else {
-        setUserSuggestions([]);
+    try {
+      const result = await getAllUsers();
+      console.log("Fetched user IDs:", result.data);
+
+      if (!Array.isArray(result.data)) {
+        navigate("/500");
+        return;
       }
-    }, 300); // 300ms delay after typing
 
-    return () => clearTimeout(delayDebounce);
-  }, [searchQuery]);
-  console.log(searchQuery);
-  console.log(userSuggestions);
+      const fullUsers: User[] = [];
+
+      for (const userId of result.data) {
+        try {
+          const userRes = await getUser(userId);
+          if (userRes?.data) {
+            fullUsers.push(userRes.data);
+          }
+        } catch (err) {
+          console.error(`Error getting user ${userId}`, err);
+        }
+      }
+
+
+      let filtered = fullUsers.filter((user) => {
+        return user.name.toLowerCase().includes(searchQuery.toLowerCase());
+      });
+
+      setUserSuggestions(filtered);
+    } catch (error) {
+      console.error("Error in search:", error);
+      setUserSuggestions([]);
+    }
+  }, 300);
+
+  return () => clearTimeout(delayDebounce);
+}, [searchQuery, navigate]);
+
+  
+   console.log("userSuggestions:", userSuggestions[0]);
+   
 
   return (
     <Box
@@ -114,7 +130,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
             sx={{
               ml: 2,
               flex: 1,
-              color: theme.palette.text.primary,
+              color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
             }}
             placeholder="Search users..."
             value={searchQuery}
@@ -142,25 +158,29 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
               overflowY: "auto",
             }}
           >
-            {userSuggestions.map((user) => (
-              <Box
-                key={user.id}
-                sx={{
-                  padding: "8px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    backgroundColor: colors.primary[300],
-                  },
-                }}
-                onClick={() => {
-                  setSearchQuery("");
-                  setUserSuggestions([]);
-                  navigate(`/user/${user.id}/aboutUser`);
-                }}
-              >
-                {user.displayName}
-              </Box>
-            ))}
+           {userSuggestions.map((user) => (
+  <Box
+    key={user.id}
+    sx={{
+      py: "8px",      // vertical padding
+      pl: "16px",     // left padding for text alignment
+      cursor: "pointer",
+      textAlign: "left",
+      color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
+      "&:hover": {
+        backgroundColor: colors.primary[300],
+      },
+    }}
+    onClick={() => {
+      setSearchQuery("");
+      setUserSuggestions([]);
+      navigate(`/user/${user.id}/aboutUser`);
+    }}
+  >
+    {user.name}
+  </Box>
+))}
+
           </Box>
         )}
       </Box>
@@ -183,8 +203,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           <SettingsOutlinedIcon />
         </IconButton>
 
-        {/* Container holding Person Icon + Logout Menu.
-            Mouse leaves this box => hide the menu. */}
         <Box
           position="relative"
           onMouseEnter={() => setShowLogout(true)}
@@ -194,17 +212,6 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
             <PersonOutlinedIcon />
           </IconButton>
 
-          {/**
-           * Logout button dropdown:
-           *
-           * Displays a red "Logout" button with curved edges when the user
-           * hovers over the Person icon. Clicking it triggers handleLogout().
-           *
-           * @name LogoutButton
-           * @description
-           *   A hover-triggered button that clears session data via logout()
-           *   and redirects the user to the homepage.
-           */}
           {showLogout && (
             <Box
               position="absolute"
