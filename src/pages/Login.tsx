@@ -81,15 +81,6 @@ const Login = () => {
     setError("");
   };
 
-  const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!account) {
-      e.preventDefault();
-      setError("No account registered!");
-    } else {
-      setError("");
-    }
-  };
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!account || !password) {
@@ -297,25 +288,7 @@ const Login = () => {
                   sx={textFieldSx}
                 />
 
-                {/* Forgot Password link - functionality from first file */}
-                <Box sx={{ textAlign: 'right', mt: 1 }}>
-                  <Typography
-                    component="a"
-                    variant="body2"
-                    href="/forgot_pwd"
-                    onClick={handleForgotPwd}
-                    sx={{
-                      color: isDark ? '#60a5fa' : '#2563eb',
-                      textDecoration: 'none',
-                      '&:hover': {
-                        textDecoration: 'underline',
-                      }
-                    }}
-                  >
-                    Forgot password?
-                  </Typography>
-                </Box>
-
+               
                 {error && (
                   <Alert 
                     severity="error" 
