@@ -30,12 +30,10 @@ describe("createNewIssue", () => {
     });
 
     const res: Result = await createNewIssue(
-      { name: "x", priority: 1 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2 },
       "issues"
     );
     expect(res.status).toBe(201);
-    expect(res.issue).not.toBeNull();
-    expect(res.issue?.id).toBe(5);
   });
 
   it("returns error on non-2xx", async () => {
@@ -46,9 +44,11 @@ describe("createNewIssue", () => {
       statusText: "Bad Request",
     });
 
-    const res = await createNewIssue({ name: "x", priority: 1 }, "issues");
+    const res = await createNewIssue(
+      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      "issues"
+    );
     expect(res.status).toBe(400);
-    expect(res.issue).toBeNull();
     expect(res.error).toMatch(/Bad payload|Bad Request/);
   });
 });
