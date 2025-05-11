@@ -101,9 +101,17 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
           <Typography
             variant="h5"
             sx={{ whiteSpace: "nowrap", overflow: "hidden" }}
+          />
+          <Typography
+            variant="h5"
+            sx={{ whiteSpace: "nowrap", overflow: "hidden" }}
           >
             {isSidebar && "Bricked Up"}
           </Typography>
+          <IconButton
+            onClick={() => setIsSidebar(false)}
+            sx={{ color: colors.grey[100] }}
+          />
           <IconButton
             onClick={() => setIsSidebar(false)}
             sx={{ color: colors.grey[100] }}
@@ -114,14 +122,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
 
         {isSidebar && (
           <Box>
-            <Item
-              title="Create Issue"
-              to="/createIssue"
-              icon={<AddTaskIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-
             <Item
               title="View Organizations"
               to="/viewOrg"

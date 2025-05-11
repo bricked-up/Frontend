@@ -73,8 +73,8 @@ export type User = {
   avatar?: string | null;
   verified: boolean;
   verifyId?: number | null;
-  organizations?: number[]; // From /get-user, backend sends []int
-  projects?: number[];    // From /get-user, backend sends []int
+  organizations?: (number | OrgMember)[]; // From /get-user, backend sends []int
+  projects?: (number | ProjectMember)[];   // From /get-user, backend sends []int
   issues?: number[];      // From /get-user, backend sends []int
   sessions?: Session[];
 }

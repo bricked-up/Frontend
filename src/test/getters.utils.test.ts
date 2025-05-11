@@ -9,7 +9,8 @@ import {
     getProject,
     getProjectMember,
     getOrgRole,      // <-- Import new getter
-    getProjectRole   // <-- Import new getter
+    getProjectRole,   // <-- Import new getter
+    getUserProjects // PRATUL: GetAllProjects for an induvidual user
 } from "../utils/getters.utils";
 import {
     User,
@@ -122,7 +123,7 @@ describe("Getter Utility Functions (Integration Tests)", () => {
     });
 
     describe("getProject", () => {
-        const existingProjectId = 1;
+        const existingProjectId = 2;
         const nonExistentProjectId = 80808;
 
         it("should get existing project data successfully (status 200)", async () => {
@@ -292,5 +293,34 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.error).toBeDefined();
         });
     });
+    describe("getUserProjects", () => {
+        const existingUserIdWithProjects = 2; // Ensure this user has associated projects in your test DB
+        const nonExistentUserId = 999999;
+      
+        it("should fetch all projects for a valid user (status 200)", async () => {
+          const result = await getUserProjects(existingUserIdWithProjects);
+          expect(result.status).toBe(200);
+          expect(result.error).toBeUndefined();
+          expect(result.data).not.toBeNull();
+          expect(Array.isArray(result.data)).toBe(true);
+          if (result.data && result.data.length > 0) {
+            const project = result.data[0];
+            expect(project).toHaveProperty("id");
+            expect(project).toHaveProperty("name");
+            expect(project).toHaveProperty("orgId");
+            expect(project).toHaveProperty("budget");
+            expect(project).toHaveProperty("charter");
+          } else {
+            console.warn("User has no associated projects.");
+          }
+        });
+      
+        it("should handle user not found (status 404)", async () => {
+          const result = await getUserProjects(nonExistentUserId);
+          expect(result.status).toBe(404);
+          expect(result.data).toBeNull();
+          expect(result.error).toBeDefined();
+        });
+      });      
     // --- END: New Tests ---
 });

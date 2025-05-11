@@ -32,21 +32,63 @@ async function parseErrorResponse(response: Response): Promise<string> {
   }
 }
 
-// --- Helper Function for Parsing Dates ---
+// --- Helper Function for Parsing Nullable Dates ---
+// This function remains for fields that CAN be null, like 'completed'
 function parseSQLNullTime(sqlTime?: SQLNullTime | string | null): Date | null {
   if (!sqlTime) return null;
   if (typeof sqlTime === 'string') {
     const date = new Date(sqlTime);
     return isNaN(date.getTime()) ? null : date;
   }
-  if (typeof sqlTime === 'object' && 'Valid' in sqlTime && 'Time' in sqlTime) {
-    if (sqlTime.Valid && sqlTime.Time) {
-      const date = new Date(sqlTime.Time);
+  // Ensure sqlTime is an object and not null before checking for properties
+  if (typeof sqlTime === 'object' && sqlTime !== null && 'Valid' in sqlTime && 'Time' in sqlTime) {
+    // Cast to SQLNullTime to satisfy TypeScript, assuming the checks are sufficient
+    const sqlTimeObj = sqlTime as SQLNullTime;
+    if (sqlTimeObj.Valid && sqlTimeObj.Time) {
+      const date = new Date(sqlTimeObj.Time);
       return isNaN(date.getTime()) ? null : date;
     }
   }
   return null;
 }
+
+// --- NEW Helper Function for Parsing REQUIRED Dates ---
+// This function is for fields like 'created' that CANNOT be null.
+// It will throw an error if the date is null, invalid, or not present.
+function parseRequiredSQLTime(sqlTime: SQLNullTime | string | undefined | null, fieldNameForError: string): Date {
+  if (!sqlTime) {
+    throw new Error(`Required date field '${fieldNameForError}' was null, undefined, or empty.`);
+  }
+
+  let parsedDate: Date | null = null;
+
+  if (typeof sqlTime === 'string') {
+    const date = new Date(sqlTime);
+    if (!isNaN(date.getTime())) {
+      parsedDate = date;
+    }
+  } else if (typeof sqlTime === 'object' && sqlTime !== null && 'Valid' in sqlTime && 'Time' in sqlTime) {
+    // Cast to SQLNullTime, assuming the checks are sufficient
+    const sqlTimeObj = sqlTime as SQLNullTime;
+    if (sqlTimeObj.Valid && sqlTimeObj.Time) {
+      const date = new Date(sqlTimeObj.Time);
+      if (!isNaN(date.getTime())) {
+        parsedDate = date;
+      }
+    } else if (!sqlTimeObj.Valid) {
+      // Explicitly throw if Valid is false for a required field
+      throw new Error(`Required date field '${fieldNameForError}' received SQLNullTime with Valid: false.`);
+    }
+  }
+
+  if (parsedDate) {
+    return parsedDate;
+  } else {
+    // If parsing failed for other reasons (e.g. invalid date string within a valid structure)
+    throw new Error(`Required date field '${fieldNameForError}' could not be parsed into a valid date from input: ${JSON.stringify(sqlTime)}`);
+  }
+}
+
 
 // --- Getter Functions ---
 
@@ -79,16 +121,19 @@ export const getIssue = async (issueId: number): Promise<GetIssueResult> => {
       console.error(`Error fetching issue ${issueId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
-    const rawData = await response.json(); // Consider robust parsing if issues can be "not found" with 200/empty
+    const rawData = await response.json();
     const data: Issue = {
       ...rawData,
       tagId: rawData.tagid !== undefined ? rawData.tagid : rawData.tagId,
-      created: parseSQLNullTime(rawData.created),
+      // Use parseRequiredSQLTime for 'created' as it cannot be null
+      created: parseRequiredSQLTime(rawData.created, `Issue [${issueId}] 'created' field`),
+      // Use parseSQLNullTime for 'completed' as it can be null
       completed: parseSQLNullTime(rawData.completed),
     };
     delete (data as any).tagid;
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
+    // Errors from parseRequiredSQLTime will also be caught here
     console.error(`Network or parsing error in getIssue for ID ${issueId}:`, error.message, error);
     return { status: 0, data: null, error: error.message || "Network or parsing error" };
   }
@@ -139,31 +184,31 @@ export const getOrgMember = async (memberId: number): Promise<GetOrgMemberResult
       return { status: response.status, data: null, error };
     }
     const text = await response.text();
+    // Preserving your original logic for handling empty text / 404 for this function
     if (!text && response.status !== 404) {
       return { status: response.status, data: null, error: undefined };
     }
+    // This explicit 404 check is redundant if the `!response.ok` block correctly handles 404s by returning.
+    // However, keeping it to match your provided code precisely.
     if (response.status === 404) {
       return { status: response.status, data: null, error: undefined };
     }
-
+    // If text is empty at this point (e.g. after passing the above checks for some reason), JSON.parse will throw.
     const rawData = JSON.parse(text);
     const data: OrgMember = {
       ...rawData,
       userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
       orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId,
-      // Map aggregated permissions if backend sends them (as per OrgMember struct in backend docs)
       canExec: rawData.can_exec,
       canRead: rawData.can_read,
       canWrite: rawData.can_write,
-      roles: rawData.roles, // This will be number[] as per backend struct
+      roles: rawData.roles,
     };
     delete (data as any).userid;
     delete (data as any).orgid;
-    // Optionally delete raw can_exec etc. if you only want camelCase from types.ts
-    delete (data as any).can_exec; // Assuming these are present on rawData if true
+    delete (data as any).can_exec;
     delete (data as any).can_read;
     delete (data as any).can_write;
-
 
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -187,24 +232,38 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
     const data: Project = parsedData as Project;
 
     if (data && data.issues && Object.keys(data).length > 0) {
-      data.issues = data.issues.map(issue => ({
-        ...issue,
-        created: parseSQLNullTime(issue.created as any),
-        completed: parseSQLNullTime(issue.completed as any),
-        tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : issue.tagId,
-      }));
+      // The .map operation might throw if parseRequiredSQLTime fails for any issue's 'created' field.
+      // This error would be caught by the outer catch block for getProject.
+      data.issues = data.issues.map(issue => {
+        // Assuming 'issue' here is a raw object from the backend data.
+        // The `as any` for issue.created and issue.completed is kept from your original code.
+        const issueIdForError = (issue as any).id || 'unknown'; // For better error messages
+        const transformedIssue = {
+          ...issue,
+          // Use parseRequiredSQLTime for 'created'
+          created: parseRequiredSQLTime((issue as any).created, `Project [${projectId}] Issue [${issueIdForError}] 'created' field`),
+          // Use parseSQLNullTime for 'completed'
+          completed: parseSQLNullTime((issue as any).completed),
+          tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : (issue as any).tagId,
+        };
+        delete (transformedIssue as any).tagid;
+        return transformedIssue;
+      });
+      // The 'if (data.issues)' check before forEach is slightly redundant if map always runs on an existing array,
+      // but kept as per original structure.
       if (data.issues) {
-        data.issues.forEach(issue => delete (issue as any).tagid);
+        // This forEach loop was for deleting tagid, which is now done inside the map's transformedIssue.
+        // data.issues.forEach(issue => delete (issue as any).tagid); // This line is no longer needed here.
       }
     }
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
+    // Errors from parseRequiredSQLTime within the issues.map will also be caught here
     console.error(`Network or parsing error in getProject for ID ${projectId}:`, error.message, error);
-    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+    return { status: 200, data: null, error: error.message || "Network or parsing error" };
   }
 };
 
-// UPDATED: Mapped can_exec, can_read, can_write from backend
 export const getProjectMember = async (memberId: number): Promise<GetProjectMemberResult> => {
   try {
     const params = new URLSearchParams({ memberid: String(memberId) });
@@ -216,6 +275,7 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
       return { status: response.status, data: null, error };
     }
     const text = await response.text();
+    // Preserving your original logic for handling empty text / 404 for this function
     if (!text && response.status !== 404) {
       return { status: response.status, data: null, error: undefined };
     }
@@ -225,30 +285,20 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
 
     const rawData = JSON.parse(text);
     const data: ProjectMember = {
-      ...rawData, // Spread first to include id and any other direct fields
+      ...rawData, 
       userId: rawData.userid !== undefined ? rawData.userid : rawData.userId,
       projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId,
-      // Map aggregated permissions from backend (can_exec, etc.)
       canExec: rawData.can_exec,
       canRead: rawData.can_read,
       canWrite: rawData.can_write,
-      roles: rawData.roles,    // This will be number[] from backend (array of role IDs)
-      issues: rawData.issues,  // This will be number[] from backend (array of issue IDs)
+      roles: rawData.roles,
+      issues: rawData.issues,
     };
-    // Clean up original lowercase keys
     delete (data as any).userid;
     delete (data as any).projectid;
-    // Optionally delete raw can_exec etc. if you only want camelCase from types.ts
-    // and if they were included by the spread of rawData.
-    // However, the explicit mapping above should create the camelCase versions.
-    // If rawData has can_exec, it will be on `data` too. If type `ProjectMember` expects `canExec`
-    // (camelCase) then we are good. If `types.ts` has `can_exec` (snake_case) then no mapping needed for these.
-    // Your `types.ts` was updated to expect camelCase `canExec` etc.
-    // Let's delete the snake_case versions if they were spread from rawData.
     delete (data as any).can_exec;
     delete (data as any).can_read;
     delete (data as any).can_write;
-
 
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -257,23 +307,18 @@ export const getProjectMember = async (memberId: number): Promise<GetProjectMemb
   }
 };
 
-// --- START: New Getter Functions for OrgRole and ProjectRole ---
-
-/**
- * Fetches a specific organization role by its ID.
- * Corresponds to backend GetOrgRoleHandler.
- */
 export const getOrgRole = async (roleId: number): Promise<GetOrgRoleResult> => {
   try {
     const params = new URLSearchParams({ roleid: String(roleId) });
     const response = await fetch(`${API_BASE}/get-org-role?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 if role not found
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching organization role ${roleId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
     const text = await response.text();
+    // Preserving your original logic for handling empty text / 404 for this function
     if (!text && response.status !== 404) {
       return { status: response.status, data: null, error: undefined };
     }
@@ -282,24 +327,17 @@ export const getOrgRole = async (roleId: number): Promise<GetOrgRoleResult> => {
     }
 
     const rawData = JSON.parse(text);
-    // Backend OrgRole struct has: OrgID `json:"orgid"`, Name `json:"name"`,
-    // CanExec `json:"can_exec"`, CanWrite `json:"can_write"`, CanRead `json:"can_read"`
-    // Frontend OrgRole type expects: orgId, name, canExec, canWrite, canRead (all camelCase or matching)
     const data: OrgRole = {
-      ...rawData, // id, name, can_exec, can_write, can_read would be spread
-      orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId, // Map orgid
-      // Ensure permissions are mapped to camelCase if types.ts expects it
-      // and backend sends snake_case (which it does as per utils.pdf)
+      ...rawData,
+      orgId: rawData.orgid !== undefined ? rawData.orgid : rawData.orgId,
       canExec: rawData.can_exec,
       canRead: rawData.can_read,
       canWrite: rawData.can_write,
     };
-    delete (data as any).orgid; // Clean up original lowercase field if it was on rawData
-    // Delete snake_case permissions if they were spread and types.ts expects camelCase
+    delete (data as any).orgid;
     delete (data as any).can_exec;
     delete (data as any).can_read;
     delete (data as any).can_write;
-
 
     return { status: response.status, data: data, error: undefined };
   } catch (error: any) {
@@ -308,21 +346,18 @@ export const getOrgRole = async (roleId: number): Promise<GetOrgRoleResult> => {
   }
 };
 
-/**
- * Fetches a specific project role by its ID.
- * Corresponds to backend GetProjRoleHandler.
- */
 export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResult> => {
   try {
     const params = new URLSearchParams({ roleid: String(roleId) });
     const response = await fetch(`${API_BASE}/get-proj-role?${params.toString()}`, { method: "GET" });
 
-    if (!response.ok) { // Handles 404 if role not found
+    if (!response.ok) {
       const error = await parseErrorResponse(response);
       console.error(`Error fetching project role ${roleId}: Status ${response.status}, Message: ${error}`);
       return { status: response.status, data: null, error };
     }
     const text = await response.text();
+    // Preserving your original logic for handling empty text / 404 for this function
     if (!text && response.status !== 404) {
       return { status: response.status, data: null, error: undefined };
     }
@@ -331,19 +366,14 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
     }
 
     const rawData = JSON.parse(text);
-    // Backend ProjectRole struct has: ProjectID `json:"projectid"`, Name `json:"name"`,
-    // CanExec `json:"can_exec"`, CanWrite `json:"can_write"`, CanRead `json:"can_read"`
-    // Frontend ProjectRole type expects: projectId, name, canExec, canWrite, canRead
     const data: ProjectRole = {
-      ...rawData, // id, name, can_exec, can_write, can_read would be spread
-      projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId, // Map projectid
-      // Ensure permissions are mapped to camelCase
+      ...rawData,
+      projectId: rawData.projectid !== undefined ? rawData.projectid : rawData.projectId,
       canExec: rawData.can_exec,
       canRead: rawData.can_read,
       canWrite: rawData.can_write,
     };
-    delete (data as any).projectid; // Clean up original lowercase field
-    // Delete snake_case permissions if they were spread
+    delete (data as any).projectid;
     delete (data as any).can_exec;
     delete (data as any).can_read;
     delete (data as any).can_write;
@@ -355,4 +385,49 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
   }
 };
 
-// --- END: New Getter Functions ---
+  /**
+  * Fetches all projects associated with a specific user.
+  * Internally uses `getUser` and `getProject` to resolve full project details.
+  * Returns an array of `Project` objects or an error if the user or any project fetch fails critically.
+  */
+  export const getUserProjects = async (userId: number): Promise<GetResult<Project[]>> => {
+    try {
+      const userResult = await getUser(userId);
+      if (userResult.status !== 200 || !userResult.data) {
+        return {
+          status: userResult.status,
+          data: null,
+          error: userResult.error || "User not found",
+        };
+      }
+  
+      const rawProjects = userResult.data.projects ?? [];
+  
+      // Only include number IDs from (number | ProjectMember)[]
+      const projectIds = rawProjects.filter(
+        (p): p is number => typeof p === "number"
+      );
+  
+      const projects: Project[] = [];
+  
+      for (const id of projectIds) {
+        const projectResult = await getProject(id);
+        if (projectResult.status === 200 && projectResult.data) {
+          const raw = projectResult.data;
+  
+          const transformedProject: Project = {
+            ...raw,
+            orgId: (raw as any).orgid !== undefined ? (raw as any).orgid : raw.orgId,
+          };
+          delete (transformedProject as any).orgid;
+  
+          projects.push(transformedProject);
+        }
+      }
+  
+      return { status: 200, data: projects, error: undefined };
+    } catch (error: any) {
+      return { status: 0, data: null, error: error.message || "Unexpected error" };
+    }
+  };
+  
