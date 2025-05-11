@@ -634,7 +634,58 @@ const AboutUser: React.FC = () => {
                     mb: 4,
                   }}
                 >
-                  {/* Delete User Button - Left */}
+                  {/* Update Profile Button - Left */}
+                  <Button
+                    variant="contained"
+                    startIcon={<Save size={20} />}
+                    onClick={handleUpdateProfile}
+                    sx={{
+                      backgroundColor: theme.palette.primary.main, // Blue color
+                      color: "white",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.dark,
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      boxShadow: `0 4px 10px ${theme.palette.primary.main}40`,
+                      flex: 1, // Take equal space
+                      maxWidth: "34%", // Slightly wider
+                    }}
+                  >
+                    Update Profile
+                  </Button>
+                  
+                  {/* Logout Button - Middle */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<LogOut size={20} />}
+                    onClick={handleLogoutClick}
+                    sx={{
+                      color: "#f44336", // Red color
+                      borderColor: "#f44336",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: "rgba(244, 67, 54, 0.08)",
+                        borderColor: "#d32f2f", 
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      mx: 2, // margin on both sides
+                      flex: 1, // Take equal space
+                      maxWidth: "30%", // Limit width
+                    }}
+                  >
+                    Logout
+                  </Button>
+                  
+                  {/* Delete User Button - Right */}
                   <Button
                     variant="outlined"
                     startIcon={<Trash2 size={20} />}
@@ -658,57 +709,6 @@ const AboutUser: React.FC = () => {
                   >
                     Delete
                   </Button>
-                  
-                  {/* Update Profile Button - Center */}
-                  <Button
-                    variant="contained"
-                    startIcon={<Save size={20} />}
-                    onClick={handleUpdateProfile}
-                    sx={{
-                      backgroundColor: theme.palette.primary.main, // Blue color
-                      color: "white",
-                      textTransform: "none",
-                      fontWeight: 600,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: theme.palette.primary.dark,
-                      },
-                      borderRadius: "8px",
-                      py: 1.5,
-                      px: 3,
-                      boxShadow: `0 4px 10px ${theme.palette.primary.main}40`,
-                      mx: 2, // margin on both sides
-                      flex: 1, // Take equal space
-                      maxWidth: "34%", // Slightly wider
-                    }}
-                  >
-                    Update Profile
-                  </Button>
-                  
-                  {/* Logout Button - Right */}
-                  <Button
-                    variant="outlined"
-                    startIcon={<LogOut size={20} />}
-                    onClick={handleLogoutClick}
-                    sx={{
-                      color: "#f44336", // Red color
-                      borderColor: "#f44336",
-                      textTransform: "none",
-                      fontWeight: 600,
-                      fontSize: "1rem",
-                      "&:hover": {
-                        backgroundColor: "rgba(244, 67, 54, 0.08)",
-                        borderColor: "#d32f2f", 
-                      },
-                      borderRadius: "8px",
-                      py: 1.5,
-                      px: 3,
-                      flex: 1, // Take equal space
-                      maxWidth: "30%", // Limit width
-                    }}
-                  >
-                    Logout
-                  </Button>
                 </Box>
               </>
             )}
@@ -723,11 +723,11 @@ const AboutUser: React.FC = () => {
         aria-labelledby="logout-dialog-title"
         aria-describedby="logout-dialog-description"
       >
-        <DialogTitle id="logout-dialog-title">
+        <DialogTitle id="logout-dialog-title" sx={{ color: theme.palette.mode === 'dark' ? '#fff' : 'inherit' }}>
           {"Are you sure that you want to logout?"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="logout-dialog-description">
+          <DialogContentText id="logout-dialog-description" sx={{ color: theme.palette.mode === 'dark' ? '#e0e0e0' : 'inherit' }}>
             You will need to log in again to access your account.
           </DialogContentText>
         </DialogContent>
@@ -748,11 +748,11 @@ const AboutUser: React.FC = () => {
         aria-labelledby="delete-dialog-title"
         aria-describedby="delete-dialog-description"
       >
-        <DialogTitle id="delete-dialog-title">
+        <DialogTitle id="delete-dialog-title" sx={{ color: theme.palette.mode === 'dark' ? '#fff' : 'inherit' }}>
           {"Are you sure you want to delete your account?"}
         </DialogTitle>
         <DialogContent>
-          <DialogContentText id="delete-dialog-description">
+          <DialogContentText id="delete-dialog-description" sx={{ color: theme.palette.mode === 'dark' ? '#e0e0e0' : 'inherit' }}>
             This action cannot be undone. All your data will be permanently removed.
           </DialogContentText>
         </DialogContent>
@@ -760,31 +760,35 @@ const AboutUser: React.FC = () => {
           <Button onClick={handleDeleteCancel} color="primary">
             Cancel
           </Button>
-                    <Button onClick={handleDeleteConfirm} color="error" autoFocus>
-                      Delete Account
-                    </Button>
-                  </DialogActions>
-                </Dialog>
-          
-                {/* Notification Dialog */}
-                <Dialog
-                  open={notificationDialog.open}
-                  onClose={handleCloseNotification}
-                  aria-labelledby="notification-dialog-title"
-                >
-                  <DialogTitle id="notification-dialog-title">{notificationDialog.title}</DialogTitle>
-                  <DialogContent>
-                    <DialogContentText>{notificationDialog.message}</DialogContentText>
-                  </DialogContent>
-                  <DialogActions>
-                    <Button onClick={handleCloseNotification} color="primary">OK</Button>
-                  </DialogActions>
-                </Dialog>
-              </Box>
-            );
-          };
-          
-          export default AboutUser;
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete Account
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
+      {/* Notification Dialog */}
+      <Dialog
+        open={notificationDialog.open}
+        onClose={handleCloseNotification}
+        aria-labelledby="notification-dialog-title"
+      >
+        <DialogTitle id="notification-dialog-title" sx={{ color: theme.palette.mode === 'dark' ? '#fff' : 'inherit' }}>
+          {notificationDialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: theme.palette.mode === 'dark' ? '#e0e0e0' : 'inherit' }}>
+            {notificationDialog.message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotification} color="primary">OK</Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+};
+
+export default AboutUser;
 
           async function getParsedUserById(numericUserId: number): Promise<User | null> {
             try {
