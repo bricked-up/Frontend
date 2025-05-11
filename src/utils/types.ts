@@ -12,9 +12,10 @@
  * @property {number} budget - The budget allocated to the project.
  * @property {string} charter - A description or charter for the project.
  * @property {boolean} archived - A flag indicating if the project is archived.
- * @property {ProjectMember[]} [members] - Optional array of project members associated with this project.
- * @property {Issue[]} [issues] - Optional array of issues belonging to this project.
- * @property {Tag[]} [tags] - Optional array of tags defined within this project.
+ * @property {ProjectMember[]} [members] - Optional array of project members associated with this project. (Potentially populated by getProject)
+ * @property {Issue[]} [issues] - Optional array of issues belonging to this project. (Potentially populated by getProject)
+ * @property {Tag[]} [tags] - Optional array of tags defined within this project. (Potentially populated by getProject)
+ * @property {ProjectRole[]} [roles] - Optional array of roles defined for this project (distinct from member-assigned roles).
  */
 export type Project = {
   id: number;
@@ -26,27 +27,29 @@ export type Project = {
   members?: ProjectMember[];
   issues?: Issue[];
   tags?: Tag[];
+  roles?: ProjectRole[]; // Roles defined at the project level
 }
 
 /**
  * @description Represents an organization within the application.
  * @property {number} [id] - The unique identifier for the organization (optional, e.g., during creation).
  * @property {string} name - The name of the organization.
- * @property {Project[]} [projects] - Optional array of projects belonging to this organization.
- * @property {OrgMember[]} [members] - Optional array of members in this organization.
- * @property {OrgRole[]} [roles] - Optional array of roles defined within this organization.
+ * @property {Project[]} [projects] - Optional array of projects belonging to this organization. (Potentially populated by getOrg)
+ * @property {OrgMember[]} [members] - Optional array of members in this organization. (Potentially populated by getOrg)
+ * @property {OrgRole[]} [roles] - Optional array of roles defined within this organization. (Potentially populated by getOrg)
  */
-
 export type Organization = {
   id?: number;
   name: string;
   projects?: Project[];
   members?: OrgMember[];
-  roles?: OrgRole[];
+  roles?: OrgRole[]; // Roles defined at the organization level
 }
 
 /**
  * @description Represents a user account in the application.
+ * Note: For `getUser` endpoint, `organizations`, `projects`, and `issues` are expected to be number arrays (IDs)
+ * based on current test expectations and backend User struct.
  * @property {string} displayName - The user's preferred display name.
  * @property {number} id - The unique identifier for the user.
  * @property {string} email - The user's email address, used for login and communication.
@@ -56,27 +59,23 @@ export type Organization = {
  * @property {string | null} [avatar] - Optional URL or path to the user's avatar image.
  * @property {boolean} verified - Flag indicating if the user's email address has been verified.
  * @property {number | null} [verifyId] - Optional ID related to the verification process.
- * @property {OrgMember[]} [organizations] - Optional array of organization memberships for the user.
- * (Backend might send IDs; frontend type expects full OrgMember objects).
- * @property {ProjectMember[]} [projects] - Optional array of project memberships for the user.
- * (Backend might send IDs; frontend type expects full ProjectMember objects).
- * @property {Issue[]} [issues] - Optional array of issues assigned to or created by the user.
- * (Backend might send IDs; frontend type expects full Issue objects).
+ * @property {number[]} [organizations] - IDs of organizations the user is part of (from /get-user).
+ * @property {number[]} [projects] - IDs of projects the user is part of (from /get-user).
+ * @property {number[]} [issues] - IDs of issues assigned to/created by user (from /get-user).
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
-
 export type User = {
   displayName: string;
   id: number;
   email: string;
   name: string;
-  password: string;
+  password?: string;
   avatar?: string | null;
   verified: boolean;
   verifyId?: number | null;
-  organizations?: OrgMember[];
-  projects?: ProjectMember[];
-  issues?: Issue[];
+  organizations?: number[]; // From /get-user, backend sends []int
+  projects?: number[];    // From /get-user, backend sends []int
+  issues?: number[];      // From /get-user, backend sends []int
   sessions?: Session[];
 }
 
@@ -85,9 +84,9 @@ export type User = {
  * @property {number} id - The unique identifier for the issue.
  * @property {string} title - The title or summary of the issue.
  * @property {string | null} [desc] - Optional detailed description of the issue.
- * @property {number | null} [tagId] - Optional ID of an associated tag.
+ * @property {number | null} [tagId] - Optional ID of an associated tag (mapped from backend's tagid).
  * @property {number | null} [priority] - Optional priority level of the issue.
- * @property {Date} created - The date and time when the issue was created. (Parsed from backend string/SQLNullTime).
+ * @property {Date | null} created - The date and time when the issue was created. (Parsed from backend string/SQLNullTime).
  * @property {Date | null} [completed] - Optional date and time when the issue was completed. (Parsed from backend SQLNullTime).
  * @property {number} cost - The estimated or actual cost associated with resolving the issue.
  * @property {Dependency[]} [dependencies] - Optional array of issue dependencies.
@@ -98,8 +97,9 @@ export type Issue = {
   title: string;
   desc?: string | null;
   tagId?: number | null;
+  // tagid?: number; // We map and delete this, so it's not part of the final type
   priority?: number | null;
-  created: Date;
+  created: Date | null;
   completed?: Date | null;
   cost: number;
   dependencies?: Dependency[];
@@ -108,16 +108,23 @@ export type Issue = {
 
 /**
  * @description Represents the membership of a user within an organization, linking a user to an organization.
+ * Backend may send aggregated permissions directly on this object.
  * @property {number} id - The unique identifier for the organization membership entry.
  * @property {number} userId - The ID of the user.
  * @property {number} orgId - The ID of the organization.
- * @property {OrgRole[]} [roles] - Optional array of roles assigned to the user within this organization.
+ * @property {number[] | OrgRole[]} [roles] - Array of organization role IDs (from backend) or populated OrgRole objects.
+ * @property {boolean} [canExec] - Aggregated execute permission for the user in this organization (from backend `can_exec`).
+ * @property {boolean} [canWrite] - Aggregated write permission for the user in this organization (from backend `can_write`).
+ * @property {boolean} [canRead] - Aggregated read permission for the user in this organization (from backend `can_read`).
  */
 export type OrgMember = {
   id: number;
   userId: number;
   orgId: number;
-  roles?: OrgRole[];
+  roles?: number[] | OrgRole[]; // Backend `Roles` is `[]int`
+  canExec?: boolean;  // Mapped from backend `can_exec`
+  canWrite?: boolean; // Mapped from backend `can_write`
+  canRead?: boolean;  // Mapped from backend `can_read`
 }
 
 /**
@@ -131,31 +138,40 @@ export type OrgMember = {
  */
 export type OrgRole = {
   id: number;
-  orgId: number;
+  orgId: number;        // Backend OrgRole struct has OrgID `json:"orgid"`
   name: string;
-  canRead: boolean;
-  canWrite: boolean;
-  canExec: boolean;
+  canRead: boolean;     // Backend OrgRole struct has CanRead `json:"can_read"`
+  canWrite: boolean;    // Backend OrgRole struct has CanWrite `json:"can_write"`
+  canExec: boolean;     // Backend OrgRole struct has CanExec `json:"can_exec"`
 }
 
 /**
  * @description Represents the membership of a user within a project, linking a user to a project.
+ * Backend may send aggregated permissions directly on this object.
  * @property {number} id - The unique identifier for the project membership entry.
  * @property {number} userId - The ID of the user.
  * @property {number} projectId - The ID of the project.
- * @property {ProjectRole[]} [roles] - Optional array of roles assigned to the user within this project.
+ * @property {number[] | ProjectRole[]} [roles] - Array of project role IDs (from backend) or populated ProjectRole objects.
+ * @property {boolean} [canExec] - Aggregated execute permission for the user in this project (from backend `can_exec`).
+ * @property {boolean} [canWrite] - Aggregated write permission for the user in this project (from backend `can_write`).
+ * @property {boolean} [canRead] - Aggregated read permission for the user in this project (from backend `can_read`).
+ * @property {number[]} [issues] - IDs of issues relevant to this project membership (from backend).
  */
 export type ProjectMember = {
   id: number;
   userId: number;
   projectId: number;
-  roles?: ProjectRole[];
+  roles?: number[] | ProjectRole[]; // Backend `Roles` is `[]int`
+  canExec?: boolean;  // Mapped from backend `can_exec`
+  canWrite?: boolean; // Mapped from backend `can_write`
+  canRead?: boolean;  // Mapped from backend `can_read`
+  issues?: number[];  // Backend `Issues` is `[]int`
 }
 
 /**
  * @description Defines a role within a project, specifying permissions specific to that project.
  * @property {number} id - The unique identifier for the project role.
- * @property {number} projectId - The ID of the project to which this role belongs.
+ * @property {number} projectId - The ID of the project to which this role belongs (mapped from backend's 'projectid').
  * @property {string} name - The name of the role (e.g., "Lead", "Developer", "Tester").
  * @property {boolean} canRead - Permission to read data within the project.
  * @property {boolean} canWrite - Permission to write or modify data within the project.
@@ -163,11 +179,11 @@ export type ProjectMember = {
  */
 export type ProjectRole = {
   id: number;
-  projectId: number;
+  projectId: number;    // Backend ProjectRole struct has ProjectID `json:"projectid"`
   name: string;
-  canRead: boolean;
-  canWrite: boolean;
-  canExec: boolean;
+  canRead: boolean;     // Backend ProjectRole struct has CanRead `json:"can_read"`
+  canWrite: boolean;    // Backend ProjectRole struct has CanWrite `json:"can_write"`
+  canExec: boolean;     // Backend ProjectRole struct has CanExec `json:"can_exec"`
 }
 
 /**
@@ -230,7 +246,6 @@ export type VerifyUser = {
   id: number;
   code: number;
   expires: Date;
-
 }
 
 /**
@@ -265,7 +280,6 @@ export interface Board {
   tasks: Task[];
 }
 
-
 /**
  * @description Represents a task within a board.
  * @property {string} id - The unique identifier for the task (note: type is string).
@@ -282,14 +296,13 @@ export interface Task {
   id: string;
   title: string;
   desc: string;
-  tagid: number;
+  tagid: number; // Sticking to backend field name for this type
   priority: number;
   cost: number;
   created: Date;
   createdBy: string;
   completed?: Date;
 }
-
 
 /**
  * @description Represents the data structure for creating a new board.
@@ -302,6 +315,19 @@ export interface NewBoard {
   name: string;
   createdBy: string;
   createdAt: Date;
+}
+
+/**
+* @interface SQLNullTime
+* @description Represents the raw structure of a nullable time value often returned
+* by Go backends when using `sql.NullTime`. This interface is useful for parsing
+* such data before converting it to a JavaScript `Date` object or `null`.
+* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
+* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
+*/
+export interface SQLNullTime {
+Time: string;
+Valid: boolean;
 }
 
 // --- Getter Result Types ---
@@ -334,37 +360,51 @@ export type GetUserResult = GetResult<User>;
 export type GetIssueResult = GetResult<Issue>;
 
 /**
-* @description Result type for fetching project members.
-* Currently defined as `string[]` based on the hypothetical endpoint's expectation.
-* This might change to `GetResult<ProjectMember[]>` or `GetResult<User[]>` if the
-* endpoint is implemented to return richer member objects.
-*/
-export type GetProjectMembersResult = GetResult<string[]>;
-
-/**
- * @description Result type for fetching an array of Issues for a project.
- * Wraps an array of Issue types within the generic GetResult structure.
+ * @description Result type for fetching all User IDs.
+ * Wraps an array of numbers (user IDs) within the generic GetResult structure.
+ * This aligns with the /get-all-users endpoint returning an array of IDs.
  */
-export type GetProjectIssuesResult = GetResult<Issue[]>;
+export type GetUsersResult = GetResult<number[]>; // UPDATED: Was GetResult<User[]>
 
 /**
- * @description Result type for fetching an array of Issues for an organization.
- * Wraps an array of Issue types within the generic GetResult structure.
+ * @description Result type for fetching a single Organization.
+ * Wraps the Organization type within the generic GetResult structure.
  */
-export type GetOrgIssuesResult = GetResult<Issue[]>;
+export type GetOrganizationResult = GetResult<Organization>;
 
 /**
-* @interface SQLNullTime
-* @description Represents the raw structure of a nullable time value often returned
-* by Go backends when using `sql.NullTime`. This interface is useful for parsing
-* such data before converting it to a JavaScript `Date` object or `null`.
-* @property {string} Time - The time value as a string (typically ISO 8601 format if Valid is true).
-* @property {boolean} Valid - A boolean indicating whether the Time value is valid (true) or represents a SQL NULL (false).
-*/
-export interface SQLNullTime {
-Time: string;
-Valid: boolean;
-}
+ * @description Result type for fetching a single Project.
+ * Wraps the Project type within the generic GetResult structure.
+ */
+export type GetProjectResult = GetResult<Project>;
+
+/**
+ * @description Result type for fetching a single Organization Member.
+ * Wraps the OrgMember type within the generic GetResult structure.
+ */
+export type GetOrgMemberResult = GetResult<OrgMember>;
+
+/**
+ * @description Result type for fetching a single Project Member.
+ * Wraps the ProjectMember type within the generic GetResult structure.
+ */
+export type GetProjectMemberResult = GetResult<ProjectMember>;
+
+
+// --- START: Added types for OrgRole and ProjectRole getters ---
+/**
+ * @description Result type for fetching a single Organization Role.
+ * Wraps the OrgRole type within the generic GetResult structure.
+ */
+export type GetOrgRoleResult = GetResult<OrgRole>;
+
+/**
+ * @description Result type for fetching a single Project Role.
+ * Wraps the ProjectRole type within the generic GetResult structure.
+ */
+export type GetProjectRoleResult = GetResult<ProjectRole>;
+// --- END: Added types for OrgRole and ProjectRole getters ---
+
 
 // --- New Getter Result Types for Board and Task ---
 
