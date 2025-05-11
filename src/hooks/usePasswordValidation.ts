@@ -38,7 +38,7 @@ const usePasswordValidation = ({
     if (number && !/[0-9]/.test(password)) {
       errorList.push('Password must contain at least one number');
     }
-    if (specialChar && !/[!@#$%^&*(),.?":{}|<>]/.test(password)) {
+    if (specialChar && !/[-_/!@#$%^&*(),.?":{}|<>]/.test(password)) {
       errorList.push('Password must contain at least one special character');
     }
     if (password!==confirmpwd) {
