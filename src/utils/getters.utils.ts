@@ -237,11 +237,11 @@ export const getProject = async (projectId: number): Promise<GetProjectResult> =
       data.issues = data.issues.map(issue => {
         // Assuming 'issue' here is a raw object from the backend data.
         // The `as any` for issue.created and issue.completed is kept from your original code.
-        const issueIdForError = (issue as any).id || 'unknown'; // For better error messages
+        const issueIdForError = issue.id || 'unknown'; // For better error messages
         const transformedIssue = {
           ...issue,
           // Use parseRequiredSQLTime for 'created'
-          created: parseRequiredSQLTime((issue as any).created, `Project [${projectId}] Issue [${issueIdForError}] 'created' field`),
+          //created: parseRequiredSQLTime(issue.created, `Project [${projectId}] Issue [${issueIdForError}] 'created' field`) as unknown as string | SQLNullTime | null | undefined,
           // Use parseSQLNullTime for 'completed'
           completed: parseSQLNullTime((issue as any).completed),
           tagId: (issue as any).tagid !== undefined ? (issue as any).tagid : (issue as any).tagId,
