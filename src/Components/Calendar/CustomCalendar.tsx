@@ -39,9 +39,9 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../../css/CalendarStyles.css"; // Assuming you have custom styles here
 import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
 // Import Issue type and the corrected data
-import { Issue } from "../../utils/types"; // Adjust path if needed
-import { mockActivityData } from "../../utils/mock_Activity_Calendar_Data"; // Adjust path if needed
+import { Issue,Project } from "../../utils/types"; // Adjust path if needed
 import { tokens } from "../../theme";
+import { getUserProjects } from "../../utils/getters.utils";
 
 // Setup localization using date-fns locales
 const locales = {
@@ -64,18 +64,6 @@ type CalendarEvent = {
   resource: Issue; // Keep the original Issue data
 };
 
-// Map mock data (Issue[]) to CalendarEvent[]
-const events: CalendarEvent[] = mockActivityData
-  .filter((item): item is Issue & { completed: Date } => !!item.completed)
-  .map(
-    (item): CalendarEvent => ({
-      id: item.id,
-      title: item.title,
-      start: item.completed,
-      end: item.completed,
-      resource: item,
-    })
-  );
 
 // Type-safe keys for settings
 type ThresholdKey = "urgentThreshold" | "upcomingThreshold";
@@ -267,6 +255,9 @@ const CustomCalendar: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false); // State for settings panel visibility
   const colors = tokens(theme.palette.mode);
 
+  const userId = Number(localStorage.getItem("userid"));
+  const [issues, setIssues] = useState<Issue[]>([]);
+
   // Load settings from localStorage or use defaults
   const [settings, setSettings] = useState<CalendarSettings>(() => {
     try {
@@ -303,6 +294,24 @@ const CustomCalendar: React.FC = () => {
     },
     []
   );
+
+  useEffect(() => {
+  const fetchUserIssues = async () => {
+    if (!userId) return;
+
+    const userProjectsResult = await getUserProjects(userId);
+    if (!userProjectsResult.data) {
+      console.error("Failed to fetch user projects:", userProjectsResult.error);
+      return;
+    }
+
+    // Extract issues from projects
+    const allIssues: Issue[] = userProjectsResult.data.flatMap((project) => project.issues || []);
+    setIssues(allIssues);
+  };
+
+  fetchUserIssues();
+}, [userId]);
 
   // Function to determine event styling based on due date and settings
   const eventStyleGetter = useCallback(
@@ -396,6 +405,14 @@ const CustomCalendar: React.FC = () => {
     ],
     []
   );
+
+  const events: CalendarEvent[] = issues.map((issue) => ({
+    id: issue.id,
+    title: issue.title,
+    start: issue.created,
+    end: issue.completed ?? issue.created,
+    resource: issue,
+  }));
 
   return (
     // Main container Box
