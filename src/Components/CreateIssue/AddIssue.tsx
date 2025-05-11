@@ -231,27 +231,19 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               InputLabelProps={labelStyles}
             />
           </Grid>
-          <Grid item xs={12}>
-            <Typography
-              variant="caption"
-              color="textSecondary"
-              sx={{ mb: 1, display: "block" }}
-            >
-              Dependency is optional. Select "None" if this issue has no
-              dependencies.
-            </Typography>
+          <Grid item xs={6}>
             <FormControl fullWidth error={!!issueError}>
               <InputLabel
                 id="dependency-select-label"
                 style={labelStyles.style}
               >
-                Issue Dependency (Optional)
+                Issue Dependency
               </InputLabel>
               <Select
                 labelId="dependency-select-label"
                 id="dependency-select"
                 value={dependencyId === null ? "" : dependencyId}
-                label="Issue Dependency (Optional)"
+                label="Issue Dependency"
                 onChange={(e) => handleDependencyChange(e.target.value)}
                 disabled={loadingIssues}
                 style={textFieldStyles.style}
@@ -279,6 +271,16 @@ export const AddIssue: React.FC<AddIssueProps> = ({
               )}
               {issueError && <FormHelperText>{issueError}</FormHelperText>}
             </FormControl>
+          </Grid>
+          <Grid item xs={12}>
+            <Typography
+              variant="caption"
+              color="textSecondary"
+              sx={{ mt: 1, display: "block" }}
+            >
+              Dependency is optional. Select "None" if this issue has no
+              dependencies.
+            </Typography>
           </Grid>
         </Grid>
       </DialogContent>
