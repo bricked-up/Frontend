@@ -860,21 +860,6 @@ const ViewProject = () => {
     ? mockProjectMembers.filter((row) => row.project === selectedProject)
     : mockProjectMembers;
 
-  // Create unique project options without using Set spreading
-  const getUniqueProjects = () => {
-    const projects = [""];
-    const projectSet = new Set<string>();
-
-    mockProjectMembers.forEach((member) => {
-      if (!projectSet.has(member.project)) {
-        projectSet.add(member.project);
-        projects.push(member.project);
-      }
-    });
-
-    return projects;
-  };
-
   return (
     <Box
       sx={{
