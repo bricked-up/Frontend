@@ -1,12 +1,12 @@
-// Helper services for task operations (e.g., add, delete, update)
+// Helper services for issue operations (e.g., add, delete, update)
 
-import { Task } from './types';
+import { Issue} from './types';
 import { getBoard, updateBoard } from './boards';
 
-export const addTask = (task: Task, boardId: number) => {
+export const addissue = (issue: Issue, boardId: number) => {
   const board = getBoard(boardId);
   if (board) {
-    board.tasks = [...board.tasks, task];
+    board.issues = [...board.issues, issue];
     updateBoard(boardId, board);
     return true;
   }
@@ -14,10 +14,10 @@ export const addTask = (task: Task, boardId: number) => {
   return false;
 };
 
-export const deleteTask = (taskId: string, boardId: number) => {
+export const deleteissue = (issueId: number, boardId: number) => {
   const board = getBoard(boardId);
   if (board) {
-    board.tasks = board.tasks.filter((task) => task.id !== taskId);
+    board.issues = board.issues.filter((issue) => issue.id !== issueId);
     updateBoard(boardId, board);
     return true;
   }
@@ -26,20 +26,20 @@ export const deleteTask = (taskId: string, boardId: number) => {
 };
 
 
-export async function updateTask(task: Task, boardId: number): Promise<boolean> {
+export async function updateissue(issue: Issue, boardId: number): Promise<boolean> {
   try {
     const board = getBoard(boardId);
     if (!board) return false;
 
-    const index = board.tasks.findIndex((t) => t.id === task.id);
+    const index = board.issues.findIndex((t) => t.id === issue.id);
     if (index !== -1) {
-      board.tasks[index] = task;
+      board.issues[index] = issue;
       updateBoard(boardId, board);
       return true;
     }
     return false;
   } catch (error) {
-    console.error("Failed to update task", error);
+    console.error("Failed to update issue", error);
     return false;
   }
 }

@@ -50,7 +50,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
   const [priority, setPriority] = useState<number | null>(1);
   const [tagId, setTagId] = useState<number | null>(1); // renamed tagid->tagId
   const [cost, setCost] = useState(0);
-
+  
   // new state: selected assignee ID
   const [assignedToId, setAssignedToId] = useState<number | undefined>(
     initialData?.assignedToId
@@ -64,7 +64,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       setTagId(initialData.tagId ?? 1);
       setCost(initialData.cost);
       // sync existing assignee on edit
-      setAssignedToId(initialData.assignedToId ?? 0);
+      setAssignedToId(initialData.assignedToId ?? undefined);
     } else {
       setTitle("");
       setDesc("");
@@ -72,7 +72,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       setTagId(1);
       setCost(0);
       // clear assignee on new
-      setAssignedToId(0);
+      setAssignedToId(undefined);
     }
   }, [initialData]);
 
@@ -97,13 +97,14 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       completed: initialData?.completed ?? null,
       // include assignment fields
       assignedToId,
-      assignedToName: members.find((m) => m.id === assignedToId)?.name,
+      assignedToName,
     };
 
     onAdd(newIssue);
     onClose();
   };
 
+  const assignedToName = members.find(m => m.id === assignedToId)?.name;
   const theme = useTheme();
   const textColor = theme.palette.mode === "light" ? "black" : "white";
 
@@ -189,10 +190,10 @@ export const AddIssue: React.FC<AddIssueProps> = ({
           </Grid>
 
           {/* Assignee dropdown */}
-          <Grid item xs={12}>
+          <Grid item xs={6}>
             <DropDown
               label="Asignee"
-              value={assignedToId ?? ""}
+              value={assignedToName ?? ""}
               onSelect={(val) => {
                 if (val === "") {
                   // user picked “None”
