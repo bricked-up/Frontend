@@ -269,7 +269,7 @@ export type ForgotPassword = {
  * @property {string} createdBy - The name or identifier of the user who created the board.
  * @property {string} createdById - The ID of the user who created the board.
  * @property {Date} createdAt - The date and time when the board was created.
- * @property {Task[]} tasks - An array of tasks belonging to this board.
+ * @property {Issue[]} issues - An array of tasks belonging to this board.
  */
 export interface Board {
   id: number;
@@ -277,7 +277,7 @@ export interface Board {
   createdBy: string;
   createdById: string;
   createdAt: Date;
-  tasks: Task[];
+  issues: Issue[];
 }
 
 /**
