@@ -384,3 +384,50 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
     return { status: 0, data: null, error: error.message || "Network or parsing error" };
   }
 };
+
+  /**
+  * Fetches all projects associated with a specific user.
+  * Internally uses `getUser` and `getProject` to resolve full project details.
+  * Returns an array of `Project` objects or an error if the user or any project fetch fails critically.
+  */
+  export const getUserProjects = async (userId: number): Promise<GetResult<Project[]>> => {
+    try {
+      const userResult = await getUser(userId);
+      if (userResult.status !== 200 || !userResult.data) {
+        return {
+          status: userResult.status,
+          data: null,
+          error: userResult.error || "User not found",
+        };
+      }
+  
+      const rawProjects = userResult.data.projects ?? [];
+  
+      // Only include number IDs from (number | ProjectMember)[]
+      const projectIds = rawProjects.filter(
+        (p): p is number => typeof p === "number"
+      );
+  
+      const projects: Project[] = [];
+  
+      for (const id of projectIds) {
+        const projectResult = await getProject(id);
+        if (projectResult.status === 200 && projectResult.data) {
+          const raw = projectResult.data;
+  
+          const transformedProject: Project = {
+            ...raw,
+            orgId: (raw as any).orgid !== undefined ? (raw as any).orgid : raw.orgId,
+          };
+          delete (transformedProject as any).orgid;
+  
+          projects.push(transformedProject);
+        }
+      }
+  
+      return { status: 200, data: projects, error: undefined };
+    } catch (error: any) {
+      return { status: 0, data: null, error: error.message || "Unexpected error" };
+    }
+  };
+  
