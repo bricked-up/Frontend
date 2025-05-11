@@ -1,0 +1,250 @@
+
+> bricked-up@0.1.0 start
+> react-scripts start
+
+(node:25) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+(node:25) [DEP_WEBPACK_DEV_SERVER_ON_AFTER_SETUP_MIDDLEWARE] DeprecationWarning: 'onAfterSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+(node:25) [DEP_WEBPACK_DEV_SERVER_ON_BEFORE_SETUP_MIDDLEWARE] DeprecationWarning: 'onBeforeSetupMiddleware' option is deprecated. Please use the 'setupMiddlewares' option.
+Starting the development server...
+
+Compiled with warnings.
+
+[eslint] 
+src/Components/AccountPage/Form.tsx
+  Line 6:11:  'OrgMember' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 30:9:  'handleFileUpload' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Calendar/CustomCalendar.tsx
+  Line 26:3:   'EventProps' is defined but never used         @typescript-eslint/no-unused-vars
+  Line 34:3:   'isSameDay' is defined but never used          @typescript-eslint/no-unused-vars
+  Line 263:9:  'navigate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Channels.tsx
+  Line 16:3:   'Popover' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 77:10:  'anchorEl' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 78:10:  'taskContent' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 106:9:  'handleClosePopover' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Layout.tsx
+  Line 7:8:  'LogoutButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Navbar/NavBar.tsx
+  Line 7:8:    'ProfileButton' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 29:11:  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/hooks/usePasswordValidation.ts
+  Line 1:10:  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/AboutUser.tsx
+  Line 1:27:   'useMemo' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  Line 1:36:   'useCallback' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  Line 1:49:   'useContext' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  Line 7:10:   'User' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+  Line 30:10:  'isCurrentViewed' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  Line 51:6:   React Hook useEffect has missing dependencies: 'navigate' and 'userId'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 72:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+  Line 73:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+
+src/pages/Activity.tsx
+  Line 312:6:  React Hook useMemo has an unnecessary dependency: 'mockActivityData'. Either exclude it or remove the dependency array. Outer scope values like 'mockActivityData' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+src/pages/Calendar.tsx
+  Line 2:15:  'Typography' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LandingPage.tsx
+  Line 38:9:  'isMobile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LoadingPage.tsx
+  Line 4:8:  'NavBar' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/Login.tsx
+  Line 1:10:  'specialChars' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 4:10:  'red' is defined but never used           @typescript-eslint/no-unused-vars
+
+src/utils/loginPage.utils.ts
+  Line 1:10:  'API_BASE' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/Components/AccountPage/Form.tsx
+  Line 6:11:  'OrgMember' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 30:9:  'handleFileUpload' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Calendar/CustomCalendar.tsx
+  Line 26:3:   'EventProps' is defined but never used         @typescript-eslint/no-unused-vars
+  Line 34:3:   'isSameDay' is defined but never used          @typescript-eslint/no-unused-vars
+  Line 263:9:  'navigate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Channels.tsx
+  Line 16:3:   'Popover' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 77:10:  'anchorEl' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 78:10:  'taskContent' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 106:9:  'handleClosePopover' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Layout.tsx
+  Line 7:8:  'LogoutButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Navbar/NavBar.tsx
+  Line 7:8:    'ProfileButton' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 29:11:  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/hooks/usePasswordValidation.ts
+  Line 1:10:  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/AboutUser.tsx
+  Line 1:27:   'useMemo' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  Line 1:36:   'useCallback' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  Line 1:49:   'useContext' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  Line 7:10:   'User' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+  Line 30:10:  'isCurrentViewed' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  Line 51:6:   React Hook useEffect has missing dependencies: 'navigate' and 'userId'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 72:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+  Line 73:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+
+src/pages/Activity.tsx
+  Line 312:6:  React Hook useMemo has an unnecessary dependency: 'mockActivityData'. Either exclude it or remove the dependency array. Outer scope values like 'mockActivityData' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+src/pages/Calendar.tsx
+  Line 2:15:  'Typography' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LandingPage.tsx
+  Line 38:9:  'isMobile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LoadingPage.tsx
+  Line 4:8:  'NavBar' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/Login.tsx
+  Line 1:10:  'specialChars' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 4:10:  'red' is defined but never used           @typescript-eslint/no-unused-vars
+
+src/utils/loginPage.utils.ts
+  Line 1:10:  'API_BASE' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 1 warning
+No issues found.
+Compiling...
+Compiled with warnings.
+
+[eslint] 
+src/Components/AccountPage/Form.tsx
+  Line 6:11:  'OrgMember' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 30:9:  'handleFileUpload' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Calendar/CustomCalendar.tsx
+  Line 26:3:   'EventProps' is defined but never used         @typescript-eslint/no-unused-vars
+  Line 34:3:   'isSameDay' is defined but never used          @typescript-eslint/no-unused-vars
+  Line 263:9:  'navigate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Channels.tsx
+  Line 16:3:   'Popover' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 77:10:  'anchorEl' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 78:10:  'taskContent' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 106:9:  'handleClosePopover' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Layout.tsx
+  Line 7:8:  'LogoutButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Navbar/NavBar.tsx
+  Line 7:8:    'ProfileButton' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 29:11:  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/hooks/usePasswordValidation.ts
+  Line 1:10:  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/AboutUser.tsx
+  Line 1:27:   'useMemo' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  Line 1:36:   'useCallback' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  Line 1:49:   'useContext' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  Line 7:10:   'User' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+  Line 30:10:  'isCurrentViewed' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  Line 51:6:   React Hook useEffect has missing dependencies: 'navigate' and 'userId'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 72:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+  Line 73:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+
+src/pages/Activity.tsx
+  Line 312:6:  React Hook useMemo has an unnecessary dependency: 'mockActivityData'. Either exclude it or remove the dependency array. Outer scope values like 'mockActivityData' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+src/pages/Calendar.tsx
+  Line 2:15:  'Typography' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LandingPage.tsx
+  Line 38:9:  'isMobile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LoadingPage.tsx
+  Line 4:8:  'NavBar' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/Login.tsx
+  Line 1:10:  'specialChars' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 4:10:  'red' is defined but never used           @typescript-eslint/no-unused-vars
+
+src/utils/loginPage.utils.ts
+  Line 1:10:  'API_BASE' is defined but never used  @typescript-eslint/no-unused-vars
+
+Search for the keywords to learn more about each warning.
+To ignore, add // eslint-disable-next-line to the line before.
+
+WARNING in [eslint] 
+src/Components/AccountPage/Form.tsx
+  Line 6:11:  'OrgMember' is defined but never used                  @typescript-eslint/no-unused-vars
+  Line 30:9:  'handleFileUpload' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Calendar/CustomCalendar.tsx
+  Line 26:3:   'EventProps' is defined but never used         @typescript-eslint/no-unused-vars
+  Line 34:3:   'isSameDay' is defined but never used          @typescript-eslint/no-unused-vars
+  Line 263:9:  'navigate' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Channels.tsx
+  Line 16:3:   'Popover' is defined but never used                      @typescript-eslint/no-unused-vars
+  Line 77:10:  'anchorEl' is assigned a value but never used            @typescript-eslint/no-unused-vars
+  Line 78:10:  'taskContent' is assigned a value but never used         @typescript-eslint/no-unused-vars
+  Line 106:9:  'handleClosePopover' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Layout.tsx
+  Line 7:8:  'LogoutButton' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/Components/Navbar/NavBar.tsx
+  Line 7:8:    'ProfileButton' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 29:11:  'user' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/hooks/usePasswordValidation.ts
+  Line 1:10:  'error' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/AboutUser.tsx
+  Line 1:27:   'useMemo' is defined but never used                                                                                         @typescript-eslint/no-unused-vars
+  Line 1:36:   'useCallback' is defined but never used                                                                                     @typescript-eslint/no-unused-vars
+  Line 1:49:   'useContext' is defined but never used                                                                                      @typescript-eslint/no-unused-vars
+  Line 7:10:   'User' is defined but never used                                                                                            @typescript-eslint/no-unused-vars
+  Line 30:10:  'isCurrentViewed' is assigned a value but never used                                                                        @typescript-eslint/no-unused-vars
+  Line 51:6:   React Hook useEffect has missing dependencies: 'navigate' and 'userId'. Either include them or remove the dependency array  react-hooks/exhaustive-deps
+  Line 72:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+  Line 73:11:  img elements must have an alt prop, either with meaningful text, or an empty string for decorative images                   jsx-a11y/alt-text
+
+src/pages/Activity.tsx
+  Line 312:6:  React Hook useMemo has an unnecessary dependency: 'mockActivityData'. Either exclude it or remove the dependency array. Outer scope values like 'mockActivityData' aren't valid dependencies because mutating them doesn't re-render the component  react-hooks/exhaustive-deps
+
+src/pages/Calendar.tsx
+  Line 2:15:  'Typography' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LandingPage.tsx
+  Line 38:9:  'isMobile' is assigned a value but never used  @typescript-eslint/no-unused-vars
+
+src/pages/LoadingPage.tsx
+  Line 4:8:  'NavBar' is defined but never used  @typescript-eslint/no-unused-vars
+
+src/pages/Login.tsx
+  Line 1:10:  'specialChars' is defined but never used  @typescript-eslint/no-unused-vars
+  Line 4:10:  'red' is defined but never used           @typescript-eslint/no-unused-vars
+
+src/utils/loginPage.utils.ts
+  Line 1:10:  'API_BASE' is defined but never used  @typescript-eslint/no-unused-vars
+
+webpack compiled with 1 warning
+No issues found.
+npm error path /app
+npm error command failed
+npm error signal SIGINT
+npm error command sh -c react-scripts start
+npm error A complete log of this run can be found in: /root/.npm/_logs/2025-05-10T15_30_58_925Z-debug-0.log

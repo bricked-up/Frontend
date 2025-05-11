@@ -38,9 +38,9 @@ function App() {
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
                 </Route>
-              ) : (
+                :
                 <Route path="/" element={<LandingPage />} />
-              )}
+              }
 
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
@@ -100,6 +100,7 @@ function App() {
                 <Route path="*" element={<Page404 />} />
               </Route>
               <Route path="/500" element={<Error500Page />} />
+
             </Routes>
           </div>
 
@@ -111,3 +112,4 @@ function App() {
 }
 
 export default App;
+
