@@ -61,11 +61,10 @@ async function parseErrorResponse(response: Response): Promise<string> {
   }
 }
 
-
 function formatDateForBackend(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 /**
@@ -112,9 +111,7 @@ export const createNewIssue = async (
 
     const now = new Date();
     params.append("date", formatDateForBackend(now));
-    params.append("completed", formatDateForBackend(now));  
-
-
+    params.append("completed", formatDateForBackend(now));
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
@@ -129,17 +126,14 @@ export const createNewIssue = async (
       return { status: response.status, error };
     }
 
-
     console.log("meooow");
     console.log(response.status);
     return { status: response.status };
   } catch (err: any) {
     console.log("meow");
-    return { status: 0, error: err.message || "Unknown error!"};
+    return { status: 0, error: err.message || "Unknown error!" };
   }
 };
-
-
 
 /**
  * Creates a new organization, optionally linking existing project IDs.
@@ -150,7 +144,6 @@ export const createNewIssue = async (
  * 403 – Forbidden: insufficient permissions
  * 405 – Method Not Allowed: wrong HTTP method
  * 500 – Internal Server Error: check response body for details
- *
  * @example
  * const { status, organization, error } = await createOrganization(
  *   { name: "Acme Corp", projects: ["proj1", "proj2"] },
@@ -249,19 +242,16 @@ export const createOrganization = async (
 export const createProject = async (
   paramsObj: NewProjectParams,
   endpoint: string
-): Promise<CreateProjectResult> => {
+): Promise<Number> => {
   try {
     const params = new URLSearchParams();
-    Object.entries(paramsObj).forEach(([key, value]) => {
-      if (value == null) return;
-      console.log(key);
-      console.log(value);
-      if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, String(v)));
-      } else {
-        params.append(key, String(value));
-      }
-    });
+    const sessionid = localStorage.getItem("sessionid");
+    params.append("sessionid", String(sessionid));
+    params.append("name", paramsObj.name);
+    params.append("orgid", String(paramsObj.orgId));
+    params.append("budget", String(paramsObj.budget));
+    params.append("charter", paramsObj.charter);
+    params.append("archived", '0');
 
     console.log(params);
 
@@ -273,25 +263,12 @@ export const createProject = async (
 
     if (!response.ok) {
       const error = await parseErrorResponse(response);
-      return { status: response.status, project: null, error };
+      return 500;
     }
 
-    const rawJson: any = await response.json();
-
-    const project: Project = {
-      id: rawJson.id,
-      name: rawJson.name,
-      orgId: rawJson.orgId,
-      budget: rawJson.budget,
-      charter: rawJson.charter,
-      archived: rawJson.archived,
-      members: rawJson.members ?? [],
-      issues: rawJson.issues ?? [],
-      tags: rawJson.tags ?? [],
-    };
-
-    return { status: response.status, project };
-  } catch (err: any) {
-    return { status: 0, project: null, error: err.message || "Unknown error" };
+    const status: any = await response.text();
+    return status;
+  } catch (error: any) {
+    return 500;
   }
 };
