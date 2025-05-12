@@ -29,6 +29,7 @@ import {
   Organization as OrgDetailsType,
   Project as ProjectDetailsType,
 } from "../utils/types";
+import { updateUser } from "../utils/update.utils";
 
 // Helper function to check if an item is an OrgMember (and not a number)
 function isOrgMember(item: any): item is OrgMember {
@@ -87,6 +88,7 @@ const AboutUser: React.FC = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [isOwnProfile] = useState(userid === userId);
   const confirmationShown = useRef(false);
+  const [newName, setNewName] = useState<String>();
 
   // State for editing username
   const [isEditingUsername, setIsEditingUsername] = useState(false);
@@ -277,21 +279,35 @@ const AboutUser: React.FC = () => {
     setIsEditingUsername(true);
   };
 
-  const handleSaveUsername = () => {
+  const handleSaveUsername = async () => {
     if (viewedUser && editedUsername.trim() !== "") {
       // Update local state
       const updatedUser = { ...viewedUser, displayName: editedUsername };
       setViewedUser(updatedUser);
+      setNewName(editedUsername);
 
       // Also update global user context if it's the same user
       if (user && user.id === viewedUser.id) {
       }
 
-      // TODO: Send update to backend
-      // e.g., api.updateUser(viewedUser.id, { displayName: editedUsername });
+      const sessionid = localStorage.getItem("sessionid");
+
+      if (!sessionid) {
+        navigate("/500");
+      }
 
       console.log("Username updated locally:", editedUsername);
-      showNotification("Username Updated", "Username updated locally, please save to apply changes.");
+      const result = await updateUser(Number(sessionid), {
+        name: editedUsername,
+        email: viewedUser.email,
+        avatar: viewedUser.avatar,
+        password: viewedUser.password
+      } as User)
+
+      if (result) {
+        navigate("/500");
+      }
+
       setIsEditingUsername(false);
     } else {
       // Reset to current username if empty
@@ -300,11 +316,9 @@ const AboutUser: React.FC = () => {
     }
   };
 
-  const handleUpdateProfile = () => {
+  const handleUpdateProfile = async () => {
     // This would handle the complete profile update to backend
-    showNotification("Profile Update", "Profile update functionality would be implemented here.");
-    // In a real implementation, this would call your API
-    // e.g., api.updateUser(viewedUser.id, viewedUser);
+
   };
 
   // Logout dialog handlers
@@ -637,7 +651,7 @@ const AboutUser: React.FC = () => {
                   <Button
                     variant="contained"
                     startIcon={<Save size={20} />}
-                    onClick={handleUpdateProfile}
+                    onClick={handleSaveUsername}
                     sx={{
                       backgroundColor: theme.palette.primary.main, // Blue color
                       color: "white",
