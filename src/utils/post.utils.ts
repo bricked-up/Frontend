@@ -305,11 +305,16 @@ export const removeProjectMember = async (
     const params = new URLSearchParams({
       sessionid: String(sessionId),
       memberid: String(memberId),
-    }).toString();
+    });
+
+    console.log("memberId:", memberId);
+    console.log("sessionId:", sessionId);
     
     console.log("DELETE /remove-proj-member");
-    const response = await fetch(`${API_BASE}/remove-proj-member{params}`, 
-      {method: "DELETE"}
+    const response = await fetch(`${API_BASE}/remove-proj-member`, 
+      {method: "DELETE",
+        body: params,
+      }
     );
 
     if (!response.ok) {
@@ -339,6 +344,8 @@ export const removeOrgMember = async (
 
     console.log("DELETE /remove-org-member");
     console.log("Body Params:", params);
+    console.log("memberId:", memberId);
+    console.log("sessionId:", sessionId);
 
     const response = await fetch(`${API_BASE}/remove-org-member`, {
       method: "DELETE",
