@@ -153,7 +153,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                   sx={{
                     backgroundColor: isDark
                       ? theme.palette.grey[800]
-                      : theme.palette.grey[200],
+                      : theme.palette.grey[400],
                   }}
                 />
                 <Chip
@@ -161,7 +161,7 @@ const ActivityCard: React.FC<ActivityCardProps> = ({
                   sx={{
                     backgroundColor: isDark
                       ? theme.palette.grey[800]
-                      : theme.palette.grey[200],
+                      : theme.palette.grey[400],
                   }}
                 />
               </Stack>
