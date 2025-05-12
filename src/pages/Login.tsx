@@ -92,7 +92,7 @@ const Login = () => {
       const { status } = await authUser(account, password, "login");
 
       if (status === 200) {
-        navigate("/dashbourd");
+        navigate("/ViewProject");
       } else if (status === 401) {
         setError("Invalid email or password");
       } else if (status === 500) {

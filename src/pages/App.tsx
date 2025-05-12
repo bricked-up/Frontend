@@ -39,7 +39,7 @@ function App() {
             <Routes>
               {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
-                  <Route path="/" element={<Dashboard />} />
+                  <Route path="/viewProject" element={<ViewProject />} />
                 </Route>
               ) : (
                 <Route path="/" element={<LandingPage />} />
