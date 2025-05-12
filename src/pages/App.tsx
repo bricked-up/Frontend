@@ -15,8 +15,8 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateTask from "../Components/CreateIssue/CreateIssue";
-//import { mockBoard } from "../Components/CreateIssue/CreateIssue";
+import CreateNewIssue from "../Components/CreateIssue/CreateIssue";
+import { defaultBoard } from "../Components/CreateIssue/CreateIssue";
 import EmailVerification from "./EmailVerification";
 import React from "react";
 
@@ -34,7 +34,6 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-
               {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -87,10 +86,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
-                {/* <Route
-                  path="/createIssue"
-                  element={<CreateTask board={mockBoard} />}
-                /> */}
+                <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard}/>} />
               </Route>
 
               {/* routes for 404 and server errors */}
@@ -100,8 +96,6 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
-
-
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -109,4 +103,3 @@ function App() {
 }
 
 export default App;
-

@@ -21,10 +21,17 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { useEffect } from "react";
 import { getUser, getIssue } from "../../utils/getters.utils";
-interface CreateIssuePageProps {
-  board: Board;
+ interface CreateIssuePageProps {
+   board?: Board;
 }
-
+export const defaultBoard: Board = {
+  id: 0,
+  name: "Untitled Board",
+  createdBy: "system",
+  createdById: "0",
+  createdAt: new Date(),
+  issues: [],
+};
 // export const mockBoard: Board = {
 //   id: 1,
 //   name: "Project Board",
@@ -92,7 +99,7 @@ interface CreateIssuePageProps {
  * - Allows creating, editing, deleting, and completing issues.
  * - Supports switching issues between 'In Progress' and 'Completed' states.
  */
-const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
+const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) => {
   // Import necessary components
   const { Grid } = require("@mui/material");
   const [showAddIssue, setShowAddIssue] = useState(false);
