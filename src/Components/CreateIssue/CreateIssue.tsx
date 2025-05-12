@@ -21,8 +21,8 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { useEffect } from "react";
 import { getUser, getIssue } from "../../utils/getters.utils";
- interface CreateIssuePageProps {
-   board?: Board;
+interface CreateIssuePageProps {
+  board?: Board;
 }
 export const defaultBoard: Board = {
   id: 0,
@@ -99,76 +99,93 @@ export const defaultBoard: Board = {
  * - Allows creating, editing, deleting, and completing issues.
  * - Supports switching issues between 'In Progress' and 'Completed' states.
  */
-const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) => {
-  // Import necessary components
-  const { Grid } = require("@mui/material");
+const CreateIssue: React.FC<CreateIssuePageProps> = ({
+  board = {
+    id: 0,
+    name: "",
+    createdBy: "system",
+    createdById: "0",
+    createdAt: new Date(),
+    issues: [],
+  },
+}) => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
   const [showAddIssue, setShowAddIssue] = useState(false);
   const [issues, setIssues] = useState<Issue[]>([]);
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
-    const loadIssuesFromBackend = async () => {
+    const loadIssues = async () => {
       const userId = Number(localStorage.getItem("userid"));
       if (!userId) return;
+      const { data: user } = await getUser(userId);
+      if (!user?.issues) return;
 
-      const userRes = await getUser(userId);
-      if (!userRes.data || !userRes.data.issues) return;
-
-      const issuesFetched = await Promise.all(
-        userRes.data.issues.map((issueId) => getIssue(issueId))
-      );
-
-      const validIssues = issuesFetched
+      const fetched = await Promise.all(user.issues.map((id) => getIssue(id)));
+      const valid = fetched
         .filter((res) => res.status === 200 && res.data)
         .map((res) => res.data as Issue);
 
-      setIssues(validIssues);
-    };
+      const savedStatus = localStorage.getItem("completedStatus");
+      const overrides: Record<number, string> = savedStatus
+        ? JSON.parse(savedStatus)
+        : {};
 
-    loadIssuesFromBackend();
+      const merged = valid.map((issue) => ({
+        ...issue,
+        completed:
+          overrides[issue.id] === "completed"
+            ? new Date()
+            : overrides[issue.id] === "uncompleted"
+            ? undefined
+            : issue.completed,
+      }));
+
+      setIssues(merged);
+    };
+    loadIssues();
   }, []);
 
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
+  const saveCompletionState = (updated: Issue[]) => {
+    const status: Record<number, string> = {};
+    updated.forEach((issue) => {
+      status[issue.id] = issue.completed ? "completed" : "uncompleted";
+    });
+    localStorage.setItem("completedStatus", JSON.stringify(status));
+  };
 
-  const handleAddIssue = (issue: Issue) => {
+  const handleAddIssue = (issue: Issue) =>
     setIssues((prev) => [...prev, issue]);
+  const handleDeleteIssue = (id: number) =>
+    setIssues((prev) => prev.filter((issue) => issue.id !== id));
+
+  const handleCompleteIssue = (id: number) => {
+    setIssues((prev) => {
+      const updated = prev.map((issue) =>
+        issue.id === id
+          ? { ...issue, completed: issue.completed ? undefined : new Date() }
+          : issue
+      );
+      saveCompletionState(updated);
+      return updated;
+    });
   };
 
-  const handleDeleteIssue = (IssueId: number) => {
-    setIssues((prev) => prev.filter((Issue) => Issue.id !== IssueId));
-  };
-
-  const handleCompleteIssue = (IssueId: number) => {
-    setIssues((previssues) =>
-      previssues.map((Issue) =>
-        Issue.id === IssueId
-          ? { ...Issue, completed: Issue.completed ? undefined : new Date() }
-          : Issue
-      )
-    );
-  };
-
-  const handleEditIssue = (Issue: Issue) => {
-    setEditingIssue(Issue);
-  };
-
-  const handleSaveEdit = (updatedIssue: Issue) => {
+  const handleEditIssue = (issue: Issue) => setEditingIssue(issue);
+  const handleSaveEdit = (updated: Issue) => {
     setIssues((prev) =>
-      prev.map((Issue) => (Issue.id === updatedIssue.id ? updatedIssue : Issue))
+      prev.map((issue) => (issue.id === updated.id ? updated : issue))
     );
     setEditingIssue(null);
   };
 
-  const handleChangeTab = (event: React.SyntheticEvent, newValue: number) => {
-    setActiveTab(newValue);
-  };
+  const handleChangeTab = (_: React.SyntheticEvent, value: number) =>
+    setActiveTab(value);
 
-  const inProgressissues = issues.filter((Issue) => !Issue.completed);
-  const completedissues = issues.filter((Issue) => Issue.completed);
-
-  //        bgcolor: theme.palette.background.default,
+  const inProgress = issues.filter((issue) => !issue.completed);
+  const completed = issues.filter((issue) => issue.completed);
 
   return (
     <Box
@@ -209,90 +226,63 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
           alignItems="center"
           padding={4}
         >
-          <Box
-            sx={{
-              width: "100%",
-              maxWidth: "1200px",
-              mb: 3,
-            }}
-          >
-            <Box
+          <Box sx={{ width: "100%", maxWidth: "1200px", mb: 3 }}>
+            <Tabs
+              value={activeTab}
+              onChange={handleChangeTab}
+              variant="fullWidth"
               sx={{
-                width: "100%",
-                backgroundColor: "transparent",
-                mb: 2,
+                minHeight: "60px",
+                borderBottom: 1,
+                borderColor: "divider",
+                "& .MuiTab-root": {
+                  minHeight: "60px",
+                  fontWeight: 600,
+                  fontSize: "1rem",
+                  transition: "all 0.3s ease",
+                  position: "relative",
+                  overflow: "visible",
+                  textTransform: "none",
+                  color: "text.secondary",
+                  "&::after": {
+                    content: '""',
+                    position: "absolute",
+                    bottom: 0,
+                    left: "50%",
+                    width: 0,
+                    height: "3px",
+                    backgroundColor: "primary.main",
+                    transition: "all 0.3s ease",
+                    transform: "translateX(-50%)",
+                    borderRadius: "3px 3px 0 0",
+                  },
+                },
+                "& .MuiTab-root.Mui-selected": {
+                  color: "text.secondary",
+                  "&::after": {
+                    width: "100%",
+                  },
+                },
+                "& .MuiTabs-indicator": {
+                  display: "none",
+                },
               }}
             >
-              <Tabs
-                value={activeTab}
-                onChange={handleChangeTab}
-                variant="fullWidth"
-                sx={{
-                  minHeight: "60px",
-                  borderBottom: 1,
-                  borderColor: "divider",
-                  "& .MuiTab-root": {
-                    minHeight: "60px",
-                    fontWeight: 600,
-                    fontSize: "1rem",
-                    transition: "all 0.3s ease",
-                    position: "relative",
-                    overflow: "visible",
-                    textTransform: "none",
-                    color: "text.secondary",
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      bottom: 0,
-                      left: "50%",
-                      width: 0,
-                      height: "3px",
-                      backgroundColor: "primary.main",
-                      transition: "all 0.3s ease",
-                      transform: "translateX(-50%)",
-                      borderRadius: "3px 3px 0 0",
-                    },
-                  },
-                  "& .MuiTab-root.Mui-selected": {
-                    color: "text.secondary",
-                    "&::after": {
-                      width: "100%",
-                    },
-                  },
-                  "& .MuiTabs-indicator": {
-                    display: "none",
-                  },
-                }}
-              >
-                <Tab
-                  icon={<AssignmentIcon />}
-                  iconPosition="start"
-                  label={`In Progress (${inProgressissues.length})`}
-                  sx={{
-                    "&:first-of-type::after": {
-                      width: activeTab === 0 ? "100%" : 0,
-                    },
-                  }}
-                />
-                <Tab
-                  icon={<CheckCircleIcon />}
-                  iconPosition="start"
-                  label={`Completed (${completedissues.length})`}
-                  sx={{
-                    "&:nth-of-type(2)::after": {
-                      width: activeTab === 1 ? "100%" : 0,
-                    },
-                  }}
-                />
-              </Tabs>
-            </Box>
+              <Tab
+                icon={<AssignmentIcon />}
+                label={`In Progress (${inProgress.length})`}
+              />
+              <Tab
+                icon={<CheckCircleIcon />}
+                label={`Completed (${completed.length})`}
+              />
+            </Tabs>
           </Box>
 
           <Box
             sx={{
               width: "100%",
               maxWidth: "1200px",
-              transition: "opacity 0.3s ease",
               minHeight: "200px",
               maxHeight: "calc(100vh - 240px)",
               overflowY: "auto",
@@ -301,14 +291,14 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
             }}
           >
             <TabPanel value={activeTab} index={0}>
-              {inProgressissues.length > 0 ? (
+              {inProgress.length ? (
                 <Grid container spacing={3}>
-                  {inProgressissues.map((Issue) => (
-                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
-                      <Grow in={true} timeout={300}>
+                  {inProgress.map((issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={issue.id}>
+                      <Grow in timeout={300}>
                         <Box>
                           <IssueCard
-                            issue={Issue}
+                            issue={issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}
@@ -320,56 +310,19 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
                   ))}
                 </Grid>
               ) : (
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    textAlign: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.02)",
-                    borderRadius: 4,
-                    mt: 2,
-                  }}
-                >
-                  <AssignmentLateIcon
-                    sx={{
-                      fontSize: 60,
-                      color: "text.secondary",
-                      mb: 2,
-                      opacity: 0.7,
-                    }}
-                  />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No issues in progress
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 3 }}
-                  >
-                    Add your first Issue to get started
-                  </Typography>
-                  <Button
-                    variant="contained"
-                    size="large"
-                    startIcon={<AddIcon />}
-                    onClick={() => setShowAddIssue(true)}
-                    sx={{ borderRadius: "24px", px: 3 }}
-                  >
-                    Add new Issue
-                  </Button>
-                </Paper>
+                <Typography>No issues in progress</Typography>
               )}
             </TabPanel>
 
             <TabPanel value={activeTab} index={1}>
-              {completedissues.length > 0 ? (
+              {completed.length ? (
                 <Grid container spacing={3}>
-                  {completedissues.map((Issue) => (
-                    <Grid item xs={12} sm={6} md={4} key={Issue.id}>
-                      <Grow key={Issue.id} in={true} timeout={300}>
+                  {completed.map((issue) => (
+                    <Grid item xs={12} sm={6} md={4} key={issue.id}>
+                      <Grow in timeout={300}>
                         <Box>
                           <IssueCard
-                            issue={Issue}
+                            issue={issue}
                             boardId={board.id}
                             onDelete={handleDeleteIssue}
                             onComplete={handleCompleteIssue}
@@ -381,43 +334,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
                   ))}
                 </Grid>
               ) : (
-                <Paper
-                  elevation={0}
-                  sx={{
-                    p: 4,
-                    textAlign: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.02)",
-                    borderRadius: 4,
-                    mt: 2,
-                  }}
-                >
-                  <EmojiEventsIcon
-                    sx={{
-                      fontSize: 60,
-                      color: "text.secondary",
-                      mb: 2,
-                      opacity: 0.7,
-                    }}
-                  />
-                  <Typography variant="h6" color="text.secondary" gutterBottom>
-                    No completed issues yet
-                  </Typography>
-                  <Typography
-                    variant="body2"
-                    color="text.secondary"
-                    sx={{ mb: 3 }}
-                  >
-                    issues you complete will appear here
-                  </Typography>
-                  <Button
-                    variant="outlined"
-                    size="large"
-                    onClick={() => setActiveTab(0)}
-                    sx={{ borderRadius: "24px", px: 3 }}
-                  >
-                    View in-progress issues
-                  </Button>
-                </Paper>
+                <Typography>No completed issues</Typography>
               )}
             </TabPanel>
           </Box>
@@ -435,7 +352,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
 
       {editingIssue && (
         <AddIssue
-          show={!!editingIssue}
+          show
           onClose={() => setEditingIssue(null)}
           boardId={board.id}
           onAdd={handleSaveEdit}
@@ -446,31 +363,29 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) =>
   );
 };
 
-// Custom TabPanel component
-const TabPanel = (props: {
+const TabPanel = ({
+  children,
+  value,
+  index,
+}: {
   children: React.ReactNode;
   value: number;
   index: number;
-}) => {
-  const { children, value, index, ...other } = props;
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`tabpanel-${index}`}
-      aria-labelledby={`tab-${index}`}
-      style={{
-        display: value === index ? "block" : "none",
-        width: "100%",
-        transition: "opacity 0.3s ease",
-        opacity: value === index ? 1 : 0,
-      }}
-      {...other}
-    >
-      {value === index && children}
-    </div>
-  );
-};
+}) => (
+  <div
+    role="tabpanel"
+    hidden={value !== index}
+    id={`tabpanel-${index}`}
+    aria-labelledby={`tab-${index}`}
+    style={{
+      display: value === index ? "block" : "none",
+      width: "100%",
+      transition: "opacity 0.3s ease",
+      opacity: value === index ? 1 : 0,
+    }}
+  >
+    {value === index && children}
+  </div>
+);
 
 export default CreateIssue;
