@@ -323,6 +323,9 @@ const ProjectDetails = ({ project }: { project: any }) => {
   );
 };
 
+const ViewProject = () => {
+  const theme = useTheme();
+  const colors = tokens(theme.palette.mode);
 
   const [projectOptions, setProjectOptions] = useState<
     { id: number; name: string }[]

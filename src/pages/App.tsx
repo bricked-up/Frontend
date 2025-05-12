@@ -18,6 +18,8 @@ import ViewOrg from "./ViewOrganization";
 import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
+import React from "react";
+import EmailVerification from "./EmailVerification";
 
 
 function App() {
