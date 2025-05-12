@@ -65,7 +65,6 @@ export type Organization = {
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
 export type User = {
-  displayName: string;
   id: number;
   email: string;
   name: string;
