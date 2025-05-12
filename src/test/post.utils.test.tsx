@@ -18,19 +18,10 @@ describe("createNewIssue", () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
       status: 201,
-      json: async () => ({
-        id: 5,
-        name: "Test Issue",
-        description: null,
-        priority: 1,
-        cost: 0,
-        created: "2025-04-26T00:00:00Z",
-        completed: "2025-04-27T00:00:00Z",
-      }),
     });
 
     const res: Result = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", desc: null, priority: 1, projectid: 2, tagid: 2, assignee: -1},
       "issues"
     );
     expect(res.status).toBe(201);
@@ -45,7 +36,7 @@ describe("createNewIssue", () => {
     });
 
     const res = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2, assignee: -1},
       "issues"
     );
     expect(res.status).toBe(400);
