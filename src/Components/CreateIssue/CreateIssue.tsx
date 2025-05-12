@@ -26,7 +26,7 @@ import { getUser, getIssue } from "../../utils/getters.utils";
 }
 export const defaultBoard: Board = {
   id: 0,
-  name: "Untitled Board",
+  name: "",
   createdBy: "system",
   createdById: "0",
   createdAt: new Date(),
