@@ -1,6 +1,8 @@
 .rbc-calendar {
     background-color: #1e1e1e;
     color: white;
+    height: 100% !important;
+    minHeight: 600px;
 }
 
 .rbc-toolbar {

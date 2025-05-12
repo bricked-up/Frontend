@@ -415,6 +415,8 @@ const CustomCalendar: React.FC = () => {
     resource: issue,
   }));
 
+  console.log("Calendar Events:", events); //Debugging
+
   return (
     // Main container Box
     <Box
