@@ -295,3 +295,69 @@ export const createProject = async (
     return { status: 0, project: null, error: err.message || "Unknown error" };
   }
 };
+
+//remove member from project
+export const removeProjectMember = async (
+  sessionId: number,
+  memberId: number
+): Promise<Result> => {
+  try {
+    const params = new URLSearchParams({
+      sessionid: String(sessionId),
+      memberid: String(memberId),
+    }).toString();
+    
+    console.log("DELETE /remove-proj-member");
+    const response = await fetch(`${API_BASE}/remove-proj-member{params}`, 
+      {method: "DELETE"}
+    );
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      return { status: response.status, error };
+    }
+
+    return { status: response.status };
+  } catch (err: any) {
+    return {
+      status: 0,
+      error: err.message || "Unknown error",
+    };
+  }
+};
+
+//remove member from organization
+export const removeOrgMember = async (
+  sessionId: number,
+  memberId: number
+): Promise<Result> => {
+  try {
+    const params = new URLSearchParams({
+      sessionid: String(sessionId),
+      memberid: String(memberId),
+    });
+
+    console.log("DELETE /remove-org-member");
+    console.log("Body Params:", params);
+
+    const response = await fetch(`${API_BASE}/remove-org-member`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+    });
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      return { status: response.status, error };
+    }
+
+    return { status: response.status };
+  } catch (err: any) {
+    return {
+      status: 0,
+      error: err.message || "Unknown error",
+    };
+  }
+};
