@@ -21,8 +21,8 @@ const FAQ_DATA = [
     icon: <HelpOutline />,
     section: "General Questions",
     items: [
-      { question: "What is your return policy?", answer: "You can return items within 30 days of purchase." },
-      { question: "Do you offer international shipping?", answer: "Yes, we ship to most countries worldwide." },
+      { question: "What can i do if my account is blocked?", answer: "You can email us to review the issue." },
+      { question: "Can i verify my account through email?", answer: "Yes, you can." },
       { question: "How do I reset my password?", answer: "Click on 'Forgot Password' on the login page." },
       { question: "Can I change my email address?", answer: "Yes, you can update your email in account settings." },
     ],
