@@ -15,26 +15,22 @@ import {
 import { ExpandMore, HelpOutline, Person } from "@mui/icons-material";
 import { motion } from "framer-motion";
 
+// Sample FAQ data
 const FAQ_DATA = [
   {
-    section: "Account",
-    icon: <Person />,
+    icon: <HelpOutline />,
+    section: "General Questions",
     items: [
-      {
-        question: "How do I log in?",
-        answer:
-          "Click the 'Log In' button in the top-right corner. You can use email/password, Google OAuth, or GitHub credentials. Two-factor authentication is available in account settings.",
-      },
-      {
-        question: "Can I change my password?",
-        answer:
-          "Yes! Navigate to Account Settings > Security. You'll need to verify your current password before setting a new one. We require passwords to be at least 12 characters with mixed character types.",
-      },
-      {
-        question: "Can I deactivate my account?",
-        answer:
-          "Yes, in Account Settings > Advanced. All your personal data will be anonymized, but project data will remain intact for team continuity.",
-      },
+      { question: "What is your return policy?", answer: "You can return items within 30 days of purchase." },
+      { question: "Do you offer international shipping?", answer: "Yes, we ship to most countries worldwide." },
+    ],
+  },
+  {
+    icon: <Person />,
+    section: "Account Management",
+    items: [
+      { question: "How do I reset my password?", answer: "Click on 'Forgot Password' on the login page." },
+      { question: "Can I change my email address?", answer: "Yes, you can update your email in account settings." },
     ],
   },
 ];
@@ -48,6 +44,8 @@ const Faq: React.FC = () => {
     window.scrollTo(0, 0);
   }, []);
 
+  const isDark = theme.palette.mode === "dark";
+
   const handleChange = (panel: string) => (event: React.SyntheticEvent, isExpanded: boolean) => {
     setExpanded(isExpanded ? panel : false);
   };
@@ -57,8 +55,10 @@ const Faq: React.FC = () => {
       sx={{
         minHeight: "100vh",
         fontFamily: "'Poppins', sans-serif",
-        background: "linear-gradient(135deg, #0f172a, #1e293b, #334155)",
-        color: "#f1f5f9",
+        background: isDark
+          ? "linear-gradient(135deg, #0f172a, #1e293b, #334155)"
+          : "linear-gradient(135deg, #f8fafc, #e2e8f0, #cbd5e1)",
+        color: isDark ? "#f1f5f9" : "#1e293b",
         pt: 2,
         pb: 8,
         overflowY: "auto",
@@ -75,13 +75,13 @@ const Faq: React.FC = () => {
             elevation={8}
             sx={{
               backdropFilter: "blur(16px)",
-              background: "rgba(30, 41, 59, 0.7)",
+              background: isDark ? "rgba(30, 41, 59, 0.7)" : "rgba(255, 255, 255, 0.7)",
               borderRadius: 6,
               p: { xs: 3, md: 6 },
               width: "100%",
               textAlign: "center",
               border: `1px solid ${theme.palette.divider}`,
-              boxShadow: "0 12px 32px rgba(0, 0, 0, 0.3)",
+              boxShadow: "0 12px 32px rgba(0, 0, 0, 0.1)",
               transition: "all 0.4s ease-in-out",
               my: 4,
               overflow: "hidden",
@@ -89,22 +89,42 @@ const Faq: React.FC = () => {
           >
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.6 }}>
               <Box sx={{ display: "flex", justifyContent: "center", mb: 3 }}>
-                <HelpOutline sx={{ fontSize: { xs: 50, md: 70 }, color: "#38bdf8", filter: "drop-shadow(0 0 10px rgba(56, 189, 248, 0.4))" }} />
+                <HelpOutline
+                  sx={{
+                    fontSize: { xs: 50, md: 70 },
+                    color: "#38bdf8",
+                    filter: "drop-shadow(0 0 10px rgba(56, 189, 248, 0.4))",
+                  }}
+                />
               </Box>
 
-              <Typography variant="h3" sx={{ fontWeight: 700, color: "#f1f5f9", mb: 2 }}>
+              <Typography variant="h3" sx={{ fontWeight: 700, color: isDark ? "#f1f5f9" : "#0f172a", mb: 2 }}>
                 Help Center
               </Typography>
 
-              <Typography variant="subtitle1" sx={{ opacity: 0.85, color: "#cbd5e1", maxWidth: "700px", mx: "auto", mb: 4 }}>
+              <Typography
+                variant="subtitle1"
+                sx={{
+                  opacity: 0.85,
+                  color: isDark ? "#cbd5e1" : "#475569",
+                  maxWidth: "700px",
+                  mx: "auto",
+                  mb: 4,
+                }}
+              >
                 Everything you need to know, answered in one place. Browse through our comprehensive FAQ to find solutions quickly.
               </Typography>
 
-              <Divider sx={{ my: 5, borderColor: alpha("#f1f5f9", 0.1) }} />
+              <Divider sx={{ my: 5, borderColor: alpha(isDark ? "#f1f5f9" : "#0f172a", 0.1) }} />
             </motion.div>
 
-            {FAQ_DATA.map((section, sectionIndex) => (
-              <motion.div key={sectionIndex} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.4 + sectionIndex * 0.1, duration: 0.6 }}>
+            {FAQ_DATA.map((section: { icon: React.FunctionComponentElement<{ sx: { color: string; fontSize: number; }; }>; section: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; items: any[]; }, sectionIndex: React.Key | null | undefined) => (
+              <motion.div
+                key={sectionIndex}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.4 + (Number(sectionIndex) || 0) * 0.1, duration: 0.6 }}
+              >
                 <Box sx={{ mt: 5, mb: 4, textAlign: "left" }}>
                   <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 3 }}>
                     <Box
@@ -119,29 +139,42 @@ const Faq: React.FC = () => {
                         height: 48,
                       }}
                     >
-                      {React.cloneElement(section.icon, { sx: { color: "#38bdf8", fontSize: 28 } })}
+                      {React.cloneElement(section.icon, {
+                        sx: { color: "#38bdf8", fontSize: 28 },
+                      })}
                     </Box>
-                    <Typography variant="h4" sx={{ fontWeight: 700, color: "#f8fafc" }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: isDark ? "#f8fafc" : "#0f172a" }}>
                       {section.section}
                     </Typography>
                   </Box>
 
-                  {section.items.map((item, i) => {
+                  {section.items.map((item: { question: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; answer: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; }, i: React.Key | null | undefined) => {
                     const panelId = `panel-${sectionIndex}-${i}`;
                     return (
                       <motion.div key={i} whileHover={{ x: 8 }} transition={{ type: "spring", stiffness: 400, damping: 20 }}>
-                        <Accordion expanded={expanded === panelId} onChange={handleChange(panelId)} disableGutters sx={{ background: "transparent", boxShadow: "none", mb: 2 }}>
+                        <Accordion
+                          expanded={expanded === panelId}
+                          onChange={handleChange(panelId)}
+                          disableGutters
+                          sx={{
+                            background: "transparent",
+                            boxShadow: "none",
+                            mb: 2,
+                          }}
+                        >
                           <AccordionSummary
                             expandIcon={
                               <ExpandMore
                                 sx={{
-                                  color: expanded === panelId ? "#38bdf8" : alpha("#f1f5f9", 0.7),
+                                  color: expanded === panelId ? "#38bdf8" : alpha(isDark ? "#f1f5f9" : "#0f172a", 0.7),
                                   transition: "all 0.3s",
                                 }}
                               />
                             }
                             sx={{
-                              background: expanded === panelId ? alpha("#0ea5e9", 0.1) : alpha("#ffffff", 0.05),
+                              background: expanded === panelId
+                                ? alpha("#0ea5e9", 0.1)
+                                : alpha(isDark ? "#ffffff" : "#000000", 0.05),
                               borderRadius: 3,
                               py: 1.5,
                               px: 3,
@@ -150,7 +183,17 @@ const Faq: React.FC = () => {
                               borderLeft: `3px solid ${expanded === panelId ? "#38bdf8" : "transparent"}`,
                             }}
                           >
-                            <Typography variant="h6" sx={{ fontWeight: 600, color: expanded === panelId ? "#f8fafc" : alpha("#f1f5f9", 0.9) }}>
+                            <Typography
+                              variant="h6"
+                              sx={{
+                                fontWeight: 600,
+                                color: expanded === panelId
+                                  ? isDark
+                                    ? "#f8fafc"
+                                    : "#0f172a"
+                                  : alpha(isDark ? "#f1f5f9" : "#0f172a", 0.9),
+                              }}
+                            >
                               {item.question}
                             </Typography>
                           </AccordionSummary>
@@ -161,11 +204,18 @@ const Faq: React.FC = () => {
                               borderLeft: `3px solid #38bdf8`,
                               marginLeft: 3,
                               marginRight: 2,
-                              background: alpha("#0f172a", 0.4),
+                              background: alpha(isDark ? "#0f172a" : "#e2e8f0", 0.4),
                               borderRadius: "0 0 16px 0",
                             }}
                           >
-                            <Typography variant="body1" sx={{ color: alpha("#f1f5f9", 0.8), lineHeight: 1.8, letterSpacing: 0.3 }}>
+                            <Typography
+                              variant="body1"
+                              sx={{
+                                color: alpha(isDark ? "#f1f5f9" : "#0f172a", 0.8),
+                                lineHeight: 1.8,
+                                letterSpacing: 0.3,
+                              }}
+                            >
                               {item.answer}
                             </Typography>
                           </AccordionDetails>
@@ -177,7 +227,7 @@ const Faq: React.FC = () => {
               </motion.div>
             ))}
 
-            <Divider sx={{ my: 5, borderColor: alpha("#f1f5f9", 0.1) }} />
+            <Divider sx={{ my: 5, borderColor: alpha(isDark ? "#f1f5f9" : "#0f172a", 0.1) }} />
           </Paper>
         </motion.div>
 
@@ -188,8 +238,8 @@ const Faq: React.FC = () => {
             py: 2,
             fontSize: "0.9rem",
             opacity: 0.4,
-            color: "#94a3b8",
-            borderTop: `1px solid ${alpha("#f1f5f9", 0.1)}`,
+            color: isDark ? "#94a3b8" : "#475569",
+            borderTop: `1px solid ${alpha(isDark ? "#f1f5f9" : "#0f172a", 0.1)}`,
             mt: 4,
           }}
         >
