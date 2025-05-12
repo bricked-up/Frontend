@@ -41,7 +41,7 @@ import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
 // Import Issue type and the corrected data
 import { Issue,Project } from "../../utils/types"; // Adjust path if needed
 import { tokens } from "../../theme";
-import { getUserProjects } from "../../utils/getters.utils";
+import { getUser, getIssue } from "../../utils/getters.utils";
 
 // Setup localization using date-fns locales
 const locales = {
@@ -297,21 +297,29 @@ const CustomCalendar: React.FC = () => {
   );
 
   useEffect(() => {
-  const fetchUserIssues = async () => {
+  const fetchCalendarIssues = async () => {
+    const userId = Number(localStorage.getItem("userId"));
     if (!userId) return;
 
-    const userProjectsResult = await getUserProjects(userId);
-    if (!userProjectsResult.data) {
-      console.error("Failed to fetch user projects:", userProjectsResult.error);
-      return;
-    }
+    // 1) load the User, get its issue IDs
+    const userRes = await getUser(userId);
+    if (!userRes.data?.issues) return;
 
-    const allIssues: Issue[] = userProjectsResult.data.flatMap((project) => project.issues || []);
-    setIssues(allIssues);
+    // 2) fetch each Issue by ID
+    const issueResponses = await Promise.all(
+      userRes.data.issues.map((issueId) => getIssue(issueId))
+    );
+    const fetchedIssues = issueResponses
+      .filter((r) => r.status === 200 && r.data)
+      .map((r) => r.data as Issue);
+
+    console.log("Fetched issues for calendar:", fetchedIssues);
+    setIssues(fetchedIssues);
   };
 
-  fetchUserIssues();
+  fetchCalendarIssues();
 }, []);
+
 
   // Function to determine event styling based on due date and settings
   const eventStyleGetter = useCallback(
