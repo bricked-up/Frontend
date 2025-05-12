@@ -34,7 +34,7 @@ const DropDown: React.FC<DropDownProps> = ({ value, onSelect, options = [] }) =>
                 displayEmpty
                 renderValue={(selected) => {
                     if (!selected) {
-                        return <span style={{ color: "#aaa" }}>Select Organization</span>;
+                        return <span style={{ color: "#aaa" }}>Select</span>;
                     }
                     return selected;
                 }}

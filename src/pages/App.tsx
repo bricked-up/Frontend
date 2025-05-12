@@ -99,6 +99,7 @@ function App() {
                 <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard} />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
                 <Route path="createProject" element={<CreateProject />} />
+                <Route path="/createorg" element={<CreateOrganization/>}/>
               </Route>
 
               {/* routes for 404 and server errors */}
