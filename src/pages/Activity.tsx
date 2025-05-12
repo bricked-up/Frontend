@@ -44,13 +44,25 @@ interface ActivityCardProps {
   onNavigateToCalendar: (date: Date) => void;
 }
 
-const ActivityCard: React.FC<ActivityCardProps> = ({ issue, isExpanded, onToggleExpand, onNavigateToCalendar }) => {
+const ActivityCard: React.FC<ActivityCardProps> = ({
+  issue,
+  isExpanded,
+  onToggleExpand,
+  onNavigateToCalendar,
+}) => {
   const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const isDark = theme.palette.mode === "dark";
   const handleCardClick = () => onToggleExpand(issue.id);
-  const handleDueDateClick = (e: React.MouseEvent) => { e.stopPropagation(); issue.completed && onNavigateToCalendar(issue.completed); };
+  const handleDueDateClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    issue.completed && onNavigateToCalendar(issue.completed);
+  };
   const formattedDueDate = issue.completed
-    ? issue.completed.toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" })
+    ? issue.completed.toLocaleDateString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+      })
     : "No due date";
 
   return (
@@ -59,42 +71,63 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ issue, isExpanded, onToggle
         elevation={isExpanded ? 8 : 2}
         sx={{
           mb: 2,
-          position: 'relative',
+          position: "relative",
           borderRadius: 3,
-          backgroundColor: isDark ? theme.palette.grey[900] : theme.palette.grey[50],
+          backgroundColor: isDark
+            ? theme.palette.grey[900]
+            : theme.palette.grey[50],
           color: isDark ? theme.palette.grey[100] : theme.palette.grey[900],
-          '&:hover': {
-            transform: 'translateY(-4px)',
+          "&:hover": {
+            transform: "translateY(-4px)",
             boxShadow: theme.shadows[6],
           },
-          transition: 'transform 0.2s, box-shadow 0.2s',
-          '&::before': {
+          transition: "transform 0.2s, box-shadow 0.2s",
+          "&::before": {
             content: '""',
-            position: 'absolute',
+            position: "absolute",
             top: 0,
             bottom: 0,
             left: 0,
-            width: '4px',
-            backgroundColor: priorityColor[issue.priority ?? 1] || theme.palette.primary.main,
-            borderTopLeftRadius: '3px',
-            borderBottomLeftRadius: '3px',
+            width: "4px",
+            backgroundColor:
+              priorityColor[issue.priority ?? 1] || theme.palette.primary.main,
+            borderTopLeftRadius: "3px",
+            borderBottomLeftRadius: "3px",
           },
-          pl: '12px',
+          pl: "12px",
         }}
       >
         <CardActionArea onClick={handleCardClick} sx={{ p: 2 }}>
-          <Stack direction="row" justifyContent="space-between" alignItems="center">
-            <Typography variant="h6" fontWeight={600}>{issue.title}</Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <Typography variant="h6" fontWeight={600}>
+              {issue.title}
+            </Typography>
             <IconButton
               size="small"
-              sx={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: theme.transitions.create("transform", { duration: theme.transitions.duration.short }) }}
+              sx={{
+                transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)",
+                transition: theme.transitions.create("transform", {
+                  duration: theme.transitions.duration.short,
+                }),
+              }}
             >
               <ExpandMoreIcon />
             </IconButton>
           </Stack>
         </CardActionArea>
         <Collapse in={isExpanded} timeout={TRANSITION_DURATION} unmountOnExit>
-          <Divider sx={{ my: 1, borderColor: isDark ? theme.palette.grey[800] : theme.palette.grey[300] }} />
+          <Divider
+            sx={{
+              my: 1,
+              borderColor: isDark
+                ? theme.palette.grey[800]
+                : theme.palette.grey[300],
+            }}
+          />
           <CardContent>
             <Stack spacing={2}>
               <Chip
@@ -103,14 +136,34 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ issue, isExpanded, onToggle
                 onClick={handleDueDateClick}
                 clickable
                 sx={{
-                  backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200],
-                  color: isDark ? theme.palette.grey[100] : theme.palette.grey[900],
+                  backgroundColor: isDark
+                    ? theme.palette.grey[800]
+                    : theme.palette.grey[200],
+                  color: isDark
+                    ? theme.palette.grey[100]
+                    : theme.palette.grey[900],
                 }}
               />
-              <Typography variant="body2">{issue.desc ?? <em>No desc provided.</em>}</Typography>
+              <Typography variant="body2">
+                {issue.desc ?? <em>No desc provided.</em>}
+              </Typography>
               <Stack direction="row" spacing={2}>
-                <Chip label={`Priority: ${issue.priority ?? 0}`} sx={{ backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200] }} />
-                <Chip label={`Cost: ${issue.cost ?? 0}`} sx={{ backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200] }} />
+                <Chip
+                  label={`Priority: ${issue.priority ?? 0}`}
+                  sx={{
+                    backgroundColor: isDark
+                      ? theme.palette.grey[800]
+                      : theme.palette.grey[200],
+                  }}
+                />
+                <Chip
+                  label={`Cost: ${issue.cost ?? 0}`}
+                  sx={{
+                    backgroundColor: isDark
+                      ? theme.palette.grey[800]
+                      : theme.palette.grey[200],
+                  }}
+                />
               </Stack>
             </Stack>
           </CardContent>
@@ -128,7 +181,7 @@ const Activity: React.FC = () => {
   const [expandedIssueId, setExpandedIssueId] = useState<number | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
-  const isDark = theme.palette.mode === 'dark';
+  const isDark = theme.palette.mode === "dark";
 
   useEffect(() => {
     (async () => {
@@ -139,11 +192,16 @@ const Activity: React.FC = () => {
         if (isNaN(userId)) throw new Error("Invalid user ID in localStorage");
 
         const userRes: GetUserResult = await getUser(userId);
-        if (userRes.status !== 200 || !userRes.data) throw new Error(userRes.error || "Failed to load user");
+        if (userRes.status !== 200 || !userRes.data)
+          throw new Error(userRes.error || "Failed to load user");
         const ids = userRes.data.issues ?? [];
 
-        const results: GetIssueResult[] = await Promise.all(ids.map(id => getIssue(id)));
-        const loaded = results.filter(r => r.status === 200 && r.data).map(r => r.data!);
+        const results: GetIssueResult[] = await Promise.all(
+          ids.map((id) => getIssue(id))
+        );
+        const loaded = results
+          .filter((r) => r.status === 200 && r.data)
+          .map((r) => r.data!);
         setIssues(loaded);
       } catch (e: any) {
         setError(e.message);
@@ -153,90 +211,153 @@ const Activity: React.FC = () => {
     })();
   }, []);
 
-  const handleToggleExpand = (id: number) => setExpandedIssueId(prev => (prev === id ? null : id));
-  const handleNavigateToCalendar = (date: Date) => navigate(`/calendar?date=${date.toISOString().split("T")[0]}`);
+  const handleToggleExpand = (id: number) =>
+    setExpandedIssueId((prev) => (prev === id ? null : id));
+  const handleNavigateToCalendar = (date: Date) =>
+    navigate(`/calendar?date=${date.toISOString().split("T")[0]}`);
 
   const filteredIssues = useMemo(() => {
     if (!searchQuery) return issues;
     const q = searchQuery.toLowerCase();
-    return issues.filter(i => i.title.toLowerCase().includes(q) || (i.desc?.toLowerCase().includes(q) ?? false));
+    return issues.filter(
+      (i) =>
+        i.title.toLowerCase().includes(q) ||
+        (i.desc?.toLowerCase().includes(q) ?? false)
+    );
   }, [issues, searchQuery]);
 
-  if (loading) return (
-    <Box textAlign="center" p={4} sx={{ backgroundColor: isDark ? theme.palette.background.default : '#fff' }}>
-      <Stack spacing={1}>
-        {[...Array(3)].map((_, i) => (
-          <Skeleton key={i} variant="rectangular" height={100} animation="wave" sx={{ borderRadius: 2 }} />
-        ))}
-      </Stack>
-    </Box>
-  );
-  if (error) return (
-    <Box textAlign="center" p={4} sx={{ backgroundColor: isDark ? theme.palette.background.default : '#fff' }}>
-      <Typography color="error">Error: {error}</Typography>
-    </Box>
-  );
+  if (loading)
+    return (
+      <Box
+        textAlign="center"
+        p={4}
+        sx={{
+          backgroundColor: isDark ? theme.palette.background.default : "#fff",
+        }}
+      >
+        <Stack spacing={1}>
+          {[...Array(3)].map((_, i) => (
+            <Skeleton
+              key={i}
+              variant="rectangular"
+              height={100}
+              animation="wave"
+              sx={{ borderRadius: 2 }}
+            />
+          ))}
+        </Stack>
+      </Box>
+    );
+  if (error)
+    return (
+      <Box
+        textAlign="center"
+        p={4}
+        sx={{
+          backgroundColor: isDark ? theme.palette.background.default : "#fff",
+        }}
+      >
+        <Typography color="error">Error: {error}</Typography>
+      </Box>
+    );
 
   return (
     <Box
       sx={{
-        minHeight: "calc(100vh - 64px)",
-        pt: "64px",
+        height: "100vh",
         display: "flex",
-        justifyContent: "center",
-        px: { xs: 2, sm: 3, md: 4 },
-        backgroundColor: isDark ? theme.palette.background.default : '#f9f9f9',
+        flexDirection: "column",
+        backgroundColor: isDark ? theme.palette.background.default : "#f9f9f9",
       }}
     >
-      <Stack spacing={4} sx={{ width: "100%", maxWidth: 900 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ color: isDark ? '#fafafa' : '#212121' }}>
-          Activity Feed
-        </Typography>
+      {/* Header */}
 
-        <Paper sx={{ p: 2, position: "sticky", top: 64, zIndex: 10, backgroundColor: isDark ? theme.palette.background.paper : '#fff' }}>
-          <TextField
-            fullWidth
-            placeholder="Search activities..."
-            value={searchQuery}
-            onChange={e => setSearchQuery(e.target.value)}
-            InputProps={{
-              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: isDark ? '#fafafa' : '#757575' }} /></InputAdornment>,
-              endAdornment: searchQuery && <InputAdornment position="end"><IconButton onClick={() => setSearchQuery("")}><ClearIcon /></IconButton></InputAdornment>,
-              style: { color: isDark ? '#fafafa' : '#212121' },
-            }}
-            sx={{
-              '.MuiOutlinedInput-root': {
-                '& fieldset': {
-                  borderColor: isDark ? '#555' : '#ccc'
-                },
-                '&:hover fieldset': {
-                  borderColor: isDark ? '#888' : '#888'
-                }
-              }
-            }}
-          />
-        </Paper>
+      <Typography
+        variant="h4"
+        fontWeight={700}
+        sx={{ color: isDark ? "#fafafa" : "#212121", mb: 2 }}
+      >
+        Activity Feed
+      </Typography>
+      <Paper
+        sx={{
+          p: 2,
+          position: "sticky",
+          top: 64,
+          zIndex: 10,
+          backgroundColor: isDark ? theme.palette.background.paper : "#fff",
+        }}
+      >
+        <TextField
+          fullWidth
+          placeholder="Search activities..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon sx={{ color: isDark ? "#fafafa" : "#757575" }} />
+              </InputAdornment>
+            ),
+            endAdornment: searchQuery && (
+              <InputAdornment position="end">
+                <IconButton onClick={() => setSearchQuery("")}>
+                  <ClearIcon />
+                </IconButton>
+              </InputAdornment>
+            ),
+            style: { color: isDark ? "#fafafa" : "#212121" },
+          }}
+          sx={{
+            ".MuiOutlinedInput-root": {
+              "& fieldset": {
+                borderColor: isDark ? "#555" : "#ccc",
+              },
+              "&:hover fieldset": {
+                borderColor: isDark ? "#888" : "#888",
+              },
+            },
+          }}
+        />
+      </Paper>
 
-        {filteredIssues.length > 0 ? (
-          filteredIssues.map(issue => (
-            <ActivityCard
-              key={issue.id}
-              issue={issue}
-              isExpanded={expandedIssueId === issue.id}
-              onToggleExpand={handleToggleExpand}
-              onNavigateToCalendar={handleNavigateToCalendar}
-            />
-          ))
-        ) : (
-          <Fade in timeout={300}>   
-            <Box textAlign="center" mt={8} sx={{ color: theme.palette.text.secondary }}>
-              <ErrorOutlineIcon fontSize="large" />
-              <Typography variant="h6">No activities found</Typography>
-              <Typography variant="body2">Try searching for activities.</Typography>
-            </Box>
-          </Fade>
-        )}
-      </Stack>
+      {/* Scrollable List */}
+      <Box
+        sx={{
+          flex: 1,
+          overflowY: "auto",
+          px: { xs: 2, sm: 3, md: 4 },
+          pt: 2,
+        }}
+      >
+        <Stack spacing={2} sx={{ width: "100%", maxWidth: 900, mx: "auto" }}>
+          {filteredIssues.length > 0 ? (
+            filteredIssues.map((issue) => (
+              <ActivityCard
+                key={issue.id}
+                issue={issue}
+                isExpanded={expandedIssueId === issue.id}
+                onToggleExpand={handleToggleExpand}
+                onNavigateToCalendar={handleNavigateToCalendar}
+              />
+            ))
+          ) : (
+            <Fade in timeout={300}>
+              <Box
+                textAlign="center"
+                mt={8}
+                sx={{ color: theme.palette.text.secondary }}
+              >
+                <ErrorOutlineIcon fontSize="large" />
+                <Typography variant="h6">No activities found</Typography>
+                <Typography variant="body2">
+                  Try searching for activities.
+                </Typography>
+              </Box>
+            </Fade>
+          )}
+        </Stack>
+      </Box>
     </Box>
   );
 };
