@@ -28,13 +28,10 @@ export interface CreateOrganizationResult {
 
 export interface NewProjectParams {
   name: string;
-  orgId: number;
-  tag: string;
+  orgid: number;
   budget: number;
   charter: string;
   archived: boolean;
-  members?: string[];
-  issues?: string[];
 }
 
 export interface CreateProjectResult {
@@ -131,10 +128,11 @@ export const createNewIssue = async (
 
 
     console.log("meooow");
-    console.log(response.status);
+    window.alert(response.status);
     return { status: response.status };
   } catch (err: any) {
     console.log("meow");
+    window.alert("Something went wrong")
     return { status: 0, error: err.message || "Unknown error!"};
   }
 };
@@ -251,24 +249,48 @@ export const createProject = async (
   endpoint: string
 ): Promise<CreateProjectResult> => {
   try {
-    const params = new URLSearchParams();
-    Object.entries(paramsObj).forEach(([key, value]) => {
-      if (value == null) return;
-      console.log(key);
-      console.log(value);
-      if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, String(v)));
-      } else {
-        params.append(key, String(value));
-      }
-    });
+    const sessionid = localStorage.getItem("sessionid");
 
+    const params = new URLSearchParams();
+    params.append('sessionid', String(sessionid!))
+    params.append('name', paramsObj.name);
+    params.append('orgid', String(paramsObj.orgid ?? 0));
+
+    params.append('budget', String(paramsObj.budget));
+    params.append('charter', paramsObj.charter);
+    params.append('archived', 'false');
+    // Object.entries(paramsObj).forEach(([key, value]) => {
+    //   if (value == null) return;
+    //   console.log(key);
+    //   console.log(value);
+    //   if (Array.isArray(value)) {
+    //      value.forEach((v) => params.append(`${key}[]`, String(v)));
+    //   } else if (typeof value === "boolean") {
+    //     params.append(key, value.toString().toLowerCase());
+    // } else {
+    //   params.append(key, String(value));
+    //   }
+    // });
+    // params.append('id', id)       
+    // params.append('orgid', orgiD)       
+    // params.append('budget', budget)       
+    // params.append('charter', charter)       
+    // params.append('members', members)      
+    // params.append('issues', issues)      
+    // params.append('tags', tags)     
+    // params.append('roles', roles)
+    // params.append('name', name);
+    // params.append('orgid', String(orgId));
+    // params.append('budget', String(budget));
+    // params.append('charter', charter.trim());
+    // params.append('archived', 'false');
     console.log(params);
+
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params,
+      body: params.toString().trim(),
     });
 
     if (!response.ok) {
@@ -285,9 +307,9 @@ export const createProject = async (
       budget: rawJson.budget,
       charter: rawJson.charter,
       archived: rawJson.archived,
-      members: rawJson.members ?? [],
-      issues: rawJson.issues ?? [],
-      tags: rawJson.tags ?? [],
+      //members: rawJson.members ?? [],
+      //issues: rawJson.issues ?? [],
+      //tags: rawJson.tags ?? [],
     };
 
     return { status: response.status, project };

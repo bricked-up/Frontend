@@ -78,7 +78,7 @@ describe("createProject", () => {
       json: async () => ({
         id: 7,
         name: "Proj",
-        orgId: 1,
+        orgid: 1,
         tag: "v1",
         budget: 100,
         charter: "ch",
@@ -91,8 +91,7 @@ describe("createProject", () => {
     const res: CreateProjectResult = await createProject(
       {
         name: "Proj",
-        orgId: 1,
-        tag: "v1",
+        orgid: 1,
         budget: 100,
         charter: "ch",
         archived: false,
