@@ -20,8 +20,8 @@ describe("createNewIssue", () => {
       status: 201,
       json: async () => ({
         id: 5,
-        title: "Test Issue",
-        desc: null,
+        name: "Test Issue",
+        description: null,
         priority: 1,
         cost: 0,
         created: "2025-04-26T00:00:00Z",
@@ -30,7 +30,7 @@ describe("createNewIssue", () => {
     });
 
     const res: Result = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2, assignee: -1},
       "issues"
     );
     expect(res.status).toBe(201);
@@ -45,7 +45,7 @@ describe("createNewIssue", () => {
     });
 
     const res = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2 , assignee: -1},
       "issues"
     );
     expect(res.status).toBe(400);

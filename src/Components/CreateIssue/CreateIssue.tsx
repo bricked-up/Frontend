@@ -21,69 +21,76 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
 import { useEffect } from "react";
 import { getUser, getIssue } from "../../utils/getters.utils";
-interface CreateIssuePageProps {
-  board: Board;
+ interface CreateIssuePageProps {
+   board?: Board;
 }
-
-export const mockBoard: Board = {
-  id: 1,
-  name: "Project Board",
-  createdBy: "Kejsi",
-  createdById: "user-1",
+export const defaultBoard: Board = {
+  id: 0,
+  name: "",
+  createdBy: "system",
+  createdById: "0",
   createdAt: new Date(),
-  issues: [
-    {
-      id: 1,
-      title: "Setup Project Repository",
-      desc: "Initialize GitHub repository and push the initial commit.",
-      tagId: 1,
-      priority: 1,
-      cost: 100,
-      created: new Date("2024-04-01"),
-      completed: undefined,
-    },
-    {
-      id: 2,
-      title: "Create Database Schema",
-      desc: "Design and create tables for users, projects, and issues.",
-      tagId: 2,
-      priority: 2,
-      cost: 300,
-      created: new Date("2024-04-02"),
-      completed: undefined,
-    },
-    {
-      id: 3,
-      title: "Implement User Authentication",
-      desc: "Login, signup, password reset, and session management.",
-      tagId: 3,
-      priority: 1,
-      cost: 250,
-      created: new Date("2024-04-04"),
-      completed: new Date("2024-04-06"),
-    },
-    {
-      id: 4,
-      title: "Build Issue Tracking Dashboard",
-      desc: "Frontend UI to create, view, edit, and complete issues.",
-      tagId: 1,
-      priority: 3,
-      cost: 400,
-      created: new Date("2024-04-07"),
-      completed: undefined,
-    },
-    {
-      id: 5,
-      title: "Deploy Application",
-      desc: "Deploy backend on server and frontend on Vercel.",
-      tagId: 2,
-      priority: 2,
-      cost: 500,
-      created: new Date("2024-04-10"),
-      completed: undefined,
-    },
-  ],
+  issues: [],
 };
+// export const mockBoard: Board = {
+//   id: 1,
+//   name: "Project Board",
+//   createdBy: "Kejsi",
+//   createdById: "user-1",
+//   createdAt: new Date(),
+//   issues: [
+//     {
+//       id: 1,
+//       title: "Setup Project Repository",
+//       desc: "Initialize GitHub repository and push the initial commit.",
+//       tagId: 1,
+//       priority: 1,
+//       cost: 100,
+//       created: new Date("2024-04-01"),
+//       completed: undefined,
+//     },
+//     {
+//       id: 2,
+//       title: "Create Database Schema",
+//       desc: "Design and create tables for users, projects, and issues.",
+//       tagId: 2,
+//       priority: 2,
+//       cost: 300,
+//       created: new Date("2024-04-02"),
+//       completed: undefined,
+//     },
+//     {
+//       id: 3,
+//       title: "Implement User Authentication",
+//       desc: "Login, signup, password reset, and session management.",
+//       tagId: 3,
+//       priority: 1,
+//       cost: 250,
+//       created: new Date("2024-04-04"),
+//       completed: new Date("2024-04-06"),
+//     },
+//     {
+//       id: 4,
+//       title: "Build Issue Tracking Dashboard",
+//       desc: "Frontend UI to create, view, edit, and complete issues.",
+//       tagId: 1,
+//       priority: 3,
+//       cost: 400,
+//       created: new Date("2024-04-07"),
+//       completed: undefined,
+//     },
+//     {
+//       id: 5,
+//       title: "Deploy Application",
+//       desc: "Deploy backend on server and frontend on Vercel.",
+//       tagId: 2,
+//       priority: 2,
+//       cost: 500,
+//       created: new Date("2024-04-10"),
+//       completed: undefined,
+//     },
+//   ],
+//};
 
 /**
  * CreateIssue Component
@@ -92,7 +99,7 @@ export const mockBoard: Board = {
  * - Allows creating, editing, deleting, and completing issues.
  * - Supports switching issues between 'In Progress' and 'Completed' states.
  */
-const CreateIssue: React.FC<CreateIssuePageProps> = ({ board }) => {
+const CreateIssue: React.FC<CreateIssuePageProps> = ({ board = defaultBoard}) => {
   // Import necessary components
   const { Grid } = require("@mui/material");
   const [showAddIssue, setShowAddIssue] = useState(false);
