@@ -9,7 +9,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 import { tokens } from "../theme";
 import { useState } from "react";
 import React from "react";
@@ -36,7 +36,7 @@ const Item: React.FC<ItemProps> = ({
 }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
- 
+
   return (
     <Link
       to={to}
@@ -127,10 +127,10 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             <Item
               title="Create Organization"
               to="/createorg"
-              icon={<AddCircleIcon/>}
+              icon={<AddCircleIcon />}
               selected={selected}
               setSelected={setSelected}
-              />
+            />
             <Item
               title="View Organizations"
               to="/viewOrg"
@@ -155,7 +155,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             />
             <Item
               title="Create Projects"
-              to="/contacts"
+              to="/createProject"
               icon={<ContactsOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -185,15 +185,6 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               title="FAQ Page"
               to="/faq"
               icon={<HelpOutlineOutlinedIcon />}
-              selected={selected}
-              setSelected={setSelected}
-            />
-            <Item 
-              title="create organization"
-              to="/createOrg"
-              icon={<CorporateFareIcon />}
-              
-              
               selected={selected}
               setSelected={setSelected}
             />
