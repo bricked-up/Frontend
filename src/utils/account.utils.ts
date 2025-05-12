@@ -35,7 +35,7 @@ export const sendUserData = async (user: User, endpoint: string): Promise<number
     try {
         const params = new URLSearchParams({
             email: user.email,
-            displayName: user.displayName,
+            displayName: user.name,
             password: user.password ?? "",
             avatar: user.avatar ?? "",
         });
