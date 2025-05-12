@@ -17,9 +17,9 @@ const STORAGE_KEY = 'organizations';
  * @constant {Organization[]}
  */
 const defaultOrgs: Organization[] = [
-  { id: '1', name: 'Bricked-Up', description: '', members: [], projects: [] },
-  { id: '2', name: 'George King IT', description: '', members: [], projects: [] },
-  { id: '3', name: 'SAP', description: '', members: [], projects: [] },
+  { id: 1, name: 'Bricked-Up', members: [], projects: [] },
+  { id: 2, name: 'George King IT',  members: [], projects: [] },
+  { id: 3, name: 'SAP', members: [], projects: [] },
 ];
 
 /**
@@ -106,7 +106,7 @@ export const updateStoreOrganization = (updatedOrg: Organization): boolean => {
  * @param {string} id - The unique identifier of the organization to remove.
  * @returns {boolean} True if the operation succeeds.
  */
-export const deleteOrganizationFromStore = (id: string): boolean => {
+export const deleteOrganizationFromStore = (id: number): boolean => {
   const orgs = getOrganizationsFromStore().filter(o => o.id !== id);
   updateStore(STORAGE_KEY, orgs);
   return true;

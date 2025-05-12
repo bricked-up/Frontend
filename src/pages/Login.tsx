@@ -18,7 +18,7 @@ import {
   ListItem,
   ListItemText,
   useMediaQuery,
-  Divider
+  Divider,
 } from "@mui/material";
 import { motion } from "framer-motion";
 import NavBar from "../Components/Navbar/NavBar";
@@ -132,28 +132,32 @@ const Login = () => {
 
   // Inverted text field styling for both light and dark modes
   const textFieldSx = {
-    '& .MuiOutlinedInput-root': {
-      backgroundColor: isDark ? '#0f172a' : '#f1f5f9',
-      color: isDark ? '#f1f5f9' : '#0f172a',
-      '& fieldset': {
-        borderColor: isDark ? 'rgba(203, 213, 225, 0.3)' : 'rgba(15, 23, 42, 0.2)',
+    "& .MuiOutlinedInput-root": {
+      backgroundColor: isDark ? "#0f172a" : "#f1f5f9",
+      color: isDark ? "#f1f5f9" : "#0f172a",
+      "& fieldset": {
+        borderColor: isDark
+          ? "rgba(203, 213, 225, 0.3)"
+          : "rgba(15, 23, 42, 0.2)",
       },
-      '&:hover fieldset': {
-        borderColor: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.3)',
+      "&:hover fieldset": {
+        borderColor: isDark
+          ? "rgba(203, 213, 225, 0.5)"
+          : "rgba(15, 23, 42, 0.3)",
       },
-      '&.Mui-focused fieldset': {
-        borderColor: isDark ? '#60a5fa' : '#2563eb',
+      "&.Mui-focused fieldset": {
+        borderColor: isDark ? "#60a5fa" : "#2563eb",
       },
     },
-    '& .MuiInputLabel-root': {
-      color: isDark ? 'rgba(203, 213, 225, 0.7)' : 'rgba(15, 23, 42, 0.7)',
+    "& .MuiInputLabel-root": {
+      color: isDark ? "rgba(203, 213, 225, 0.7)" : "rgba(15, 23, 42, 0.7)",
     },
-    '& .MuiInputLabel-root.Mui-focused': {
-      color: isDark ? '#60a5fa' : '#2563eb',
+    "& .MuiInputLabel-root.Mui-focused": {
+      color: isDark ? "#60a5fa" : "#2563eb",
     },
-    '& .MuiInputBase-input': {
-      '&::placeholder': {
-        color: isDark ? 'rgba(203, 213, 225, 0.5)' : 'rgba(15, 23, 42, 0.5)',
+    "& .MuiInputBase-input": {
+      "&::placeholder": {
+        color: isDark ? "rgba(203, 213, 225, 0.5)" : "rgba(15, 23, 42, 0.5)",
         opacity: 1,
       },
     },
@@ -170,7 +174,7 @@ const Login = () => {
           ? "linear-gradient(135deg, #0f172a, #1e293b, #334155)"
           : "linear-gradient(135deg, #e0f2fe, #f1f5f9, #f8fafc)",
         color: theme.palette.text.primary,
-        transition: "background 0.5s ease, color 0.5s ease"
+        transition: "background 0.5s ease, color 0.5s ease",
       }}
     >
       <NavBar />
@@ -206,7 +210,7 @@ const Login = () => {
               boxShadow: isDark
                 ? "0 12px 32px rgba(0, 0, 0, 0.3)"
                 : "0 8px 20px rgba(0, 194, 255, 0.15)",
-              transition: "all 0.4s ease-in-out"
+              transition: "all 0.4s ease-in-out",
             }}
           >
             <Typography
@@ -216,7 +220,7 @@ const Login = () => {
                 fontWeight: 700,
                 letterSpacing: "-0.5px",
                 color: isDark ? "#f1f5f9" : "#0f172a",
-                mb: 3
+                mb: 3,
               }}
             >
               Welcome to Bricked Up!
@@ -227,35 +231,35 @@ const Login = () => {
               onChange={handleTabChange}
               variant="fullWidth"
               sx={{
-                '& .MuiTabs-indicator': {
+                "& .MuiTabs-indicator": {
                   height: 3,
                   background: "linear-gradient(to right, #0ea5e9, #6366f1)",
                 },
-                mb: 2
+                mb: 2,
               }}
             >
               <Tab
                 label="Login"
                 sx={{
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
                   color: isDark ? "#cbd5e1" : "#334155",
-                  '&.Mui-selected': {
+                  "&.Mui-selected": {
                     color: isDark ? "#f1f5f9" : "#0f172a",
-                  }
+                  },
                 }}
               />
               <Tab
                 label="Sign Up"
                 sx={{
-                  textTransform: 'none',
-                  fontWeight: 'bold',
-                  fontSize: '1rem',
+                  textTransform: "none",
+                  fontWeight: "bold",
+                  fontSize: "1rem",
                   color: isDark ? "#cbd5e1" : "#334155",
-                  '&.Mui-selected': {
+                  "&.Mui-selected": {
                     color: isDark ? "#f1f5f9" : "#0f172a",
-                  }
+                  },
                 }}
               />
             </Tabs>
@@ -288,17 +292,18 @@ const Login = () => {
                   sx={textFieldSx}
                 />
 
-               
                 {error && (
                   <Alert
                     severity="error"
                     sx={{
                       mt: 2,
-                      bgcolor: isDark ? 'rgba(239, 68, 68, 0.1)' : 'rgba(239, 68, 68, 0.08)',
-                      color: isDark ? '#fca5a5' : '#b91c1c',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#f87171' : '#ef4444'
-                      }
+                      bgcolor: isDark
+                        ? "rgba(239, 68, 68, 0.1)"
+                        : "rgba(239, 68, 68, 0.08)",
+                      color: isDark ? "#fca5a5" : "#b91c1c",
+                      "& .MuiAlert-icon": {
+                        color: isDark ? "#f87171" : "#ef4444",
+                      },
                     }}
                   >
                     {error}
@@ -321,9 +326,9 @@ const Login = () => {
                     color: "#fff",
                     boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)",
                     filter: "drop-shadow(0 0 0.75rem rgba(99, 102, 241, 0.5))",
-                    '&:hover': {
-                      background: "linear-gradient(to right, #6366f1, #0ea5e9)"
-                    }
+                    "&:hover": {
+                      background: "linear-gradient(to right, #6366f1, #0ea5e9)",
+                    },
                   }}
                 >
                   Login
@@ -369,12 +374,16 @@ const Login = () => {
                   value={confirmpwd}
                   onChange={(e) => setConfirmpwd(e.target.value)}
                   error={registerAttempt && !isValid && password !== confirmpwd}
-                  helperText={registerAttempt && password !== confirmpwd ? "Passwords don't match" : ""}
+                  helperText={
+                    registerAttempt && password !== confirmpwd
+                      ? "Passwords don't match"
+                      : ""
+                  }
                   sx={{
                     ...textFieldSx,
-                    '& .MuiFormHelperText-root': {
-                      color: isDark ? '#f87171' : '#ef4444',
-                    }
+                    "& .MuiFormHelperText-root": {
+                      color: isDark ? "#f87171" : "#ef4444",
+                    },
                   }}
                 />
 
@@ -383,17 +392,19 @@ const Login = () => {
                     severity="warning"
                     sx={{
                       mt: 2,
-                      bgcolor: isDark ? 'rgba(245, 158, 11, 0.1)' : 'rgba(245, 158, 11, 0.08)',
-                      color: isDark ? '#fcd34d' : '#92400e',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#fbbf24' : '#f59e0b'
-                      }
+                      bgcolor: isDark
+                        ? "rgba(245, 158, 11, 0.1)"
+                        : "rgba(245, 158, 11, 0.08)",
+                      color: isDark ? "#fcd34d" : "#92400e",
+                      "& .MuiAlert-icon": {
+                        color: isDark ? "#fbbf24" : "#f59e0b",
+                      },
                     }}
                   >
                     <Typography
                       variant="subtitle2"
                       sx={{
-                        color: isDark ? '#fcd34d' : '#92400e',
+                        color: isDark ? "#fcd34d" : "#92400e",
                       }}
                     >
                       Password requirements:
@@ -404,9 +415,9 @@ const Login = () => {
                           <ListItemText
                             primary={err}
                             sx={{
-                              '& .MuiListItemText-primary': {
-                                color: isDark ? '#fcd34d' : '#92400e',
-                              }
+                              "& .MuiListItemText-primary": {
+                                color: isDark ? "#fcd34d" : "#92400e",
+                              },
                             }}
                           />
                         </ListItem>
@@ -420,11 +431,13 @@ const Login = () => {
                     severity="success"
                     sx={{
                       mt: 2,
-                      bgcolor: isDark ? 'rgba(34, 197, 94, 0.1)' : 'rgba(34, 197, 94, 0.08)',
-                      color: isDark ? '#86efac' : '#166534',
-                      '& .MuiAlert-icon': {
-                        color: isDark ? '#4ade80' : '#22c55e'
-                      }
+                      bgcolor: isDark
+                        ? "rgba(34, 197, 94, 0.1)"
+                        : "rgba(34, 197, 94, 0.08)",
+                      color: isDark ? "#86efac" : "#166534",
+                      "& .MuiAlert-icon": {
+                        color: isDark ? "#4ade80" : "#22c55e",
+                      },
                     }}
                   >
                     All requirements met!
@@ -447,9 +460,9 @@ const Login = () => {
                     color: "#fff",
                     boxShadow: "0 8px 20px rgba(6, 182, 212, 0.4)",
                     filter: "drop-shadow(0 0 0.75rem rgba(99, 102, 241, 0.5))",
-                    '&:hover': {
-                      background: "linear-gradient(to right, #6366f1, #0ea5e9)"
-                    }
+                    "&:hover": {
+                      background: "linear-gradient(to right, #6366f1, #0ea5e9)",
+                    },
                   }}
                 >
                   Register
@@ -464,7 +477,7 @@ const Login = () => {
               sx={{
                 fontStyle: "italic",
                 opacity: 0.65,
-                color: isDark ? "#94a3b8" : "#475569"
+                color: isDark ? "#94a3b8" : "#475569",
               }}
             >
               "Start collaborating and organizing with your team today!"
@@ -482,7 +495,7 @@ const Login = () => {
           opacity: 0.4,
           color: theme.palette.text.secondary,
           borderTop: `1px solid ${theme.palette.divider}`,
-          transition: "color 0.4s ease, border-color 0.4s ease"
+          transition: "color 0.4s ease, border-color 0.4s ease",
         }}
       >
         © 2025 Bricked Up, Inc. · Privacy · Terms
@@ -490,5 +503,4 @@ const Login = () => {
     </Box>
   );
 };
-
 export default Login;

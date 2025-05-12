@@ -426,8 +426,8 @@ const CustomCalendar: React.FC = () => {
   const events: CalendarEvent[] = issues.map((issue) => ({
     id: issue.id,
     title: issue.title,
-    start: new Date(issue.created),
-    end: new Date(issue.created),
+    start: issue.created ? new Date(issue.created) : new Date(),
+    end: issue.created ? new Date(issue.created) : new Date(),
     allDay: true,
     resource: issue,
   }));

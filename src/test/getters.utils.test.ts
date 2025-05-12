@@ -35,6 +35,8 @@ describe("Getter Utility Functions (Integration Tests)", () => {
             expect(result.status).toBe(200);
             expect(result.error).toBeUndefined();
             expect(result.data).not.toBeNull();
+            // This assertion depends heavily on what /get-user actually returns
+            // and what is populated in your test database for user 1.
             expect(result.data).toEqual(
                 expect.objectContaining({
                     id: existingUserId,
@@ -257,7 +259,7 @@ describe("Getter Utility Functions (Integration Tests)", () => {
         it("should handle organization role not found (status 404)", async () => {
             const result = await getOrgRole(nonExistentOrgRoleId);
             expect(result.status).toBe(404);
-            expect(result.data).toBeNull();
+            expect(result.data).toBeNull(); // Getter's robust parsing should yield null data for 404
             expect(result.error).toBeDefined();
         });
     });

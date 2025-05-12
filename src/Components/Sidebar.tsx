@@ -188,6 +188,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               selected={selected}
               setSelected={setSelected}
             />
+            <Item 
+              title="create organization"
+              to="/createOrg"
+              icon={<CorporateFareIcon />}
+              
+              
+              selected={selected}
+              setSelected={setSelected}
+            />
           </Box>
         )}
       </Box>
