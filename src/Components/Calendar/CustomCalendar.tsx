@@ -422,6 +422,7 @@ const CustomCalendar: React.FC = () => {
     <Box
       sx={{
         height: "100%", // Let height be controlled by parent container
+        minHeight: "600px",
         display: "flex",
         flexDirection: "column",
       }}
@@ -591,7 +592,6 @@ const CustomCalendar: React.FC = () => {
       <Box
         sx={{
           flexGrow: 1,
-          height: "0", // Important for flexGrow with overflow
           px: { xs: 2, sm: 4 },
           pb: 3,
           // --- Styling overrides --- Use theme colors ---
