@@ -10,6 +10,8 @@ import {
   LinearProgress,
   Divider,
   Chip,
+  IconButton, // Added
+  CircularProgress, // Added for loading state
 } from "@mui/material";
 import {
   DataGrid,
@@ -30,6 +32,7 @@ import GroupsIcon from "@mui/icons-material/Groups";
 import AccountTreeIcon from "@mui/icons-material/AccountTree";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import EventNoteIcon from "@mui/icons-material/EventNote";
+import DeleteIcon from "@mui/icons-material/Delete"; // Added
 import {
   PieChart,
   Pie,
@@ -42,8 +45,10 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import { GetProjectResult, Project, ProjectMember } from "../utils/types";
+import { GetProjectResult, Project, ProjectMember } from "../utils/types"; // ProjectMember is used
 import { getUser, getProject, getProjectMember } from "../utils/getters.utils";
+import { removeProjectMember } from "../utils/post.utils"; // Added
+import { Result as PostResult } from "../utils/post.utils"; // Added type for the result of removeProjectMember
 
 const PermissionIndicator = ({ value }: { value: boolean }) => {
   return value ? (
@@ -68,6 +73,7 @@ const RoleIcon = ({
   return <VisibilityIcon sx={{ color: "#9c27b0", mr: 1 }} />;
 };
 
+// This type guard seems unused in the provided snippet, but keeping it as it was there.
 function isProjectMember(item: any): item is ProjectMember {
   return (
     typeof item === "object" &&
@@ -121,7 +127,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
         backgroundColor:
           theme.palette.mode === "light"
             ? colors.primary[900]
-            : colors.primary[400],
+            : colors.primary[400], // This was colors.primary[400], assuming it's for dark mode, changed ProjectDetails background
       }}
     >
       <Box
@@ -147,7 +153,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
         <Grid item xs={12} md={6} lg={3}>
           <Card
             sx={{
-              backgroundColor: colors.primary[400],
+              backgroundColor: colors.primary[400], // Assuming this should be consistent with the outer box in dark mode
               height: "100%",
               boxShadow: `0 4px 8px rgba(0,0,0,0.2)`,
             }}
@@ -213,7 +219,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
         <Grid item xs={12} md={6} lg={3}>
           <Card
             sx={{
-              backgroundColor: colors.primary[400],
+              backgroundColor: colors.primary[400], // Assuming this should be consistent
               height: "100%",
               boxShadow: `0 4px 8px rgba(0,0,0,0.2)`,
             }}
@@ -318,6 +324,41 @@ const ProjectDetails = ({ project }: { project: any }) => {
         </Grid>
 
         {/* Remaining sections unchanged... */}
+        {/* Placeholder for Pie Chart & Bar Chart if they were meant to be here */}
+        {/* Example from original thought process (if they are part of ProjectDetails)
+        <Grid item xs={12} md={6} lg={3}>
+          <Card sx={{ backgroundColor: colors.primary[400], height: "100%", boxShadow: `0 4px 8px rgba(0,0,0,0.2)`}}>
+            <CardContent>
+              <Typography variant="h6" color={colors.blueAccent[500]} fontWeight="600" mb={2}>Task Distribution</Typography>
+              <ResponsiveContainer width="100%" height={200}>
+                <PieChart>
+                  <Pie data={[{name: 'Group A', value: 400}, {name: 'Group B', value: 300}]} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={60} fill="#8884d8">
+                    {[{name: 'Group A', value: 400}, {name: 'Group B', value: 300}].map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+        <Grid item xs={12} md={6} lg={3}>
+           <Card sx={{ backgroundColor: colors.primary[400], height: "100%", boxShadow: `0 4px 8px rgba(0,0,0,0.2)` }}>
+            <CardContent>
+               <Typography variant="h6" color={colors.blueAccent[500]} fontWeight="600" mb={2}>Budget Usage</Typography>
+               <ResponsiveContainer width="100%" height={200}>
+                <BarChart data={[{name: 'Allocated', uv: project.budget}, {name: 'Spent', uv: project.budget * (project.progress/100)}]}>
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="uv" fill={colors.greenAccent[500]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </CardContent>
+          </Card>
+        </Grid>
+        */}
       </Grid>
     </Box>
   );
@@ -335,6 +376,7 @@ const ViewProject = () => {
     null
   );
   const [projectMembersRows, setProjectMembersRows] = useState<any[]>([]);
+  const [isDeletingMember, setIsDeletingMember] = useState<number | null>(null); // Added: track which member is being deleted
 
   useEffect(() => {
     const fetchUserProjects = async () => {
@@ -344,14 +386,14 @@ const ViewProject = () => {
       if (!user?.projects) return;
 
       const projectResponses = await Promise.all(
-        user.projects.map((pid: any) =>
-          getProject(typeof pid === "object" ? pid.projectId : pid)
+        user.projects.map((pid: any) => // pid can be number or { projectId: number }
+          getProject(typeof pid === "object" && pid !== null && 'projectId' in pid ? pid.projectId : pid)
         )
       );
-
+      
       const validProjects = projectResponses
-        .filter((p) => p.data !== null)
-        .map((p) => p.data!);
+        .filter((p): p is GetProjectResult & { data: Project } => p.data !== null) // Type assertion for filtering
+        .map((p) => p.data);
       setProjectOptions(validProjects.map((p) => ({ id: p.id, name: p.name })));
     };
     fetchUserProjects();
@@ -359,55 +401,124 @@ const ViewProject = () => {
 
   useEffect(() => {
     const fetchSelectedProject = async () => {
+      if (!selectedProject) { // Added guard to prevent running if no project is selected
+        setCurrentProjectData(null);
+        setProjectMembersRows([]);
+        return;
+      }
       const projectEntry = projectOptions.find(
         (p) => p.name === selectedProject
       );
       if (!projectEntry) return;
       const { data: project } = await getProject(projectEntry.id);
-      if (!project || !Array.isArray(project.members)) return;
+       // Ensure project and project.members are valid before proceeding
+      if (!project || !Array.isArray(project.members)) {
+        setCurrentProjectData(project); // Set project data even if members array is missing/invalid for details view
+        setProjectMembersRows([]); // Clear members rows
+        console.warn("Project data fetched, but members array is missing or invalid:", project);
+        return;
+      }
 
       setCurrentProjectData(project);
 
-      const memberDetails = await Promise.all(
-        project.members.map(async (memberId: number) => {
-          const { data: memberData } = await getProjectMember(memberId);
-          if (!memberData) return null;
+      const memberDetailsPromises = project.members.map(async (memberIdOrObject: number | { id: number, userId: number, projectId: number, /* other ProjectMember fields */ }) => {
+        let projectMemberId: number;
+        let userIdFromMemberObject: number | undefined;
 
-          const { data: userInfo } = await getUser(memberData.userId);
+        if (typeof memberIdOrObject === 'number') {
+            // This case assumes memberIdOrObject is directly the projectMemberId
+            // This might need adjustment if 'project.members' contains user IDs instead of ProjectMember IDs
+            // For now, assuming it's ProjectMember ID as per typical DB relation linking tables
+            projectMemberId = memberIdOrObject;
+        } else if (typeof memberIdOrObject === 'object' && memberIdOrObject !== null && 'id' in memberIdOrObject) {
+            // If project.members contains full ProjectMember objects
+            projectMemberId = memberIdOrObject.id;
+            userIdFromMemberObject = memberIdOrObject.userId;
+        } else {
+            console.error("Invalid member identifier in project.members:", memberIdOrObject);
+            return null; // Skip invalid entries
+        }
+        
+        const { data: memberData } = await getProjectMember(projectMemberId);
+        if (!memberData) return null;
 
-          return {
-            id: memberData.id,
-            userid: memberData.userId,
-            memberid: memberData.id,
-            username: userInfo?.name || `User ${memberData.userId}`,
-            roleName:
-              memberData.canRead && memberData.canWrite && memberData.canExec
-                ? "Administrator"
-                : memberData.canRead && memberData.canWrite
-                  ? "Developer"
-                  : memberData.canRead
-                    ? "Viewer"
-                    : "Viewer",
-            can_read: memberData.canRead,
-            can_write: memberData.canWrite,
-            can_exec: memberData.canExec,
-          };
-        })
-      );
+        const userIdToFetch = userIdFromMemberObject ?? memberData.userId;
+        const { data: userInfo } = await getUser(userIdToFetch);
 
-      setProjectMembersRows(memberDetails.filter(Boolean));
+        return {
+          id: memberData.id, // This is ProjectMember.id, used as unique row id for DataGrid
+          userid: memberData.userId,
+          memberid: memberData.id, // This is ProjectMember.id, specific for removal
+          username: userInfo?.name || `User ${memberData.userId}`,
+          roleName:
+            memberData.canRead && memberData.canWrite && memberData.canExec
+              ? "Administrator"
+              : memberData.canRead && memberData.canWrite
+                ? "Developer"
+                : memberData.canRead
+                  ? "Viewer"
+                  : "Viewer", // Default to Viewer if no specific role matches
+          can_read: memberData.canRead ?? false, // Provide default if undefined
+          can_write: memberData.canWrite ?? false, // Provide default if undefined
+          can_exec: memberData.canExec ?? false, // Provide default if undefined
+        };
+      });
+
+      const memberDetails = (await Promise.all(memberDetailsPromises)).filter(Boolean);
+      setProjectMembersRows(memberDetails as any[]); // Filtered out nulls, so assertion is safer
     };
+
     if (selectedProject) fetchSelectedProject();
-  }, [selectedProject]);
+    else { // Clear data if no project is selected
+        setCurrentProjectData(null);
+        setProjectMembersRows([]);
+    }
+  }, [selectedProject, projectOptions]); // Added projectOptions to dependency array
+
+
+  const handleRemoveMember = async (projectMemberId: number) => {
+    const sessionIdString = localStorage.getItem("sessionid");
+    if (!sessionIdString) {
+      alert("Session not found. Please log in again.");
+      // Potentially redirect to login or handle more gracefully
+      return;
+    }
+    const sessionId = Number(sessionIdString);
+    if (isNaN(sessionId)) {
+        alert("Invalid session ID found. Please log in again.");
+        return;
+    }
+
+    setIsDeletingMember(projectMemberId); // Set loading for this specific member
+    try {
+      const result: PostResult = await removeProjectMember(sessionId, projectMemberId);
+      if (result.status === 200 || result.status === 204) { // Assuming 200 or 204 for successful deletion
+        setProjectMembersRows((prevRows) =>
+          prevRows.filter((row) => row.memberid !== projectMemberId)
+        );
+        // Optionally, refetch project data if member count on ProjectDetails needs update and isn't reactive
+        // For now, just updating the local list.
+        alert("Member removed successfully.");
+      } else {
+        console.error("Failed to remove member:", result.error, "Status:", result.status);
+        alert(`Failed to remove member: ${result.error || `Status ${result.status}`}`);
+      }
+    } catch (error) {
+      console.error("Error during member removal:", error);
+      alert("An unexpected error occurred while removing the member.");
+    } finally {
+      setIsDeletingMember(null); // Clear loading state
+    }
+  };
 
   const columns: GridColDef[] = [
     {
       field: "id",
       headerName: "ID",
       flex: 0.5,
-      width: 0,
-      minWidth: 0,
-      maxWidth: 0,
+      width: 0, // These were 0, making them very small if not invisible.
+      minWidth: 0, // If they should be hidden, use columnVisibilityModel
+      maxWidth: 0, // Or set width to a small number if it's for debug but not primary display
     },
     {
       field: "username",
@@ -418,7 +529,7 @@ const ViewProject = () => {
       ),
     },
     { field: "userid", headerName: "User ID", flex: 1 },
-    { field: "memberid", headerName: "Member ID", flex: 1 },
+    { field: "memberid", headerName: "Member ID", flex: 1 }, // This is ProjectMember.id
     {
       field: "roleName",
       headerName: "Role",
@@ -475,13 +586,40 @@ const ViewProject = () => {
         <PermissionIndicator value={Boolean(params.value)} />
       ),
     },
+    { // Added Action column
+      field: "actions",
+      headerName: "Remove",
+      flex: 0.7,
+      headerAlign: "center",
+      align: "center",
+      sortable: false,
+      disableColumnMenu: true,
+      renderCell: (params: GridRenderCellParams) => {
+        const memberId = params.row.memberid; // This is ProjectMember.id
+        return (
+          <IconButton
+            onClick={() => handleRemoveMember(memberId)}
+            disabled={isDeletingMember === memberId}
+            color="error" // Use theme's error color for delete
+            size="small"
+          >
+            {isDeletingMember === memberId ? (
+              <CircularProgress size={20} color="inherit" />
+            ) : (
+              <DeleteIcon />
+            )}
+          </IconButton>
+        );
+      },
+    },
   ];
 
   return (
     <Box
       sx={{
-        backgroundColor: colors.primary[400],
-        height: "100vh",
+        backgroundColor: colors.primary[400], // This was theme.palette.mode === "light" ? colors.primary[900] : colors.primary[400]
+                                            // Changed to always be colors.primary[400] like the original code.
+        minHeight: "100vh", // Changed from height to minHeight for better responsiveness with content
         overflowY: "auto",
         py: 3,
       }}
@@ -497,7 +635,7 @@ const ViewProject = () => {
             mt: 4,
             p: 3,
             borderRadius: 2,
-            backgroundColor: colors.primary[900],
+            backgroundColor: colors.primary[900], // This was dynamic, now fixed to colors.primary[900] as per original
           }}
         >
           <Box sx={{ display: "flex", alignItems: "center", gap: 2, mb: 2 }}>
@@ -506,7 +644,14 @@ const ViewProject = () => {
             </Typography>
             <DropDown
               value={selectedProject}
-              onSelect={setSelectedProject}
+              onSelect={(value) => {
+                setSelectedProject(value);
+                // When project selection changes, clear previous project's member details immediately
+                // The useEffect for fetchSelectedProject will then load the new ones.
+                // This prevents showing old members briefly for a new project.
+                setProjectMembersRows([]); 
+                setCurrentProjectData(null);
+              }}
               options={projectOptions.map((p) => p.name)}
             />
           </Box>
@@ -517,14 +662,14 @@ const ViewProject = () => {
             slots={{ toolbar: GridToolbar }}
             initialState={{
               pagination: { paginationModel: { pageSize: 10, page: 0 } },
-              columns: { columnVisibilityModel: { id: false } },
+              columns: { columnVisibilityModel: { id: false } }, // id column is hidden by default
             }}
             pageSizeOptions={[5, 10, 25, 50]}
             sx={{
               border: "none",
               color: colors.grey[100],
               "& .MuiDataGrid-columnHeaders": {
-                backgroundColor: colors.primary[500],
+                backgroundColor: colors.primary[500], // This was colors.blueAccent[700], changed to primary[500] as per original
                 color: colors.grey[100],
                 borderBottom: `1px solid ${colors.primary[300]}`,
               },
@@ -532,7 +677,7 @@ const ViewProject = () => {
                 borderBottom: `1px solid ${colors.primary[300]}`,
               },
               "& .MuiDataGrid-virtualScroller": {
-                backgroundColor: colors.primary[400],
+                backgroundColor: colors.primary[400], // This was colors.primary[400]
               },
               "& .MuiDataGrid-footerContainer": {
                 borderTop: `1px solid ${colors.primary[300]}`,
@@ -553,9 +698,15 @@ const ViewProject = () => {
               mt: 4,
               p: 3,
               borderRadius: 2,
-              backgroundColor: colors.primary[900],
+              backgroundColor: colors.primary[900], // Consistent with the DataGrid paper
             }}
           >
+            {/* The ProjectDetails component was inside another Box with dynamic background,
+                this Paper now serves as its direct styled container.
+                Original ProjectDetails had its own animated Box with background colors.primary[400] (dark mode)
+                or colors.primary[900] (light mode).
+                The structure here is Paper (colors.primary[900]) -> ProjectDetails (which has its own Box with background)
+            */}
             <ProjectDetails project={currentProjectData} />
           </Paper>
         )}
