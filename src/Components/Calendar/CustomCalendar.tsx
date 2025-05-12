@@ -39,7 +39,7 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../../css/CalendarStyles.css"; // Assuming you have custom styles here
 import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
 // Import Issue type and the corrected data
-import { Issue,Project } from "../../utils/types"; // Adjust path if needed
+import { Issue, Project } from "../../utils/types"; // Adjust path if needed
 import { tokens } from "../../theme";
 import { getUser, getIssue } from "../../utils/getters.utils";
 
@@ -256,7 +256,7 @@ const CustomCalendar: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false); // State for settings panel visibility
   const colors = tokens(theme.palette.mode);
 
-  const userId = Number(localStorage.getItem("userid"));
+  const userid = Number(localStorage.getItem("userid"));
   const [issues, setIssues] = useState<Issue[]>([]);
 
   // Load settings from localStorage or use defaults
@@ -297,28 +297,37 @@ const CustomCalendar: React.FC = () => {
   );
 
   useEffect(() => {
-  const fetchCalendarIssues = async () => {
-    const userId = Number(localStorage.getItem("userId"));
-    if (!userId) return;
+    const fetchCalendarIssues = async () => {
+      const userid = Number(localStorage.getItem("userid"));
+      console.log("📦 userId from localStorage:", userid);
 
-    // 1) load the User, get its issue IDs
-    const userRes = await getUser(userId);
-    if (!userRes.data?.issues) return;
+      if (!userid) {
+        console.warn("No valid userId found in localStorage");
+        return;
+      }
 
-    // 2) fetch each Issue by ID
-    const issueResponses = await Promise.all(
-      userRes.data.issues.map((issueId) => getIssue(issueId))
-    );
-    const fetchedIssues = issueResponses
-      .filter((r) => r.status === 200 && r.data)
-      .map((r) => r.data as Issue);
+      const userRes = await getUser(userid);
+      console.log("Fetched user object:", userRes); // ✅ DEBUG LINE
 
-    console.log("Fetched issues for calendar:", fetchedIssues);
-    setIssues(fetchedIssues);
-  };
+      if (!userRes?.data?.issues || !Array.isArray(userRes.data.issues)) {
+        console.warn("User has no issue array");
+        return;
+      }
 
-  fetchCalendarIssues();
-}, []);
+      const issueResponses = await Promise.all(
+        userRes.data.issues.map((id) => getIssue(id))
+      );
+
+      const fetchedIssues = issueResponses
+        .filter((r) => r.status === 200 && r.data)
+        .map((r) => r.data as Issue);
+
+      console.log("Fetched issues for calendar:", fetchedIssues);
+      setIssues(fetchedIssues);
+    };
+
+    fetchCalendarIssues();
+  }, []);
 
 
   // Function to determine event styling based on due date and settings
@@ -690,14 +699,14 @@ const CustomCalendar: React.FC = () => {
             dayRangeHeaderFormat: ({ start, end }, culture, loc) =>
               loc
                 ? loc.format(start, "MMM dd", culture) +
-                  " - " +
-                  loc.format(
-                    end,
-                    loc.format(start, "MMM") === loc.format(end, "MMM")
-                      ? "dd"
-                      : "MMM dd",
-                    culture
-                  )
+                " - " +
+                loc.format(
+                  end,
+                  loc.format(start, "MMM") === loc.format(end, "MMM")
+                    ? "dd"
+                    : "MMM dd",
+                  culture
+                )
                 : "", // e.g., Apr 07 - 13
           }}
           messages={
