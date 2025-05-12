@@ -372,22 +372,27 @@ const ViewProject = () => {
       const memberDetails = await Promise.all(
         project.members.map(async (memberId: number) => {
           const { data: memberData } = await getProjectMember(memberId);
-          return memberData
-            ? {
-                id: memberData.id,
-                userid: memberData.userId,
-                memberid: memberData.id,
-                roleName: Array.isArray(memberData.roles)
-                  ? memberData.roles
-                      .map((r) => (typeof r === "object" ? r.name : r))
-                      .join(", ")
-                  : "",
-                can_read: memberData.canRead,
-                can_write: memberData.canWrite,
-                can_exec: memberData.canExec,
-                username: memberData.userId.toString(),
-              }
-            : null;
+          if (!memberData) return null;
+
+          const { data: userInfo } = await getUser(memberData.userId);
+
+          return {
+            id: memberData.id,
+            userid: memberData.userId,
+            memberid: memberData.id,
+            username: userInfo?.name || `User ${memberData.userId}`,
+            roleName:
+              memberData.canRead && memberData.canWrite && memberData.canExec
+                ? "Administrator"
+                : memberData.canRead && memberData.canWrite
+                ? "Developer"
+                : memberData.canRead
+                ? "Viewer"
+                : "Viewer",
+            can_read: memberData.canRead,
+            can_write: memberData.canWrite,
+            can_exec: memberData.canExec,
+          };
         })
       );
 
