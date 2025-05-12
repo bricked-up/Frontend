@@ -23,12 +23,6 @@ const FAQ_DATA = [
     items: [
       { question: "What is your return policy?", answer: "You can return items within 30 days of purchase." },
       { question: "Do you offer international shipping?", answer: "Yes, we ship to most countries worldwide." },
-    ],
-  },
-  {
-    icon: <Person />,
-    section: "Account Management",
-    items: [
       { question: "How do I reset my password?", answer: "Click on 'Forgot Password' on the login page." },
       { question: "Can I change my email address?", answer: "Yes, you can update your email in account settings." },
     ],
