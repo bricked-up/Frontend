@@ -46,217 +46,6 @@ import { getUser, getProject, getProjectMember } from "../utils/getters.utils";
 import { a2 } from "framer-motion/dist/types.d-DDSxwf0n";
 
 // Mock data for project members with roles based on the ER diagram
-const mockProjectMembers = [
-  {
-    id: 1,
-    username: "John Doe",
-    userid: "jdoe123",
-    memberid: "PM001",
-    roleName: "Administrator",
-    can_read: true,
-    can_write: true,
-    can_exec: true,
-    project: "Project Alpha",
-  },
-  {
-    id: 2,
-    username: "Jane Smith",
-    userid: "jsmith456",
-    memberid: "PM002",
-    roleName: "Developer",
-    can_read: true,
-    can_write: true,
-    can_exec: false,
-    project: "Project Alpha",
-  },
-  {
-    id: 3,
-    username: "Mike Johnson",
-    userid: "mjohnson789",
-    memberid: "PM003",
-    roleName: "Viewer",
-    can_read: true,
-    can_write: false,
-    can_exec: false,
-    project: "Project Alpha",
-  },
-  {
-    id: 4,
-    username: "Sarah Williams",
-    userid: "swilliams101",
-    memberid: "PM004",
-    roleName: "Developer",
-    can_read: true,
-    can_write: true,
-    can_exec: false,
-    project: "Project Beta",
-  },
-  {
-    id: 5,
-    username: "Robert Chen",
-    userid: "rchen202",
-    memberid: "PM005",
-    roleName: "Administrator",
-    can_read: true,
-    can_write: true,
-    can_exec: true,
-    project: "Project Beta",
-  },
-  {
-    id: 6,
-    username: "Emily Davis",
-    userid: "edavis303",
-    memberid: "PM006",
-    roleName: "Tester",
-    can_read: true,
-    can_write: false,
-    can_exec: true,
-    project: "Project Beta",
-  },
-  {
-    id: 7,
-    username: "Alex Thompson",
-    userid: "athompson404",
-    memberid: "PM007",
-    roleName: "Designer",
-    can_read: true,
-    can_write: true,
-    can_exec: false,
-    project: "Project Gamma",
-  },
-  {
-    id: 8,
-    username: "Lisa Garcia",
-    userid: "lgarcia505",
-    memberid: "PM008",
-    roleName: "Viewer",
-    can_read: true,
-    can_write: false,
-    can_exec: false,
-    project: "Project Gamma",
-  },
-  {
-    id: 9,
-    username: "David Taylor",
-    userid: "dtaylor606",
-    memberid: "PM009",
-    roleName: "Administrator",
-    can_read: true,
-    can_write: true,
-    can_exec: true,
-    project: "Project Gamma",
-  },
-  {
-    id: 10,
-    username: "Olivia Wilson",
-    userid: "owilson707",
-    memberid: "PM010",
-    roleName: "Developer",
-    can_read: true,
-    can_write: true,
-    can_exec: false,
-    project: "Project Delta",
-  },
-];
-
-// Mock data for projects based on the ER diagram
-const mockProjects = [
-  {
-    id: 1,
-    name: "Project Alpha",
-    orgid: "ORG001",
-    budget: 250000,
-    charter: "Develop a new CRM system",
-    archived: false,
-    progress: 75,
-    startDate: "2024-01-15",
-    endDate: "2024-12-31",
-    tags: ["CRM", "Enterprise", "High Priority"],
-    issueCount: 28,
-    completedIssues: 21,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Developer", value: 1 },
-      { name: "Viewer", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 150000 },
-      { name: "Testing", value: 50000 },
-      { name: "Infrastructure", value: 35000 },
-      { name: "Management", value: 15000 },
-    ],
-  },
-  {
-    id: 2,
-    name: "Project Beta",
-    orgid: "ORG002",
-    budget: 175000,
-    charter: "Mobile app for customer engagement",
-    archived: false,
-    progress: 45,
-    startDate: "2024-03-01",
-    endDate: "2024-10-15",
-    tags: ["Mobile", "Customer Engagement", "Medium Priority"],
-    issueCount: 42,
-    completedIssues: 19,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Developer", value: 1 },
-      { name: "Tester", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 100000 },
-      { name: "Testing", value: 40000 },
-      { name: "Design", value: 25000 },
-      { name: "Marketing", value: 10000 },
-    ],
-  },
-  {
-    id: 3,
-    name: "Project Gamma",
-    orgid: "ORG001",
-    budget: 320000,
-    charter: "Enterprise data warehouse implementation",
-    archived: false,
-    progress: 30,
-    startDate: "2024-02-20",
-    endDate: "2025-04-30",
-    tags: ["Data", "Enterprise", "High Priority"],
-    issueCount: 56,
-    completedIssues: 17,
-    roleDistribution: [
-      { name: "Administrator", value: 1 },
-      { name: "Designer", value: 1 },
-      { name: "Viewer", value: 1 },
-    ],
-    budgetAllocation: [
-      { name: "Development", value: 180000 },
-      { name: "Infrastructure", value: 90000 },
-      { name: "Testing", value: 30000 },
-      { name: "Consulting", value: 20000 },
-    ],
-  },
-  {
-    id: 4,
-    name: "Project Delta",
-    orgid: "ORG003",
-    budget: 120000,
-    charter: "Internal productivity tools suite",
-    archived: true,
-    progress: 100,
-    startDate: "2023-09-01",
-    endDate: "2024-03-31",
-    tags: ["Internal", "Productivity", "Completed"],
-    issueCount: 37,
-    completedIssues: 37,
-    roleDistribution: [{ name: "Developer", value: 1 }],
-    budgetAllocation: [
-      { name: "Development", value: 85000 },
-      { name: "Testing", value: 25000 },
-      { name: "Documentation", value: 10000 },
-    ],
-  },
-];
 
 // Permission indicator component
 const PermissionIndicator = ({ value }: { value: boolean }) => {
@@ -727,13 +516,15 @@ const ViewProject = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [projectOptions, setProjectOptions] = useState<string[]>([]);
-  const [selectedProject, setSelectedProject] = useState("");
+  const [projectOptions, setProjectOptions] = useState<
+    { id: number; name: string }[]
+  >([]);
+  const [selectedProject, setSelectedProject] = useState<string>("");
   const [currentProjectData, setCurrentProjectData] = useState<Project | null>(
     null
   );
+  const [projectMembersRows, setProjectMembersRows] = useState<any[]>([]);
 
-  // Update current project data when selection changes
   useEffect(() => {
     const fetchUserProjects = async () => {
       const userId = localStorage.getItem("userid");
@@ -743,8 +534,8 @@ const ViewProject = () => {
       if (!user || !user.projects) return;
 
       const projectIds = user.projects;
-      var numberProjectIds: number[] = [];
-      var projectResponses: any = [];
+      let numberProjectIds: number[] = [];
+      let projectResponses: any[] = [];
 
       if (
         Array.isArray(projectIds) &&
@@ -756,7 +547,6 @@ const ViewProject = () => {
         numberProjectIds = (projectIds as ProjectMember[]).map(
           (pm) => pm.projectId
         );
-
         projectResponses = await Promise.all(
           numberProjectIds.map((id) => getProject(id))
         );
@@ -767,16 +557,69 @@ const ViewProject = () => {
       }
 
       const validProjects = projectResponses
-        .filter((p: any) => p.data !== null)
-        .map((p: any) => p.data!);
+        .filter((p) => p.data !== null)
+        .map((p) => p.data!);
 
-      setProjectOptions(validProjects.map((p: any) => p.name));
+      setProjectOptions(validProjects.map((p) => ({ id: p.id, name: p.name })));
     };
 
     fetchUserProjects();
   }, []);
 
-  // Define columns based on the ER diagram
+  useEffect(() => {
+    const fetchSelectedProject = async () => {
+      if (!selectedProject) return;
+
+      const projectEntry = projectOptions.find(
+        (p) => p.name === selectedProject
+      );
+
+      console.log("project entry=", projectEntry);
+      const projectId = projectEntry?.id;
+      console.log("id=" + projectId);
+      if (!projectId) return;
+
+      const { data: project } = await getProject(projectId);
+      console.log(project);
+      console.log("project.members (raw):", project!.members);
+
+      if (!project) return;
+
+      setCurrentProjectData(project);
+
+      if (!Array.isArray(project.members)) return;
+      console.log("members array:", project.members);
+      project.members.forEach((m, i) => {
+        console.log(`member[${i}]:`, m);
+      });
+      const memberDetails = await Promise.all(
+        project.members.map(async (member: number) => {
+          const { data: memberData } = await getProjectMember(member);
+          return memberData
+            ? {
+                id: memberData.id,
+                userid: memberData.userId,
+                memberid: memberData.id,
+                roleName: Array.isArray(memberData.roles)
+                  ? memberData.roles
+                      .map((r) => (typeof r === "object" ? r.name : r))
+                      .join(", ")
+                  : "",
+                can_read: memberData.canRead,
+                can_write: memberData.canWrite,
+                can_exec: memberData.canExec,
+                username: memberData.userId.toString(),
+              }
+            : null;
+        })
+      );
+
+      setProjectMembersRows(memberDetails.filter(Boolean));
+    };
+
+    fetchSelectedProject();
+  }, [selectedProject]);
+
   const columns: GridColDef[] = [
     {
       field: "id",
@@ -802,7 +645,7 @@ const ViewProject = () => {
       field: "roleName",
       headerName: "Role",
       flex: 1,
-      renderCell: (params: GridRenderCellParams) => {
+      renderCell: (params) => {
         const row = params.row;
         return (
           <Box
@@ -830,7 +673,7 @@ const ViewProject = () => {
       flex: 0.8,
       headerAlign: "center",
       align: "center",
-      renderCell: (params: GridRenderCellParams) => (
+      renderCell: (params) => (
         <PermissionIndicator value={Boolean(params.value)} />
       ),
     },
@@ -840,7 +683,7 @@ const ViewProject = () => {
       flex: 0.8,
       headerAlign: "center",
       align: "center",
-      renderCell: (params: GridRenderCellParams) => (
+      renderCell: (params) => (
         <PermissionIndicator value={Boolean(params.value)} />
       ),
     },
@@ -850,215 +693,26 @@ const ViewProject = () => {
       flex: 0.8,
       headerAlign: "center",
       align: "center",
-      renderCell: (params: GridRenderCellParams) => (
+      renderCell: (params) => (
         <PermissionIndicator value={Boolean(params.value)} />
       ),
     },
   ];
 
-  const filteredRows = selectedProject
-    ? mockProjectMembers.filter((row) => row.project === selectedProject)
-    : mockProjectMembers;
-
   return (
-    <Box
-      sx={{
-        height: "calc(100vh - 64px)",
-        overflowY: "auto",
-        p: { xs: 2, sm: 3, md: 4 },
-        backgroundColor:
-          theme.palette.mode === "light"
-            ? colors.primary[400]
-            : colors.primary[500],
-        color: colors.grey[100],
-      }}
-    >
-      <Box
-        sx={{
-          minHeight: "100%",
-          overflowY: "auto",
-          paddingTop: "64px",
-          backgroundColor:
-            theme.palette.mode === "light"
-              ? "colors.primary[900]"
-              : colors.primary[400],
-          p: { xs: 2, sm: 3, md: 4 },
-          boxSizing: "border-box",
-        }}
-      >
-        <Header
-          title="Project Management"
-          subtitle="Team Members and Project Information"
-        />
-
-        <Paper
-          elevation={3}
-          sx={{
-            m: { xs: "20px 0 0 0", md: "30px 0 0 0" },
-            height: "auto",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor:
-              theme.palette.mode === "light"
-                ? colors.primary[900]
-                : colors.primary[400],
-            color: colors.grey[100],
-            borderRadius: "8px",
-            overflow: "hidden",
-          }}
-        >
-          {/* Dropdown and Title */}
-          <Box
-            sx={{
-              p: 2,
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
-              flexWrap: "wrap",
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <Typography variant="h6" sx={{ mr: 2, color: colors.grey[100] }}>
-                Filter by Project:
-              </Typography>
-              {/* Using your existing DropDown component, but now with project names */}
-              <DropDown
-                value={selectedProject}
-                onSelect={setSelectedProject}
-                options={projectOptions}
-              />
-            </Box>
-            <Typography
-              variant="h5"
-              sx={{
-                color: colors.grey[100],
-                fontWeight: 600,
-                textTransform: "uppercase",
-                letterSpacing: "0.5px",
-                fontSize: "1.2rem",
-              }}
-            >
-              Project Members and Roles
-            </Typography>
-          </Box>
-
-          {/* Legend for role icons */}
-          <Box
-            sx={{
-              px: 2,
-              pb: 2,
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 2,
-            }}
-          >
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <AdminPanelSettingsIcon sx={{ color: "#ff9800", mr: 1 }} />
-              <Typography variant="body2" color={colors.grey[100]}>
-                Full Access (R/W/E)
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <EditIcon sx={{ color: "#2196f3", mr: 1 }} />
-              <Typography variant="body2" color={colors.grey[100]}>
-                Editor (R/W)
-              </Typography>
-            </Box>
-            <Box sx={{ display: "flex", alignItems: "center" }}>
-              <VisibilityIcon sx={{ color: "#9c27b0", mr: 1 }} />
-              <Typography variant="body2" color={colors.grey[100]}>
-                Viewer (R only)
-              </Typography>
-            </Box>
-          </Box>
-
-          {/* DataGrid Table */}
-          <Box sx={{ height: "65vh", width: "100%" }}>
-            <DataGrid
-              rows={filteredRows}
-              columns={columns}
-              slots={{ toolbar: GridToolbar }}
-              initialState={{
-                pagination: { paginationModel: { pageSize: 10, page: 0 } },
-                columns: {
-                  columnVisibilityModel: {
-                    id: false,
-                  },
-                },
-              }}
-              pageSizeOptions={[5, 10, 25, 50]}
-              sx={{
-                border: "none",
-                color: colors.grey[100],
-                "& .MuiDataGrid-columnHeaders": {
-                  backgroundColor:
-                    theme.palette.mode === "light"
-                      ? colors.primary[300]
-                      : colors.primary[500],
-                  color: colors.grey[100],
-                  borderBottom: `1px solid ${colors.primary[300]}`,
-                  textTransform: "uppercase",
-                  letterSpacing: "0.5px",
-                  fontSize: "0.85rem",
-                },
-                "& .MuiDataGrid-cell": {
-                  borderBottom: `1px solid ${colors.primary[300]}`,
-                  padding: "10px 15px",
-                  fontSize: "0.9rem",
-                  "&:focus, &:focus-within": { outline: "none" },
-                },
-                "& .MuiDataGrid-row": {
-                  transition: "background-color 0.2s ease",
-                  cursor: "default",
-                },
-                "& .MuiDataGrid-root": {
-                  "--DataGrid-row-hoveredBackground":
-                    theme.palette.mode === "light"
-                      ? colors.primary[100]
-                      : colors.primary[800],
-                },
-
-                "& .MuiDataGrid-virtualScroller": {
-                  backgroundColor: colors.primary[400],
-                },
-                "& .MuiDataGrid-footerContainer": {
-                  borderTop: `1px solid ${colors.primary[300]}`,
-                  backgroundColor: colors.blueAccent[700],
-                  color: colors.grey[100],
-                },
-                "& .MuiDataGrid-toolbarContainer": {
-                  padding: "8px 16px",
-                  backgroundColor: colors.blueAccent[800],
-                  "& .MuiButton-root": {
-                    color: colors.grey[100],
-                  },
-                },
-              }}
-            />
-          </Box>
-        </Paper>
-
-        {/* Project Details Section */}
-        <Paper
-          elevation={3}
-          sx={{
-            mt: 4,
-            mb: 4,
-            p: 3,
-            backgroundColor:
-              theme.palette.mode === "light"
-                ? colors.primary[900]
-                : colors.primary[400],
-            color: colors.grey[100],
-            borderRadius: "8px",
-            display: "flex",
-            flexDirection: "column",
-          }}
-        >
-          <ProjectDetails project={currentProjectData} />
-        </Paper>
-      </Box>
+    <Box>
+      <DropDown
+        value={selectedProject}
+        onSelect={setSelectedProject}
+        options={projectOptions.map((p) => p.name)}
+      />
+      <DataGrid
+        rows={projectMembersRows}
+        columns={columns}
+        autoHeight
+        paginationModel={{ pageSize: 10, page: 0 }}
+        pageSizeOptions={[5, 10, 25, 50]}
+      />
     </Box>
   );
 };

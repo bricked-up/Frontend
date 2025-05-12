@@ -24,7 +24,7 @@ export type Project = {
   budget: number;
   charter: string;
   archived: boolean;
-  members?: ProjectMember[];
+  members?: number[];
   issues?: Issue[];
   tags?: Tag[];
   roles?: ProjectRole[]; // Roles defined at the project level
