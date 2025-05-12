@@ -49,60 +49,63 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
 
   const navigate = useNavigate();
 
+  // Adjust viewProfile function to go to the logged-in user's profile
   const viewProfile = (): void => {
-    navigate("/user/$(user.id)/aboutUser"); 
-  };
+  if (rawUser && rawUser.id) {
+    navigate(`/user/${rawUser.id}/aboutUser`);
+  } else {
+    console.error("User data is not available. Cannot navigate to profile.");
+  }
+};
 
- useEffect(() => {
-  const delayDebounce = setTimeout(async () => {
-    console.log("[Search effect triggered] query:", searchQuery);
-    
-    if (searchQuery.trim() === "") {
-      console.log("Query empty after trim. Clearing suggestions.");
-      setUserSuggestions([]);
-      return;
-    }
 
-    try {
-      const result = await getAllUsers();
-      console.log("Fetched user IDs:", result.data);
-
-      if (!Array.isArray(result.data)) {
-        navigate("/500");
+  useEffect(() => {
+    const delayDebounce = setTimeout(async () => {
+      console.log("[Search effect triggered] query:", searchQuery);
+      
+      if (searchQuery.trim() === "") {
+        console.log("Query empty after trim. Clearing suggestions.");
+        setUserSuggestions([]);
         return;
       }
 
-      const fullUsers: User[] = [];
+      try {
+        const result = await getAllUsers();
+        console.log("Fetched user IDs:", result.data);
 
-      for (const userId of result.data) {
-        try {
-          const userRes = await getUser(userId);
-          if (userRes?.data) {
-            fullUsers.push(userRes.data);
-          }
-        } catch (err) {
-          console.error(`Error getting user ${userId}`, err);
+        if (!Array.isArray(result.data)) {
+          navigate("/500");
+          return;
         }
+
+        const fullUsers: User[] = [];
+
+        for (const userId of result.data) {
+          try {
+            const userRes = await getUser(userId);
+            if (userRes?.data) {
+              fullUsers.push(userRes.data);
+            }
+          } catch (err) {
+            console.error(`Error getting user ${userId}`, err);
+          }
+        }
+
+        let filtered = fullUsers.filter((user) => {
+          return user.name.toLowerCase().includes(searchQuery.toLowerCase());
+        });
+
+        setUserSuggestions(filtered);
+      } catch (error) {
+        console.error("Error in search:", error);
+        setUserSuggestions([]);
       }
+    }, 300);
 
+    return () => clearTimeout(delayDebounce);
+  }, [searchQuery, navigate]);
 
-      let filtered = fullUsers.filter((user) => {
-        return user.name.toLowerCase().includes(searchQuery.toLowerCase());
-      });
-
-      setUserSuggestions(filtered);
-    } catch (error) {
-      console.error("Error in search:", error);
-      setUserSuggestions([]);
-    }
-  }, 300);
-
-  return () => clearTimeout(delayDebounce);
-}, [searchQuery, navigate]);
-
-  
-   console.log("userSuggestions:", userSuggestions[0]);
-   
+  console.log("userSuggestions:", userSuggestions[0]);
 
   return (
     <Box
@@ -195,7 +198,7 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           )}
         </IconButton>
 
-        <IconButton>
+        <IconButton onClick={ () => { navigate("/activity",  {replace: true}) } }>
           <NotificationsOutlinedIcon />
         </IconButton>
 
@@ -208,34 +211,12 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           onMouseEnter={() => setShowLogout(true)}
           onMouseLeave={() => setShowLogout(false)}
         >
-          <IconButton aria-label="Profile Icon">
-            <PersonOutlinedIcon />
+          <IconButton aria-label="Profile Icon" onClick={() => {
+            const userid = localStorage.getItem("userid");
+            navigate(`/user/${userid}/aboutUser`, {replace: true});
+          }}>
+           <PersonOutlinedIcon />
           </IconButton>
-
-          {showLogout && (
-            <Box
-              position="absolute"
-              top="40px"
-              right="0"
-              p={0}
-              border="none"
-              bgcolor="transparent"
-            >
-              <button
-                onClick={viewProfile}
-                style={{
-                  backgroundColor: "red",
-                  color: "white",
-                  padding: "0.5rem 1rem",
-                  border: "none",
-                  cursor: "pointer",
-                  borderRadius: "4px",
-                }}
-              >
-                View Profile
-              </button>
-            </Box>
-          )}
         </Box>
       </Box>
     </Box>

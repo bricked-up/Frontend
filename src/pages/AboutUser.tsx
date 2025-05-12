@@ -6,24 +6,38 @@ import {
   Paper,
   useTheme,
   Divider,
-  CircularProgress, // Added for loading states of details
-  Alert, // Added for error display of details
+  CircularProgress,
+  Alert,
+  TextField,
+  IconButton,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { useNavigate, useParams } from "react-router-dom";
 import { useUser } from "../hooks/UserContext";
 import LoadingPage from "./LoadingPage";
-import Form from "../Components/AccountPage/Form";
 import { motion } from "framer-motion";
-import { ImagePlus } from "lucide-react";
-import { getUser, getOrg, getProject } from "../utils/getters.utils"; // Ensure getOrg and getProject are correctly imported
+import {
+  ImagePlus,
+  LogOut,
+  CheckCircle,
+  XCircle,
+  Pencil,
+  Save,
+  Trash2,
+} from "lucide-react";
+import { getUser, getOrg, getProject } from "../utils/getters.utils";
 import {
   User,
   OrgMember,
   ProjectMember,
-  Organization as OrgDetailsType, // Renamed to avoid conflict if OrgMember is different
-  Project as ProjectDetailsType, // Renamed to avoid conflict
-  Issue, // Assuming you might want to fetch Issue details later
+  Organization as OrgDetailsType,
+  Project as ProjectDetailsType,
 } from "../utils/types";
+import { updateUser } from "../utils/update.utils";
 
 // Helper function to check if an item is an OrgMember (and not a number)
 function isOrgMember(item: any): item is OrgMember {
@@ -42,15 +56,58 @@ function isProjectMember(item: any): item is ProjectMember {
   );
 }
 
+/**
+ * Deletes a user based on their ID.
+ * Returns 200 on success, or appropriate error code.
+ *
+ * @example
+ * const status = await deleteUserData(userId);
+ * if (status === 200) { console.log("User deleted successfully"); }
+ */
+export const deleteUserData = async (userId: string): Promise<number> => {
+  try {
+    const params = new URLSearchParams();
+    params.append("userId", userId);
+    const response = await fetch("/delete", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
+      },
+      body: params,
+    });
+    return response.status;
+  } catch (error: any) {
+    console.log(error.message);
+    return 500;
+  }
+};
+
+// Helper function for logout
+const handleLogout = () => {
+  // Remove user.id and session.id from localStorage
+  localStorage.removeItem("userid");
+  localStorage.removeItem("sessionid");
+
+  // Reload the page to reset application state
+  window.location.href = "/";
+};
+
 const AboutUser: React.FC = () => {
+  const userid = localStorage.getItem("userid");
+
   const navigate = useNavigate();
   const theme = useTheme();
   const { user, setUser } = useUser();
-  const { userId } = useParams<{ userId: string }>(); // Ensure userId is typed
+  const { userId } = useParams<{ userId: string }>();
   const [viewedUser, setViewedUser] = useState<User | null>(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [isOwnProfile, setIsOwnProfile] = useState(false);
+  const [isOwnProfile] = useState(userid === userId);
   const confirmationShown = useRef(false);
+  const [newName, setNewName] = useState<String>();
+
+  // State for editing username
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [editedUsername, setEditedUsername] = useState("");
 
   // State for fetched organization and project details
   const [organizationDetails, setOrganizationDetails] = useState<
@@ -62,7 +119,28 @@ const AboutUser: React.FC = () => {
   const [isLoadingDetails, setIsLoadingDetails] = useState(false);
   const [detailsError, setDetailsError] = useState<string | null>(null);
 
+  // State for dialog confirmations
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [notificationDialog, setNotificationDialog] = useState({
+    open: false,
+    title: "",
+    message: "",
+  });
+
   const isDark = theme.palette.mode === "dark";
+
+  // Text color based on theme to ensure proper contrast - black in light mode, white in dark mode
+  const textColor = isDark ? "white" : "black";
+  const secondaryTextColor = isDark
+    ? "rgba(255, 255, 255, 0.7)"
+    : "rgba(0, 0, 0, 0.7)";
+
+  // Icon color based on theme
+  const iconColor = isDark ? "white" : "black";
+
+  // Text color for the text field based on theme
+  const textFieldTextColor = isDark ? "white" : "black";
 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -74,7 +152,6 @@ const AboutUser: React.FC = () => {
         if (confirmed) {
           navigate("/");
         }
-        // setIsLoaded(true); // Don't set isLoaded true here, let fetchAndSetUser handle it
       }
     }, 5000); // 5 seconds timeout
 
@@ -120,7 +197,7 @@ const AboutUser: React.FC = () => {
 
         console.log("User data fetched:", fetchedUser);
         setViewedUser(fetchedUser);
-        setIsOwnProfile(!!user && fetchedUser.id === user.id); // Ensure user is not null
+        setEditedUsername(fetchedUser.name || "");
 
         // Now fetch organization and project details
         setIsLoadingDetails(true);
@@ -148,22 +225,9 @@ const AboutUser: React.FC = () => {
             setOrganizationDetails(successfulOrgs);
             console.log("Fetched organization details:", successfulOrgs);
           } else if (isOrgMember(fetchedUser.organizations[0])) {
-            // This case implies that getUser already returned full OrgMember details.
-            // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
-            // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
-            // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
-            // The current map in the JSX expects OrgMember structure if this path is taken.
-            // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
-            // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
             console.warn(
               "Organizations are already objects, type check needed for mapping or further fetching."
             );
-            // If `WorkspaceedUser.organizations` are `OrgMember[]` and you need `OrgDetailsType[]`
-            // you might need to iterate and call `getOrg(org.orgId)` for each.
-            // For simplicity, if your JSX for orgs can work with `OrgMember[]`, you can cast it:
-            // setOrganizationDetails(fetchedUser.organizations as OrgDetailsType[]); // This might be incorrect if types differ
-            // For now, let's assume if it's not numbers, the current JSX is expecting OrgMember[] which is already there.
-            // So, no separate state update for 'organizationDetails' if 'viewedUser.organizations' are already full objects.
           }
         } else {
           setOrganizationDetails([]);
@@ -194,8 +258,6 @@ const AboutUser: React.FC = () => {
             console.warn(
               "Projects are already objects, type check needed for mapping or further fetching."
             );
-            // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
-            // the JSX mapping needs to handle ProjectMember[] directly.
           }
         } else {
           setProjectDetails([]);
@@ -209,13 +271,6 @@ const AboutUser: React.FC = () => {
         setDetailsError("Failed to load associated details.");
         if (!confirmationShown.current) {
           confirmationShown.current = true;
-          // const confirmed = window.confirm( // Avoid window.confirm in catch block of async
-          // "Error loading user data. Click OK to return to home page."
-          // );
-          // if (confirmed) {
-          // navigate("/");
-          // }
-          // Better to show an error message on the page
         }
         setIsLoadingDetails(false);
         setIsLoaded(true); // Still loaded, but with an error
@@ -228,7 +283,23 @@ const AboutUser: React.FC = () => {
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [userId, user, navigate]); // Removed isLoaded from dependencies to avoid re-triggering fetch unnecessarily
+  }, [userId, user, navigate]); // end of useEffect
+
+  // Show notification dialog instead of alert
+  const showNotification = (title: string, message: string) => {
+    setNotificationDialog({
+      open: true,
+      title,
+      message,
+    });
+  };
+
+  const handleCloseNotification = () => {
+    setNotificationDialog({
+      ...notificationDialog,
+      open: false,
+    });
+  };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (!isOwnProfile || !viewedUser) return;
@@ -244,8 +315,105 @@ const AboutUser: React.FC = () => {
       // and update the user's avatar URL in the database.
       // e.g., sendUserData({...viewedUser, avatarFile: file}, "update-user-avatar");
       console.log("New avatar selected (locally):", imageUrl);
-      alert("Avatar updated locally. Backend integration for upload needed.");
+      showNotification(
+        "Avatar Updated",
+        "Avatar updated, please save to apply changes."
+      );
     }
+  };
+
+  const handleEditUsername = () => {
+    setIsEditingUsername(true);
+  };
+
+  const handleSaveUsername = async () => {
+    if (viewedUser && editedUsername.trim() !== "") {
+      // Update local state
+      const updatedUser = { ...viewedUser, displayName: editedUsername };
+      setViewedUser(updatedUser);
+      setNewName(editedUsername);
+
+      // Also update global user context if it's the same user
+      if (user && user.id === viewedUser.id) {
+      }
+
+      const sessionid = localStorage.getItem("sessionid");
+
+      if (!sessionid) {
+        navigate("/500");
+      }
+
+      console.log("Username updated locally:", editedUsername);
+      const result = await updateUser(Number(sessionid), {
+        name: editedUsername,
+        email: viewedUser.email,
+        avatar: viewedUser.avatar,
+        password: viewedUser.password,
+      } as User);
+
+      if (result) {
+        navigate("/500");
+      }
+
+      setIsEditingUsername(false);
+    } else {
+      // Reset to current username if empty
+      setEditedUsername(viewedUser?.name || "");
+      setIsEditingUsername(false);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    // This would handle the complete profile update to backend
+  };
+
+  // Logout dialog handlers
+  const handleLogoutClick = () => {
+    setLogoutDialogOpen(true);
+  };
+
+  const handleLogoutConfirm = () => {
+    setLogoutDialogOpen(false);
+    handleLogout();
+  };
+
+  const handleLogoutCancel = () => {
+    setLogoutDialogOpen(false);
+  };
+
+  // Delete user handlers
+  const handleDeleteClick = () => {
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (userId) {
+      try {
+        const status = await deleteUserData(userId);
+        if (status === 200) {
+          showNotification("Success", "User account deleted successfully.");
+          // Remove user data from local storage and redirect
+          localStorage.removeItem("userid");
+          localStorage.removeItem("sessionid");
+          setTimeout(() => {
+            window.location.href = "/";
+          }, 2000);
+        } else {
+          window.location.href = "/";
+        }
+      } catch (error) {
+        console.error("Error deleting user:", error);
+        showNotification(
+          "Error",
+          "An unexpected error occurred while deleting account."
+        );
+      }
+    }
+    setDeleteDialogOpen(false);
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteDialogOpen(false);
   };
 
   if (!isLoaded && !viewedUser) return <LoadingPage />; // Show loading page until initial fetch attempt is done
@@ -259,7 +427,7 @@ const AboutUser: React.FC = () => {
         minHeight="80vh"
       >
         <Paper elevation={3} sx={{ p: 3 }}>
-          <Typography variant="h6">
+          <Typography variant="h6" color={textColor}>
             User profile could not be loaded or does not exist.
           </Typography>
           <Button onClick={() => navigate("/")} sx={{ mt: 2 }}>
@@ -287,12 +455,16 @@ const AboutUser: React.FC = () => {
       if (isOrgMember(viewedUser.organizations[0])) {
         return (viewedUser.organizations as OrgMember[]).map((org, index) => (
           <Box key={`org-member-${org.id}-${index}`} sx={{ mb: 1 }}>
-            <Typography>
+            <Typography color={textColor}>
               Organization ID (from member record): {org.orgId} — Membership ID:{" "}
               {org.id}
             </Typography>
             {org.roles && org.roles.length > 0 && (
-              <Typography variant="body2" sx={{ ml: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{ ml: 2 }}
+                color={secondaryTextColor}
+              >
                 Roles:{" "}
                 {org.roles
                   .map((role) =>
@@ -311,9 +483,14 @@ const AboutUser: React.FC = () => {
         return organizationDetails.map((orgDetail, index) => (
           <Box
             key={`org-detail-${orgDetail.id}-${index}`}
-            sx={{ mb: 1, p: 1, border: "1px solid #eee", borderRadius: 1 }}
+            sx={{
+              mb: 1,
+              p: 1,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 1,
+            }}
           >
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" color={textColor}>
               <strong>{orgDetail.name}</strong> (ID: {orgDetail.id})
             </Typography>
             {/* Here you might want to show roles if you fetch OrgMember entries associated with this viewedUser and orgDetail.id */}
@@ -323,9 +500,7 @@ const AboutUser: React.FC = () => {
       }
     }
     return (
-      <Typography>
-        No organization memberships found or details not loaded.
-      </Typography>
+      <Typography color={textColor}>No organizations found :( </Typography>
     );
   };
 
@@ -343,12 +518,16 @@ const AboutUser: React.FC = () => {
       if (isProjectMember(viewedUser.projects[0])) {
         return (viewedUser.projects as ProjectMember[]).map((proj, index) => (
           <Box key={`proj-member-${proj.id}-${index}`} sx={{ mb: 1 }}>
-            <Typography>
+            <Typography color={textColor}>
               Project ID (from member record): {proj.projectId} — Membership ID:{" "}
               {proj.id}
             </Typography>
             {proj.roles && proj.roles.length > 0 && (
-              <Typography variant="body2" sx={{ ml: 2 }}>
+              <Typography
+                variant="body2"
+                sx={{ ml: 2 }}
+                color={secondaryTextColor}
+              >
                 Roles:{" "}
                 {proj.roles
                   .map((role) =>
@@ -367,26 +546,27 @@ const AboutUser: React.FC = () => {
         return projectDetails.map((projDetail, index) => (
           <Box
             key={`proj-detail-${projDetail.id}-${index}`}
-            sx={{ mb: 1, p: 1, border: "1px solid #eee", borderRadius: 1 }}
+            sx={{
+              mb: 1,
+              p: 1,
+              border: `1px solid ${theme.palette.divider}`,
+              borderRadius: 1,
+            }}
           >
-            <Typography variant="subtitle1">
+            <Typography variant="subtitle1" color={textColor}>
               <strong>{projDetail.name}</strong> (ID: {projDetail.id})
             </Typography>
-            <Typography variant="body2">
+            <Typography variant="body2" color={secondaryTextColor}>
               Budget: ${projDetail.budget}
             </Typography>
-            <Typography variant="caption">
+            <Typography variant="caption" color={secondaryTextColor}>
               Charter: {projDetail.charter || "N/A"}
             </Typography>
           </Box>
         ));
       }
     }
-    return (
-      <Typography>
-        No project memberships found or details not loaded.
-      </Typography>
-    );
+    return <Typography color={textColor}>No projects found :( </Typography>;
   };
 
   return (
@@ -426,6 +606,7 @@ const AboutUser: React.FC = () => {
               : "0 8px 20px rgba(0,194,255,0.2)",
             overflowY: "auto",
             maxHeight: "calc(100vh - 100px)", // Ensure it doesn't go off-screen
+            position: "relative", // Add position relative for absolute positioned elements
           }}
         >
           <motion.div
@@ -438,7 +619,7 @@ const AboutUser: React.FC = () => {
                 src={
                   viewedUser.avatar ||
                   `https://avatar.iran.liara.run/username?username=${encodeURIComponent(
-                    viewedUser.displayName || viewedUser.name || "default"
+                    viewedUser.name || "default"
                   )}`
                 }
                 alt="Profile"
@@ -457,13 +638,13 @@ const AboutUser: React.FC = () => {
                   <Button
                     component="label"
                     variant="outlined"
-                    startIcon={<ImagePlus size={18} />} // Adjusted icon size
+                    startIcon={<ImagePlus size={18} color={iconColor} />} // Using dynamic iconColor
                     sx={{
                       mt: 1,
                       borderRadius: "8px",
                       textTransform: "none",
                       fontWeight: 600, // Slightly bolder
-                      color: theme.palette.primary.main,
+                      color: textColor, // Using dynamic textColor
                       borderColor: theme.palette.primary.main,
                       py: 0.8, // Padding adjustment
                       px: 2,
@@ -483,38 +664,111 @@ const AboutUser: React.FC = () => {
                   </Button>
                 </Box>
               )}
-              <Typography
-                variant="h4"
-                fontWeight={700}
-                sx={{ mt: 2, color: theme.palette.text.primary }}
+              <Box
+                sx={{
+                  mt: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
               >
-                {" "}
-                {/* Adjusted h variant */}
-                {viewedUser.displayName || viewedUser.name}
-              </Typography>
-              <Typography variant="body1" color="textSecondary">
+                {isEditingUsername && isOwnProfile ? (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <TextField
+                      value={editedUsername}
+                      onChange={(e) => setEditedUsername(e.target.value)}
+                      variant="standard"
+                      size="small"
+                      sx={{
+                        mr: 1,
+                        "& .MuiInputBase-input": {
+                          color: textFieldTextColor,
+                        },
+                        "& .MuiInput-underline:before": {
+                          borderBottomColor: isDark
+                            ? "rgba(255, 255, 255, 0.3)"
+                            : "rgba(0, 0, 0, 0.3)",
+                        },
+                        "& .MuiInput-underline:hover:not(.Mui-disabled):before":
+                          {
+                            borderBottomColor: theme.palette.primary.main,
+                          },
+                        "& .MuiInput-underline:after": {
+                          borderBottomColor: theme.palette.primary.main,
+                        },
+                      }}
+                    />
+                    <IconButton
+                      onClick={handleSaveUsername}
+                      color="primary"
+                      size="small"
+                    >
+                      <Save size={20} />
+                    </IconButton>
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Typography variant="h4" fontWeight={700} color={textColor}>
+                      {viewedUser.name}
+                    </Typography>
+                    {isOwnProfile && (
+                      <IconButton
+                        onClick={handleEditUsername}
+                        size="small"
+                        sx={{ ml: 1 }}
+                      >
+                        <Pencil size={18} color={iconColor} />
+                      </IconButton>
+                    )}
+                  </Box>
+                )}
+              </Box>
+              <Typography variant="body1" color={secondaryTextColor}>
                 {viewedUser.email}
-              </Typography>{" "}
-              {/* Adjusted variant */}
+              </Typography>
             </Box>
 
             <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                color={textColor}
+              >
                 Verification
               </Typography>
-              <Typography variant="body1">
-                {" "}
-                {/* Adjusted variant */}
-                {viewedUser.verified ? "Email Verified ✅" : "Not Verified ❌"}
-              </Typography>
+              <Box display="flex" justifyContent="center" width="100%" py={1}>
+                {viewedUser.verified ? (
+                  <CheckCircle size={24} color={theme.palette.success.main} />
+                ) : (
+                  <XCircle size={24} color={theme.palette.error.main} />
+                )}
+              </Box>
             </Box>
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                color={textColor}
+              >
                 Organizations
               </Typography>
               {detailsError && !isLoadingDetails && (
@@ -528,7 +782,12 @@ const AboutUser: React.FC = () => {
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
             <Box sx={{ mb: 2 }}>
-              <Typography variant="h6" fontWeight="600" gutterBottom>
+              <Typography
+                variant="h6"
+                fontWeight="600"
+                gutterBottom
+                color={textColor}
+              >
                 Projects
               </Typography>
               {detailsError && !isLoadingDetails && (
@@ -539,96 +798,220 @@ const AboutUser: React.FC = () => {
               {renderProjects()}
             </Box>
 
+            {/* Actions Section */}
             {isOwnProfile && (
-              <Box mt={4}>
-                {" "}
-                {/* Increased margin */}
-                <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
-                <Typography variant="h5" fontWeight="bold" gutterBottom>
-                  {" "}
-                  {/* Adjusted variant */}
-                  Edit Your Profile
-                </Typography>
-                <Form />
-              </Box>
+              <>
+                <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
+
+                {/* Buttons in the same row */}
+                <Box
+                  sx={{
+                    display: "flex",
+                    justifyContent: "space-between", // Place buttons at the ends
+                    width: "100%",
+                    mt: 2,
+                    mb: 4,
+                  }}
+                >
+                  {/* Update Profile Button - Left */}
+                  <Button
+                    variant="contained"
+                    startIcon={<Save size={20} />}
+                    onClick={handleSaveUsername}
+                    sx={{
+                      backgroundColor: theme.palette.primary.main, // Blue color
+                      color: "white",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: theme.palette.primary.dark,
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      boxShadow: `0 4px 10px ${theme.palette.primary.main}40`,
+                      flex: 1, // Take equal space
+                      maxWidth: "34%", // Slightly wider
+                    }}
+                  >
+                    Update Profile
+                  </Button>
+
+                  {/* Logout Button - Middle */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<LogOut size={20} />}
+                    onClick={handleLogoutClick}
+                    sx={{
+                      color: "#f44336", // Red color
+                      borderColor: "#f44336",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: "rgba(244, 67, 54, 0.08)",
+                        borderColor: "#d32f2f",
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      mx: 2, // margin on both sides
+                      flex: 1, // Take equal space
+                      maxWidth: "30%", // Limit width
+                    }}
+                  >
+                    Logout
+                  </Button>
+
+                  {/* Delete User Button - Right */}
+                  <Button
+                    variant="outlined"
+                    startIcon={<Trash2 size={20} />}
+                    onClick={handleDeleteClick}
+                    sx={{
+                      color: "#757575", // Gray color
+                      borderColor: "#757575",
+                      textTransform: "none",
+                      fontWeight: 600,
+                      fontSize: "1rem",
+                      "&:hover": {
+                        backgroundColor: "rgba(117, 117, 117, 0.08)",
+                        borderColor: "#616161",
+                      },
+                      borderRadius: "8px",
+                      py: 1.5,
+                      px: 3,
+                      flex: 1, // Take equal space
+                      maxWidth: "30%", // Limit width
+                    }}
+                  >
+                    Delete
+                  </Button>
+                </Box>
+              </>
             )}
           </motion.div>
         </Paper>
       </Box>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog
+        open={logoutDialogOpen}
+        onClose={handleLogoutCancel}
+        aria-labelledby="logout-dialog-title"
+        aria-describedby="logout-dialog-description"
+      >
+        <DialogTitle
+          id="logout-dialog-title"
+          sx={{ color: theme.palette.mode === "dark" ? "#fff" : "inherit" }}
+        >
+          {"Are you sure that you want to logout?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="logout-dialog-description"
+            sx={{
+              color: theme.palette.mode === "dark" ? "#e0e0e0" : "inherit",
+            }}
+          >
+            You will need to log in again to access your account.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleLogoutCancel} color="primary">
+            No
+          </Button>
+          <Button onClick={handleLogoutConfirm} color="error" autoFocus>
+            Yes
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={handleDeleteCancel}
+        aria-labelledby="delete-dialog-title"
+        aria-describedby="delete-dialog-description"
+      >
+        <DialogTitle
+          id="delete-dialog-title"
+          sx={{ color: theme.palette.mode === "dark" ? "#fff" : "inherit" }}
+        >
+          {"Are you sure you want to delete your account?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            id="delete-dialog-description"
+            sx={{
+              color: theme.palette.mode === "dark" ? "#e0e0e0" : "inherit",
+            }}
+          >
+            This action cannot be undone. All your data will be permanently
+            removed.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDeleteCancel} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" autoFocus>
+            Delete Account
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Notification Dialog */}
+      <Dialog
+        open={notificationDialog.open}
+        onClose={handleCloseNotification}
+        aria-labelledby="notification-dialog-title"
+      >
+        <DialogTitle
+          id="notification-dialog-title"
+          sx={{ color: theme.palette.mode === "dark" ? "#fff" : "inherit" }}
+        >
+          {notificationDialog.title}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText
+            sx={{
+              color: theme.palette.mode === "dark" ? "#e0e0e0" : "inherit",
+            }}
+          >
+            {notificationDialog.message}
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseNotification} color="primary">
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };
 
 export default AboutUser;
 
-/**
- * Fetches and parses user data by user ID.
- * Wraps the getUser API call and maps response to expected structure.
- *
- * @param userId - ID of the user to fetch.
- * @returns Parsed user object or null if not found or error.
- */
-export const getParsedUserById = async (
-  userId: number
-): Promise<User | null> => {
-  console.log(`getParsedUserById called for ID: ${userId}`);
-  if (isNaN(userId)) {
-    console.error("getParsedUserById received NaN for userId");
-    return null;
-  }
+async function getParsedUserById(numericUserId: number): Promise<User | null> {
   try {
-    const result = await getUser(userId);
-    console.log(`getUser result for ID ${userId}:`, result);
-
-    if (
-      !result ||
-      result.status !== 200 ||
-      !result.data ||
-      Object.keys(result.data).length === 0
-    ) {
-      if (result && result.status === 204) {
-        // Specifically handle 204 No Content as user not found
-        console.warn(`User with ID ${userId} not found (204 No Content).`);
-      } else if (
-        result &&
-        result.data &&
-        Object.keys(result.data).length === 0 &&
-        result.status === 200
-      ) {
-        // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
-        console.warn(
-          `User with ID ${userId} not found (200 with empty data object).`
-        );
-      } else {
-        console.error(
-          `Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`
-        );
-      }
-      return null;
+    const response = await getUser(numericUserId);
+    if (response.status === 200 && response.data) {
+      return {
+        id: response.data.id,
+        name: response.data.name,
+        email: response.data.email,
+        avatar: response.data.avatar,
+        verified: response.data.verified,
+        organizations: response.data.organizations || [],
+        projects: response.data.projects || [],
+      };
     }
-
-    const userData = result.data as User; // Assume data matches User type if status is 200 and data is present
-
-    // Ensure default values for potentially missing fields to match User type strictly
-    // The `getUser` should ideally return data that already conforms to `User` or needs minimal parsing here.
-    return {
-      id: userData.id,
-      displayName: userData.displayName || userData.name || "", // Fallback for displayName
-      email: userData.email || "",
-      name: userData.name || "",
-      password: userData.password, // Password should ideally not be part of this response
-      verified: userData.verified ?? false,
-      avatar: userData.avatar || null, // Ensure it can be null as per User type
-      // These will be arrays of numbers if `getUser` returns IDs, or arrays of objects if it returns full details.
-      // The component logic above will handle fetching details if they are IDs.
-      organizations: userData.organizations || [],
-      projects: userData.projects || [],
-      issues: userData.issues || [], // Added issues
-      sessions: userData.sessions || [], // Added sessions
-      verifyId: userData.verifyId === undefined ? null : userData.verifyId, // ensure it can be null
-    };
+    return null;
   } catch (error) {
-    console.error(`Error in getParsedUserById for ID ${userId}:`, error);
+    console.error("Error fetching user:", error);
     return null;
   }
-};
+}

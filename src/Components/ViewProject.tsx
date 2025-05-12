@@ -156,7 +156,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
             <CardContent>
               <Typography
                 variant="h6"
-                color={colors.greenAccent[500]}
+                color={colors.blueAccent[500]}
                 fontWeight="600"
                 mb={2}
               >
@@ -165,7 +165,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
 
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <AccountTreeIcon
-                  sx={{ color: colors.greenAccent[500], mr: 1 }}
+                  sx={{ color: colors.blueAccent[500], mr: 1 }}
                 />
                 <Typography variant="body2" color={colors.grey[100]}>
                   Organization ID: {project.orgid}
@@ -174,7 +174,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
 
               <Box sx={{ display: "flex", alignItems: "center", mb: 1 }}>
                 <AttachMoneyIcon
-                  sx={{ color: colors.greenAccent[500], mr: 1 }}
+                  sx={{ color: colors.blueAccent[500], mr: 1 }}
                 />
                 <Typography variant="body2" color={colors.grey[100]}>
                   Budget: ${project.budget.toLocaleString()}
@@ -222,7 +222,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
             <CardContent>
               <Typography
                 variant="h6"
-                color={colors.greenAccent[500]}
+                color={colors.blueAccent[500]}
                 fontWeight="600"
                 mb={2}
               >
@@ -242,7 +242,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
                   </Typography>
                   <Typography
                     variant="body2"
-                    color={colors.greenAccent[500]}
+                    color={colors.blueAccent[500]}
                     fontWeight="600"
                   >
                     {project.progress}%
@@ -276,7 +276,7 @@ const ProjectDetails = ({ project }: { project: any }) => {
                 </Typography>
                 <Typography
                   variant="body2"
-                  color={colors.greenAccent[500]}
+                  color={colors.blueAccent[500]}
                   fontWeight="600"
                 >
                   {project.completedIssues}/{project.issueCount}

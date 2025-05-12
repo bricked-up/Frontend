@@ -141,7 +141,7 @@ export const themeSettings = (mode: "light" | "dark") => {
             main: colors.primary[500],
           },
           secondary: {
-            main: colors.greenAccent[500],
+            main: colors.blueAccent[500],
           },
           contrast: {
             main: "#f0f0f0",
@@ -165,7 +165,7 @@ export const themeSettings = (mode: "light" | "dark") => {
             main: colors.primary[100],
           },
           secondary: {
-            main: colors.greenAccent[500],
+            main: colors.blueAccent[500],
           },
           contrast: {
             main: "#333333",

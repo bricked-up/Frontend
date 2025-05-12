@@ -137,8 +137,8 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
         <CardActions sx={{ justifyContent: 'flex-end', pt: 1 }}>
           <Tooltip title="Edit Organization" sx={{color:
               theme.palette.mode === "dark"
-                ? colors.greenAccent[100]
-                : colors.greenAccent[100],}}>
+                ? colors.blueAccent[100]
+                : colors.blueAccent[100],}}>
             <IconButton
               size="small"
               onClick={e => {

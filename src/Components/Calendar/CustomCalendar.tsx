@@ -39,9 +39,9 @@ import "react-big-calendar/lib/css/react-big-calendar.css";
 import "../../css/CalendarStyles.css"; // Assuming you have custom styles here
 import { ArrowBack, ArrowForward, Today, Settings } from "@mui/icons-material";
 // Import Issue type and the corrected data
-import { Issue } from "../../utils/types"; // Adjust path if needed
-import { mockActivityData } from "../../utils/mock_Activity_Calendar_Data"; // Adjust path if needed
+import { Issue, Project } from "../../utils/types"; // Adjust path if needed
 import { tokens } from "../../theme";
+import { getUser, getIssue } from "../../utils/getters.utils";
 
 // Setup localization using date-fns locales
 const locales = {
@@ -61,21 +61,10 @@ type CalendarEvent = {
   title: string;
   start: Date;
   end: Date;
+  allDay: boolean;
   resource: Issue; // Keep the original Issue data
 };
 
-// Map mock data (Issue[]) to CalendarEvent[]
-const events: CalendarEvent[] = mockActivityData
-  .filter((item): item is Issue & { completed: Date } => !!item.completed)
-  .map(
-    (item): CalendarEvent => ({
-      id: item.id,
-      title: item.title,
-      start: item.completed,
-      end: item.completed,
-      resource: item,
-    })
-  );
 
 // Type-safe keys for settings
 type ThresholdKey = "urgentThreshold" | "upcomingThreshold";
@@ -107,7 +96,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
 
   // Define the views you want to allow explicitly
   const allowedViews: View[] = useMemo(
-    () => [Views.MONTH, Views.WEEK, Views.DAY],
+    () => [Views.MONTH],
     []
   );
 
@@ -190,7 +179,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
       <Typography
         variant={isMobile ? "subtitle1" : "h6"}
         sx={{
-          color: theme.palette.text.primary, // Use theme text color
+          color: theme.palette.text.secondary, // Use theme text color
           fontWeight: 600,
           textAlign: "center",
           flexGrow: 1, // Allow label to take available space
@@ -267,6 +256,9 @@ const CustomCalendar: React.FC = () => {
   const [showSettings, setShowSettings] = useState(false); // State for settings panel visibility
   const colors = tokens(theme.palette.mode);
 
+  const userid = Number(localStorage.getItem("userid"));
+  const [issues, setIssues] = useState<Issue[]>([]);
+
   // Load settings from localStorage or use defaults
   const [settings, setSettings] = useState<CalendarSettings>(() => {
     try {
@@ -303,6 +295,40 @@ const CustomCalendar: React.FC = () => {
     },
     []
   );
+
+  useEffect(() => {
+    const fetchCalendarIssues = async () => {
+      const userid = Number(localStorage.getItem("userid"));
+      console.log("📦 userId from localStorage:", userid);
+
+      if (!userid) {
+        console.warn("No valid userId found in localStorage");
+        return;
+      }
+
+      const userRes = await getUser(userid);
+      console.log("Fetched user object:", userRes); // ✅ DEBUG LINE
+
+      if (!userRes?.data?.issues || !Array.isArray(userRes.data.issues)) {
+        console.warn("User has no issue array");
+        return;
+      }
+
+      const issueResponses = await Promise.all(
+        userRes.data.issues.map((id) => getIssue(id))
+      );
+
+      const fetchedIssues = issueResponses
+        .filter((r) => r.status === 200 && r.data)
+        .map((r) => r.data as Issue);
+
+      console.log("Fetched issues for calendar:", fetchedIssues);
+      setIssues(fetchedIssues);
+    };
+
+    fetchCalendarIssues();
+  }, []);
+
 
   // Function to determine event styling based on due date and settings
   const eventStyleGetter = useCallback(
@@ -397,11 +423,23 @@ const CustomCalendar: React.FC = () => {
     []
   );
 
+  const events: CalendarEvent[] = issues.map((issue) => ({
+    id: issue.id,
+    title: issue.title,
+    start: new Date(issue.created),
+    end: new Date(issue.created),
+    allDay: true,
+    resource: issue,
+  }));
+
+  console.log("Calendar Events:", events); //Debugging
+
   return (
     // Main container Box
     <Box
       sx={{
         height: "100%", // Let height be controlled by parent container
+        minHeight: "600px",
         display: "flex",
         flexDirection: "column",
       }}
@@ -432,7 +470,7 @@ const CustomCalendar: React.FC = () => {
           >
             <IconButton
               onClick={() => setShowSettings(!showSettings)}
-              sx={{ color: theme.palette.text.primary }}
+              sx={{ color: theme.palette.text.secondary }}
             >
               <Settings />
             </IconButton>
@@ -571,13 +609,12 @@ const CustomCalendar: React.FC = () => {
       <Box
         sx={{
           flexGrow: 1,
-          height: "0", // Important for flexGrow with overflow
           px: { xs: 2, sm: 4 },
           pb: 3,
           // --- Styling overrides --- Use theme colors ---
           "& .rbc-calendar": {
             backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
+            color: theme.palette.text.secondary,
             borderRadius: "8px",
             border: `1px solid ${theme.palette.divider}`,
             boxShadow: theme.shadows[3],
@@ -585,7 +622,7 @@ const CustomCalendar: React.FC = () => {
           },
           "& .rbc-header": {
             backgroundColor: theme.palette.action.hover,
-            color: theme.palette.text.primary,
+            color: theme.palette.text.secondary,
             borderBottom: `1px solid ${theme.palette.divider}`,
             padding: "8px 0",
             textAlign: "center",
@@ -604,7 +641,7 @@ const CustomCalendar: React.FC = () => {
             border: "none",
             padding: "2px 5px",
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
+            color: theme.palette.primary.main,
             borderRadius: "4px",
           },
           "& .rbc-event.rbc-selected": {
@@ -662,14 +699,14 @@ const CustomCalendar: React.FC = () => {
             dayRangeHeaderFormat: ({ start, end }, culture, loc) =>
               loc
                 ? loc.format(start, "MMM dd", culture) +
-                  " - " +
-                  loc.format(
-                    end,
-                    loc.format(start, "MMM") === loc.format(end, "MMM")
-                      ? "dd"
-                      : "MMM dd",
-                    culture
-                  )
+                " - " +
+                loc.format(
+                  end,
+                  loc.format(start, "MMM") === loc.format(end, "MMM")
+                    ? "dd"
+                    : "MMM dd",
+                  culture
+                )
                 : "", // e.g., Apr 07 - 13
           }}
           messages={

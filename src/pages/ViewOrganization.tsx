@@ -163,19 +163,20 @@ const ViewOrg = () => {
                                 "& .MuiDataGrid-virtualScroller::-webkit-scrollbar": {
                                     width: "8px",
                                     height: "8px",
+                                    backgroundColor: colors.blueAccent[800],
                                 },
                                 "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-track": {
-                                    background: colors.primary[300],
+                                    background: colors.blueAccent[800],
                                     borderRadius: "4px",
                                 },
                                 "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb": {
-                                    backgroundColor: colors.grey[600],
+                                    backgroundColor: colors.grey[900],
                                     borderRadius: "4px",
-                                    border: `1px solid ${colors.primary[300]}`,
+                                    border: `1px solid ${colors.blueAccent[800]}`,
                                 },
                                 "& .MuiDataGrid-virtualScroller::-webkit-scrollbar-thumb:hover":
                                 {
-                                    background: colors.grey[500],
+                                    background: colors.grey[900],
                                 },
 
                                 // -- Footer --
@@ -197,7 +198,7 @@ const ViewOrg = () => {
                                     padding: "10px 15px",
                                     "& .MuiButton-text": {
                                         color: colors.grey[100],
-                                        "&:hover": { backgroundColor: colors.primary[500] },
+                                        "&:hover": { backgroundColor: colors.blueAccent[800] },
                                     },
                                     "& .MuiInputBase-root": {
                                         // Style the search input in toolbar
