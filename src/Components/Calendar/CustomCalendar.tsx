@@ -96,7 +96,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
 
   // Define the views you want to allow explicitly
   const allowedViews: View[] = useMemo(
-    () => [Views.MONTH, Views.WEEK, Views.DAY],
+    () => [Views.MONTH],
     []
   );
 
@@ -179,7 +179,7 @@ const CustomToolbar = (toolbar: ToolbarProps<CalendarEvent, object>) => {
       <Typography
         variant={isMobile ? "subtitle1" : "h6"}
         sx={{
-          color: theme.palette.text.primary, // Use theme text color
+          color: theme.palette.text.secondary, // Use theme text color
           fontWeight: 600,
           textAlign: "center",
           flexGrow: 1, // Allow label to take available space
@@ -470,7 +470,7 @@ const CustomCalendar: React.FC = () => {
           >
             <IconButton
               onClick={() => setShowSettings(!showSettings)}
-              sx={{ color: theme.palette.text.primary }}
+              sx={{ color: theme.palette.text.secondary }}
             >
               <Settings />
             </IconButton>
@@ -614,7 +614,7 @@ const CustomCalendar: React.FC = () => {
           // --- Styling overrides --- Use theme colors ---
           "& .rbc-calendar": {
             backgroundColor: theme.palette.background.paper,
-            color: theme.palette.text.primary,
+            color: theme.palette.text.secondary,
             borderRadius: "8px",
             border: `1px solid ${theme.palette.divider}`,
             boxShadow: theme.shadows[3],
@@ -622,7 +622,7 @@ const CustomCalendar: React.FC = () => {
           },
           "& .rbc-header": {
             backgroundColor: theme.palette.action.hover,
-            color: theme.palette.text.primary,
+            color: theme.palette.text.secondary,
             borderBottom: `1px solid ${theme.palette.divider}`,
             padding: "8px 0",
             textAlign: "center",
@@ -641,7 +641,7 @@ const CustomCalendar: React.FC = () => {
             border: "none",
             padding: "2px 5px",
             backgroundColor: theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
+            color: theme.palette.primary.main,
             borderRadius: "4px",
           },
           "& .rbc-event.rbc-selected": {
