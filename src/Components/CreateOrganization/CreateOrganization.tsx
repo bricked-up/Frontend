@@ -160,9 +160,8 @@ const CreateOrganization: React.FC = () => {
               <Grid item xs={12} sm={6} md={4} key={org.id}>
                 <OrganizationCard
                   organization={org}
-                  onEdit={() => openDialog(org)}
-                  
-                  onDelete={function (id: number): void {
+                  memberUsers={[]}
+                  onEdit={() => openDialog(org)} onDelete={function (id: number): void {
                     throw new Error("Function not implemented.");
                   }}
                 />
