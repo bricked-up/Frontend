@@ -988,7 +988,7 @@ const ViewProject = () => {
                 },
 
                 "& .MuiDataGrid-virtualScroller": {
-                  backgroundColor: colors.primary[400],
+                  backgroundColor: colors.blueAccent[800],
                 },
                 "& .MuiDataGrid-footerContainer": {
                   borderTop: `1px solid ${colors.primary[300]}`,
