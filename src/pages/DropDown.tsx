@@ -10,10 +10,10 @@ import { useTheme } from "@mui/material/styles";
 import { tokens } from "../theme";
 
 type DropDownProps = {
+  label?: string;        // ← add this
   value: string;
   onSelect: (value: string) => void;
   options: string[];
-  label?: string;
 };
 
 const DropDown = ({ value, onSelect, options, label }: DropDownProps) => {
