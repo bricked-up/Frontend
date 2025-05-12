@@ -83,7 +83,7 @@ interface CreateIssuePageProps {
 //       completed: undefined,
 //     },
 //   ],
-// };
+//};
 
 /**
  * CreateIssue Component
