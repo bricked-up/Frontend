@@ -176,9 +176,9 @@ const CreateOrganization: React.FC = () => {
 
   const [user, setUser] = useState<User | null>(null);
 
-
   useEffect(() => {
     (async () => {
+
       try {
         const orgs = await fetchOrgsWithProjects(userId);
         setOrganizations(orgs);

@@ -8,6 +8,8 @@ import react from "react";
 import DropDown from "../Components/DropDown";
 import { getOrganizationsFromStore } from "../utils/OrganizationStore";
 import { Organization } from "../utils/Organization";
+import { getOrg, getProject, getUser } from "../utils/getters.utils";
+import { OrgMember, Project } from "../utils/types";
 
 // User table columns
 const userColumns: GridColDef[] = [
@@ -47,15 +49,55 @@ const allUsers = [
 const ViewOrg = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-    const [selectedOrg, setSelectedOrg] = useState<string>("");
-    const [orgs, setOrgs] = useState<Organization[]>([]);
+    const [selectedOrg, setSelectedOrg] = useState<string | null>(null);
+    const [memberNames, setMemberNames] = useState<string[]>([]);
+    const [projectNames, setProjectNames] = useState<string[]>([]);
 
+    // Define orgs as an array of organization objects
+    const orgs = getOrganizationsFromStore(); // Replace with your data-fetching logic
+    const selectedOrgObj = orgs.find(o => o.name === selectedOrg);
+    const selectedOrgId = selectedOrgObj?.id;
+
+    // fetch just once per selection
     useEffect(() => {
-        setOrgs(getOrganizationsFromStore());
-    }, []);
+        if (!selectedOrgId) {
+            setMemberNames([]);
+            setProjectNames([]);
+            return;
+        }
+        (async () => {
+            const orgRes = await getOrg(selectedOrgId);
+            if (!orgRes.data) return;
 
-    const filteredUsers = selectedOrg ? allUsers.filter(u => u.organization === selectedOrg) : allUsers;
-    const filteredOrgs = selectedOrg ? orgs.filter(o => o.name === selectedOrg) : orgs;
+            const mlist = orgRes.data.members ?? [];
+            const mn = await Promise.all(
+                mlist.map(m => getUser(
+                    typeof m === "number" ? m : m.userId
+                ).then(r => r.data?.name ?? `#${m}`))
+            );
+            setMemberNames(mn);
+
+            const plist = orgRes.data.projects ?? [];
+            const pn = await Promise.all(
+                plist.map(p => getProject(p.id).then(r => r.data?.name ?? `#${p.id}`))
+            );
+            setProjectNames(pn);
+        })();
+    }, [selectedOrgId]);
+
+    // derive rows at render time
+    const rawMembers = selectedOrgObj?.members ?? [];
+    const rawProjects = selectedOrgObj?.projects ?? [];
+
+    const memberRows = rawMembers.map((m, i) => ({
+        id: typeof m === "number" ? m : m.userId,
+        name: memberNames[i] ?? "",
+    }));
+    const projectRows = rawProjects.map((p, i) => ({
+        id: p.id,
+        name: projectNames[i] ?? "",
+    }));
+
     return (
         <Box
             sx={{
@@ -92,7 +134,8 @@ const ViewOrg = () => {
                 }}
             >
                 <Box sx={{ p: 2, display: 'flex', justifyContent: 'left' }}>
-                    <DropDown value={selectedOrg} onSelect={setSelectedOrg} options={orgs.map(o => o.name)} />
+
+                    <DropDown value={selectedOrg || ""} onSelect={setSelectedOrg} options={orgs.map(o => o.name)} />
 
 
                 </Box>
@@ -103,10 +146,24 @@ const ViewOrg = () => {
 
 
                     <Box sx={{ flex: 1 }}>
-
+                        {selectedOrg ? (
                         <DataGrid
-                            rows={filteredOrgs}
+                            rows={memberRows}
+                            columns={[
+                                { field: "id", headerName: "User ID", flex: 1 },
+                                { field: "name", headerName: "Name", flex: 2 },
+                            ]}
+                            autoHeight
+                        />
+                        ) : (
+                        <DataGrid
+                            rows={orgs.map(o => ({
+                                ...o,
+                                members: [],
+                                projects: [],
+                            }))}
                             columns={orgColumns}
+                            /* … */
                             slots={{ toolbar: GridToolbar }}
                             initialState={{
                                 pagination: { paginationModel: { pageSize: 10, page: 0 } },
@@ -228,6 +285,7 @@ const ViewOrg = () => {
                                 "& .MuiDataGrid-columnSeparator": { display: "none" },
                             }}
                         />
+                        )}
                     </Box>
                 </Box>
             </Paper>
