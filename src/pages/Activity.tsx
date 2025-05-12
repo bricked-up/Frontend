@@ -16,10 +16,12 @@ import {
   Fade,
   Grow,
   CircularProgress,
+  Skeleton,
   useTheme,
   Paper,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import ClearIcon from "@mui/icons-material/Clear";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
@@ -27,9 +29,13 @@ import ErrorOutlineIcon from "@mui/icons-material/ErrorOutline";
 import { useNavigate } from "react-router-dom";
 import { Issue, GetUserResult, GetIssueResult, User } from "../utils/types";
 import { getUser, getIssue } from "../utils/getters.utils";
-import { set } from "date-fns";
 
 const TRANSITION_DURATION = 300;
+const priorityColor: Record<number, string> = {
+  1: "#4caf50",
+  2: "#ff9800",
+  3: "#f44336",
+};
 
 interface ActivityCardProps {
   issue: Issue;
@@ -40,6 +46,7 @@ interface ActivityCardProps {
 
 const ActivityCard: React.FC<ActivityCardProps> = ({ issue, isExpanded, onToggleExpand, onNavigateToCalendar }) => {
   const theme = useTheme();
+  const isDark = theme.palette.mode === 'dark';
   const handleCardClick = () => onToggleExpand(issue.id);
   const handleDueDateClick = (e: React.MouseEvent) => { e.stopPropagation(); issue.completed && onNavigateToCalendar(issue.completed); };
   const formattedDueDate = issue.completed
@@ -48,22 +55,63 @@ const ActivityCard: React.FC<ActivityCardProps> = ({ issue, isExpanded, onToggle
 
   return (
     <Grow in timeout={TRANSITION_DURATION}>
-      <Card sx={{ mb: 2 }}>
+      <Card
+        elevation={isExpanded ? 8 : 2}
+        sx={{
+          mb: 2,
+          position: 'relative',
+          borderRadius: 3,
+          backgroundColor: isDark ? theme.palette.grey[900] : theme.palette.grey[50],
+          color: isDark ? theme.palette.grey[100] : theme.palette.grey[900],
+          '&:hover': {
+            transform: 'translateY(-4px)',
+            boxShadow: theme.shadows[6],
+          },
+          transition: 'transform 0.2s, box-shadow 0.2s',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            top: 0,
+            bottom: 0,
+            left: 0,
+            width: '4px',
+            backgroundColor: priorityColor[issue.priority ?? 1] || theme.palette.primary.main,
+            borderTopLeftRadius: '3px',
+            borderBottomLeftRadius: '3px',
+          },
+          pl: '12px',
+        }}
+      >
         <CardActionArea onClick={handleCardClick} sx={{ p: 2 }}>
           <Stack direction="row" justifyContent="space-between" alignItems="center">
             <Typography variant="h6" fontWeight={600}>{issue.title}</Typography>
-            <IconButton size="small" sx={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: theme.transitions.create("transform", { duration: theme.transitions.duration.short }) }}>
+            <IconButton
+              size="small"
+              sx={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: theme.transitions.create("transform", { duration: theme.transitions.duration.short }) }}
+            >
               <ExpandMoreIcon />
             </IconButton>
           </Stack>
         </CardActionArea>
         <Collapse in={isExpanded} timeout={TRANSITION_DURATION} unmountOnExit>
-          <Divider sx={{ my: 1 }} />
+          <Divider sx={{ my: 1, borderColor: isDark ? theme.palette.grey[800] : theme.palette.grey[300] }} />
           <CardContent>
             <Stack spacing={2}>
-              <Chip icon={<CalendarTodayIcon />} label={formattedDueDate} onClick={handleDueDateClick} clickable />
+              <Chip
+                icon={<CalendarTodayIcon />}
+                label={formattedDueDate}
+                onClick={handleDueDateClick}
+                clickable
+                sx={{
+                  backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200],
+                  color: isDark ? theme.palette.grey[100] : theme.palette.grey[900],
+                }}
+              />
               <Typography variant="body2">{issue.desc ?? <em>No desc provided.</em>}</Typography>
-              <Stack direction="row" spacing={2}><Chip label={`Priority: ${issue.priority ?? 0}`} /><Chip label={`Cost: ${issue.cost ?? 0}`} /></Stack>
+              <Stack direction="row" spacing={2}>
+                <Chip label={`Priority: ${issue.priority ?? 0}`} sx={{ backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200] }} />
+                <Chip label={`Cost: ${issue.cost ?? 0}`} sx={{ backgroundColor: isDark ? theme.palette.grey[800] : theme.palette.grey[200] }} />
+              </Stack>
             </Stack>
           </CardContent>
         </Collapse>
@@ -80,29 +128,21 @@ const Activity: React.FC = () => {
   const [expandedIssueId, setExpandedIssueId] = useState<number | null>(null);
   const navigate = useNavigate();
   const theme = useTheme();
-
-  const [test, setTest] = useState<User>();
+  const isDark = theme.palette.mode === 'dark';
 
   useEffect(() => {
     (async () => {
       try {
-        // Get userId from localStorage (same key as AddIssue)
         const rawUser = localStorage.getItem("userid");
         if (!rawUser) throw new Error("User ID not found in localStorage");
         const userId = Number(rawUser);
         if (isNaN(userId)) throw new Error("Invalid user ID in localStorage");
 
-        // Fetch user to get assigned issue IDs
         const userRes: GetUserResult = await getUser(userId);
         if (userRes.status !== 200 || !userRes.data) throw new Error(userRes.error || "Failed to load user");
         const ids = userRes.data.issues ?? [];
 
-        setTest(userRes.data);
-
-        // Fetch all issues in parallel
         const results: GetIssueResult[] = await Promise.all(ids.map(id => getIssue(id)));
-
-        // Collect successful results
         const loaded = results.filter(r => r.status === 200 && r.data).map(r => r.data!);
         setIssues(loaded);
       } catch (e: any) {
@@ -112,9 +152,6 @@ const Activity: React.FC = () => {
       }
     })();
   }, []);
-
-  console.log(test)
-  console.log(issues)
 
   const handleToggleExpand = (id: number) => setExpandedIssueId(prev => (prev === id ? null : id));
   const handleNavigateToCalendar = (date: Date) => navigate(`/calendar?date=${date.toISOString().split("T")[0]}`);
@@ -126,30 +163,60 @@ const Activity: React.FC = () => {
   }, [issues, searchQuery]);
 
   if (loading) return (
-    <Box textAlign="center" p={4}>
-      <CircularProgress />
-      <Typography mt={2} color="text.secondary">Loading...</Typography>
+    <Box textAlign="center" p={4} sx={{ backgroundColor: isDark ? theme.palette.background.default : '#fff' }}>
+      <Stack spacing={1}>
+        {[...Array(3)].map((_, i) => (
+          <Skeleton key={i} variant="rectangular" height={100} animation="wave" sx={{ borderRadius: 2 }} />
+        ))}
+      </Stack>
     </Box>
   );
   if (error) return (
-    <Box textAlign="center" p={4}>
+    <Box textAlign="center" p={4} sx={{ backgroundColor: isDark ? theme.palette.background.default : '#fff' }}>
       <Typography color="error">Error: {error}</Typography>
     </Box>
   );
 
   return (
-    <Box sx={{ minHeight: "calc(100vh - 64px)", pt: "64px", display: "flex", justifyContent: "center", px: { xs: 2, sm: 3, md: 4 } }}>
+    <Box
+      sx={{
+        minHeight: "calc(100vh - 64px)",
+        pt: "64px",
+        display: "flex",
+        justifyContent: "center",
+        px: { xs: 2, sm: 3, md: 4 },
+        backgroundColor: isDark ? theme.palette.background.default : '#f9f9f9',
+      }}
+    >
       <Stack spacing={4} sx={{ width: "100%", maxWidth: 900 }}>
-        <Typography variant="h4" fontWeight={700}>Activity Feed</Typography>
-        <Paper sx={{ p: 2, position: "sticky", top: 64, zIndex: 10 }}>
+        <Typography variant="h4" fontWeight={700} sx={{ color: isDark ? '#fafafa' : '#212121' }}>
+          Activity Feed
+        </Typography>
+
+        <Paper sx={{ p: 2, position: "sticky", top: 64, zIndex: 10, backgroundColor: isDark ? theme.palette.background.paper : '#fff' }}>
           <TextField
             fullWidth
             placeholder="Search activities..."
             value={searchQuery}
             onChange={e => setSearchQuery(e.target.value)}
-            InputProps={{ startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment> }}
+            InputProps={{
+              startAdornment: <InputAdornment position="start"><SearchIcon sx={{ color: isDark ? '#fafafa' : '#757575' }} /></InputAdornment>,
+              endAdornment: searchQuery && <InputAdornment position="end"><IconButton onClick={() => setSearchQuery("")}><ClearIcon /></IconButton></InputAdornment>,
+              style: { color: isDark ? '#fafafa' : '#212121' },
+            }}
+            sx={{
+              '.MuiOutlinedInput-root': {
+                '& fieldset': {
+                  borderColor: isDark ? '#555' : '#ccc'
+                },
+                '&:hover fieldset': {
+                  borderColor: isDark ? '#888' : '#888'
+                }
+              }
+            }}
           />
         </Paper>
+
         {filteredIssues.length > 0 ? (
           filteredIssues.map(issue => (
             <ActivityCard
@@ -161,8 +228,8 @@ const Activity: React.FC = () => {
             />
           ))
         ) : (
-          <Fade in timeout={300}>
-            <Box textAlign="center" mt={8} color={theme.palette.text.secondary}>
+          <Fade in timeout={300}>   
+            <Box textAlign="center" mt={8} sx={{ color: theme.palette.text.secondary }}>
               <ErrorOutlineIcon fontSize="large" />
               <Typography variant="h6">No activities found</Typography>
               <Typography variant="body2">Try searching for activities.</Typography>
