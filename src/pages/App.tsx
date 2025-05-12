@@ -19,6 +19,7 @@ import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import EmailVerification from "./EmailVerification";
 import React from "react";
+import Faq from "./Faq";
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -87,6 +88,7 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
+                <Route path="/faq" element={<Faq />} />
                 <Route
                   path="/createIssue"
                   element={<CreateTask board={mockBoard} />}
