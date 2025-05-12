@@ -4,7 +4,7 @@ import {
   createOrganization,
   CreateOrganizationResult,
 } from "../utils/post.utils";
-import { createProject, CreateProjectResult,removeProjectMember, removeOrgMember } from "../utils/post.utils";
+import { createProject, CreateProjectResult, removeProjectMember, removeOrgMember } from "../utils/post.utils";
 
 // make TS happy
 declare const global: any;
@@ -53,7 +53,7 @@ describe("createOrganization", () => {
     });
 
     const res: CreateOrganizationResult = await createOrganization(
-      { name: "Org", projects: ["p1"] },
+      { orgName: "Org", projects: [1] },
       "orgs"
     );
     expect(res.status).toBe(201);
@@ -79,7 +79,7 @@ describe("createProject", () => {
       }),
     });
 
-    const res: CreateProjectResult = await createProject(
+    const status: Number = await createProject(
       {
         name: "Proj",
         orgId: 1,
@@ -90,8 +90,7 @@ describe("createProject", () => {
       },
       "projects"
     );
-    expect(res.status).toBe(201);
-    expect(res.project?.name).toBe("Proj");
+    expect(status).toBe(201);
   });
 });
 describe("removeProjectMember", () => {

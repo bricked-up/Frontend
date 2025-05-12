@@ -19,6 +19,10 @@ import CreateNewIssue from "../Components/CreateIssue/CreateIssue";
 import { defaultBoard } from "../Components/CreateIssue/CreateIssue";
 import EmailVerification from "./EmailVerification";
 import React from "react";
+import EmailVerification from "./EmailVerification";
+import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
+import CreateProject from "../Components/CreateProject";
+
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -61,12 +65,19 @@ function App() {
               </Route>
 
               {/* project related routes */}
-              <Route path="/project">
-                <Route path=":projectId">
-                  <Route path="users" />
-                  <Route path="issues" />
+              <Route element={<Layout />}>
+                {/* /project/:projectId */}
+                <Route path="project">
+                  <Route path=":projectName" element={<ViewProject />}>
+
+                    {/* /project/:projectId/users */}
+                    <Route path="users" element={<Layout />} />
+                    {/* /project/:projectId/issues */}
+                    <Route path="issues" element={<Layout />} />
+                  </Route>
                 </Route>
               </Route>
+
 
               {/* organization related routes */}
               <Route path="/organization">
@@ -87,6 +98,9 @@ function App() {
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
                 <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard}/>} />
+                <Route path="/viewOrg" element={<ViewOrg />} />
+                <Route path="/createorg" element={<CreateOrg />} />
+                <Route path="createProject" element={<CreateProject />} />
               </Route>
 
               {/* routes for 404 and server errors */}

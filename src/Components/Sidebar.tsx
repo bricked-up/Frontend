@@ -9,6 +9,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tokens } from "../theme";
 import { useState } from "react";
 import React from "react";
@@ -124,6 +125,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         {isSidebar && (
           <Box>
             <Item
+              title="Create Organization"
+              to="/createorg"
+              icon={<AddCircleIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+              />
+            <Item
               title="View Organizations"
               to="/viewOrg"
               icon={<CorporateFareIcon />}
@@ -177,6 +185,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               title="FAQ Page"
               to="/faq"
               icon={<HelpOutlineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item 
+              title="create organization"
+              to="/createOrg"
+              icon={<CorporateFareIcon />}
+              
+              
               selected={selected}
               setSelected={setSelected}
             />

@@ -17,8 +17,8 @@ export interface Result {
 }
 
 export interface NewOrganizationParams {
-  name: string;
-  projects?: string[];
+  orgName: string;
+  projects?: number[];
 }
 
 export interface CreateOrganizationResult {
@@ -66,7 +66,7 @@ async function parseErrorResponse(response: Response): Promise<string> {
 function formatDateForBackend(date: Date): string {
   const pad = (n: number) => String(n).padStart(2, '0');
   return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())} ` +
-         `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+    `${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
 }
 
 /**
@@ -113,7 +113,7 @@ export const createNewIssue = async (
 
     const now = new Date();
     params.append("date", formatDateForBackend(now));
-    params.append("completed", formatDateForBackend(now));  
+    params.append("completed", formatDateForBackend(now));
 
 
 
@@ -136,7 +136,7 @@ export const createNewIssue = async (
     return { status: response.status };
   } catch (err: any) {
     console.log("meow");
-    return { status: 0, error: err.message || "Unknown error!"};
+    return { status: 0, error: err.message || "Unknown error!" };
   }
 };
 
@@ -181,13 +181,19 @@ export const createOrganization = async (
         params.append(key, String(value));
       }
     });
+    const sessionid = localStorage.getItem("sessionid");
+    if (sessionid) {
+      params.append("sessionid", sessionid);
+    }
+
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
       headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: params,
+      body: params.toString(),
     });
-
+    const errorText = await response.text();
+    console.log("Response body:", errorText);
     if (!response.ok) {
       const error = await parseErrorResponse(response);
       return { status: response.status, organization: null, error };
@@ -250,21 +256,16 @@ export const createOrganization = async (
 export const createProject = async (
   paramsObj: NewProjectParams,
   endpoint: string
-): Promise<CreateProjectResult> => {
+): Promise<Number> => {
   try {
     const params = new URLSearchParams();
-    Object.entries(paramsObj).forEach(([key, value]) => {
-      if (value == null) return;
-      console.log(key);
-      console.log(value);
-      if (Array.isArray(value)) {
-        value.forEach((v) => params.append(key, String(v)));
-      } else {
-        params.append(key, String(value));
-      }
-    });
-
-    console.log(params);
+    const sessionid = localStorage.getItem("sessionid");
+    params.append("sessionid", String(sessionid));
+    params.append("name", paramsObj.name);
+    params.append("orgid", String(paramsObj.orgId));
+    params.append("budget", String(paramsObj.budget));
+    params.append("charter", paramsObj.charter);
+    params.append("archived", '0');
 
     const response = await fetch(`${API_BASE}/${endpoint}`, {
       method: "POST",
@@ -273,30 +274,15 @@ export const createProject = async (
     });
 
     if (!response.ok) {
-      const error = await parseErrorResponse(response);
-      return { status: response.status, project: null, error };
+      return 500;
     }
 
-    const rawJson: any = await response.json();
-
-    const project: Project = {
-      id: rawJson.id,
-      name: rawJson.name,
-      orgId: rawJson.orgId,
-      budget: rawJson.budget,
-      charter: rawJson.charter,
-      archived: rawJson.archived,
-      members: rawJson.members ?? [],
-      issues: rawJson.issues ?? [],
-      tags: rawJson.tags ?? [],
-    };
-
-    return { status: response.status, project };
-  } catch (err: any) {
-    return { status: 0, project: null, error: err.message || "Unknown error" };
+    return response.status;
+  } catch (error: any) {
+    window.alert(`Error with the server: ${error}`)
+    return 500;
   }
 };
-
 //remove member from project
 export const removeProjectMember = async (
   sessionId: number,
@@ -307,10 +293,10 @@ export const removeProjectMember = async (
       sessionid: String(sessionId),
       memberid: String(memberId),
     }).toString();
-    
+
     console.log("DELETE /remove-proj-member");
-    const response = await fetch(`${API_BASE}/remove-proj-member{params}`, 
-      {method: "DELETE"}
+    const response = await fetch(`${API_BASE}/remove-proj-member{params}`,
+      { method: "DELETE" }
     );
 
     if (!response.ok) {
