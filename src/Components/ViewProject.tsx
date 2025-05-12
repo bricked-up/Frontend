@@ -44,7 +44,6 @@ import {
 } from "recharts";
 import { GetProjectResult, Project, ProjectMember } from "../utils/types";
 import { getUser, getProject, getProjectMember } from "../utils/getters.utils";
-import { a2 } from "framer-motion/dist/types.d-DDSxwf0n";
 
 const PermissionIndicator = ({ value }: { value: boolean }) => {
   return value ? (
@@ -260,8 +259,8 @@ const ProjectDetails = ({ project }: { project: any }) => {
                         project.progress < 30
                           ? colors.redAccent[500]
                           : project.progress < 70
-                          ? colors.blueAccent[500]
-                          : colors.greenAccent[500],
+                            ? colors.blueAccent[500]
+                            : colors.greenAccent[500],
                       borderRadius: 5,
                     },
                   }}
@@ -385,10 +384,10 @@ const ViewProject = () => {
               memberData.canRead && memberData.canWrite && memberData.canExec
                 ? "Administrator"
                 : memberData.canRead && memberData.canWrite
-                ? "Developer"
-                : memberData.canRead
-                ? "Viewer"
-                : "Viewer",
+                  ? "Developer"
+                  : memberData.canRead
+                    ? "Viewer"
+                    : "Viewer",
             can_read: memberData.canRead,
             can_write: memberData.canWrite,
             can_exec: memberData.canExec,
