@@ -1,11 +1,12 @@
+// src/Components/CreateProject.tsx
 import React, { useState, useEffect } from 'react';
 import {
   TextField,
   Button,
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  // FormControl, // Not used directly in this snippet for org selection, assuming organizations are fetched
+  // InputLabel, // Not used directly
+  // Select, // Not used directly
+  // MenuItem, // Not used directly
   Alert,
   Box,
   Typography,
@@ -15,9 +16,13 @@ import {
   InputAdornment,
 } from '@mui/material';
 import { useTheme } from '@mui/material/styles';
+import { MenuItem } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import '../css/CreateProject.css';
-import { createProject, NewProjectParams } from '../utils/post.utils';
+// Import the necessary function and types from post.utils.ts
+import { createProject, NewProjectParams, CreateProjectResult } from '../utils/post.utils';
+// Assuming your Organization type is defined elsewhere or you use a simplified one here
+// For fetching organizations, you might use a getter from getters.utils.ts if available
 
 type Organization = {
   id: number;
@@ -29,15 +34,14 @@ const CreateProject: React.FC = () => {
   const [name, setName] = useState('');
   const [budget, setBudget] = useState<string>('');
   const [charter, setCharter] = useState('');
-  const [orgId, setOrgId] = useState<string>('');
+  const [orgId, setOrgId] = useState<string>(''); // Keep as string for Select, convert to number on submit
   const [organizations, setOrganizations] = useState<Organization[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState<boolean>(true); // For fetching organizations
   const [formSubmitting, setFormSubmitting] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  // Automatically update the body attribute when theme changes
   useEffect(() => {
     if (theme.palette.mode === 'dark') {
       document.body.setAttribute('data-theme', 'dark');
@@ -50,13 +54,20 @@ const CreateProject: React.FC = () => {
     const fetchUserOrganizations = async () => {
       setLoading(true);
       try {
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        const mockOrganizations = [
+        // Replace with actual organization fetching logic if needed
+        // For example, if you have a function like getOrganizations() in getters.utils.ts
+        await new Promise(resolve => setTimeout(resolve, 1000)); // Simulate API call
+        const mockOrganizations: Organization[] = [
           { id: 1, name: 'Tech Innovators Inc.' },
           { id: 2, name: 'Design Studio Co.' },
-          { id: 3, name: 'Marketing Professionals LLC' }
+          { id: 3, name: 'Marketing Professionals LLC' },
+          // Add more mock organizations or fetch dynamically
         ];
         setOrganizations(mockOrganizations);
+        if (mockOrganizations.length > 0) {
+          // Optionally set a default orgId if desired
+          // setOrgId(String(mockOrganizations[0].id));
+        }
       } catch (err) {
         console.error('Failed to load organizations:', err);
         setError('Failed to load organizations. Please try refreshing the page.');
@@ -89,30 +100,45 @@ const CreateProject: React.FC = () => {
     const newProjectParams: NewProjectParams = {
       name: name.trim(),
       orgId: Number(orgId),
-      tag: '',
+      tag: '', // Defaulting tag to empty. Add a form field if it needs to be user-defined.
       budget: budgetValue,
       charter: charter.trim(),
-      archived: false,
-      members: [],
-      issues: []
+      archived: false, // Defaulting archived to false.
+      // members and issues are optional in NewProjectParams, defaulting to undefined or [] if not collected.
+      // members: [],
+      // issues: [],
     };
 
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      setSuccessMessage('Project created successfully! Redirecting...');
-      setTimeout(() => navigate('/viewProject'), 2000);
+      // Use the actual API endpoint for creating projects.
+      // The second argument to createProject is the endpoint string.
+      const result: CreateProjectResult = await createProject(newProjectParams, 'create-proj');
+
+      if (result.status === 201 || result.status === 200) { // Check for successful creation status codes
+        setSuccessMessage(`Project "${result.project?.name || name}" created successfully! Redirecting...`);
+        // Clear form fields after successful submission
+        setName('');
+        setBudget('');
+        setCharter('');
+        setOrgId('');
+        setTimeout(() => navigate('/viewProject'), 2000); // Navigate to view projects page
+      } else {
+        setError(result.error || 'Failed to create project. Please try again.');
+        console.error('Project creation failed:', result);
+      }
     } catch (error: any) {
       console.error('Submission error:', error);
-      setError('An unexpected error occurred while creating the project. Please try again.');
+      setError(`An unexpected error occurred: ${error.message || 'Unknown error'}. Please try again.`);
     } finally {
       setFormSubmitting(false);
     }
   };
 
-  if (loading) {
+  if (loading && organizations.length === 0) { // Adjusted loading condition
     return (
-      <Box className="create-project-container">
+      <Box className="create-project-container" sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80vh' }}>
         <CircularProgress />
+        <Typography sx={{ ml: 2 }}>Loading organization data...</Typography>
       </Box>
     );
   }
@@ -121,11 +147,11 @@ const CreateProject: React.FC = () => {
     <Box className="create-project-container">
       <Paper elevation={3} className="create-project-paper">
         <Box className="create-project-header">
-          <Typography 
-            variant="h6" 
-            component="h2" 
+          <Typography
+            variant="h6"
+            component="h2"
             fontWeight="600"
-            sx={{ color: theme.palette.mode === 'dark' ? 'white' : 'black' }}
+            sx={{ color: theme.palette.text.primary }} // Use theme's primary text color
           >
             Create New Project
           </Typography>
@@ -143,14 +169,15 @@ const CreateProject: React.FC = () => {
             onChange={(e) => setName(e.target.value)}
             fullWidth
             required
+            disabled={formSubmitting}
             InputProps={{
               sx: {
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                backgroundColor: theme.palette.background.default,
-                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
-                borderStyle: 'solid',
-                borderWidth: '1px',
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.background.paper, // Use paper background for contrast
               },
+            }}
+            InputLabelProps={{
+              sx: { color: theme.palette.text.secondary } // Ensure label is visible
             }}
           />
 
@@ -161,17 +188,49 @@ const CreateProject: React.FC = () => {
             fullWidth
             required
             type="number"
+            disabled={formSubmitting}
             InputProps={{
-              startAdornment: <InputAdornment position="start">$</InputAdornment>,
+              startAdornment: <InputAdornment position="start" sx={{ color: theme.palette.text.secondary }}>$</InputAdornment>,
               sx: {
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                backgroundColor: theme.palette.background.default,
-                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
-                borderStyle: 'solid',
-                borderWidth: '1px',
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.background.paper,
               },
             }}
+            InputLabelProps={{
+              sx: { color: theme.palette.text.secondary }
+            }}
           />
+          
+          {/* Organization Dropdown */}
+          <TextField // Using TextField as a Select
+            select
+            label="Organization"
+            value={orgId}
+            onChange={(e) => setOrgId(e.target.value)}
+            fullWidth
+            required
+            disabled={formSubmitting || loading || organizations.length === 0}
+            SelectProps={{
+              native: false, // Use MUI's Menu for dropdown
+              sx: {
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.background.paper,
+              }
+            }}
+            InputLabelProps={{
+              sx: { color: theme.palette.text.secondary }
+            }}
+            helperText={organizations.length === 0 && !loading ? "No organizations available" : ""}
+          >
+            <MenuItem value="" disabled>
+              <em>Select an Organization</em>
+            </MenuItem>
+            {organizations.map((org) => (
+              <MenuItem key={org.id} value={String(org.id)}>
+                {org.name}
+              </MenuItem>
+            ))}
+          </TextField>
 
           <TextField
             label="Project Charter"
@@ -181,23 +240,24 @@ const CreateProject: React.FC = () => {
             multiline
             rows={4}
             required
+            disabled={formSubmitting}
             InputProps={{
               sx: {
-                color: theme.palette.mode === 'dark' ? 'white' : 'black',
-                backgroundColor: theme.palette.background.default,
-                borderColor: theme.palette.mode === 'light' ? '#ccc' : 'transparent',
-                borderStyle: 'solid',
-                borderWidth: '1px',
+                color: theme.palette.text.primary,
+                backgroundColor: theme.palette.background.paper,
               },
+            }}
+            InputLabelProps={{
+              sx: { color: theme.palette.text.secondary }
             }}
           />
 
-          <Box className="create-project-buttons">
-            <Button variant="outlined" onClick={() => navigate(-1)}>
+          <Box className="create-project-buttons" sx={{ mt: 2 }}>
+            <Button variant="outlined" onClick={() => navigate(-1)} disabled={formSubmitting} color="secondary">
               Cancel
             </Button>
-            <Button type="submit" variant="contained">
-              Create Project
+            <Button type="submit" variant="contained" disabled={formSubmitting} color="primary">
+              {formSubmitting ? <CircularProgress size={24} color="inherit" /> : 'Create Project'}
             </Button>
           </Box>
         </Box>

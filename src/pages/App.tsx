@@ -86,6 +86,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
 
                 <Route path="/viewProject" element={<ViewProject />} />
+                <Route path="/CreateProject" element={<CreateProject />} />
                 <Route path="/about_user" element={<AboutUser />} />
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
