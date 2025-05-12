@@ -28,7 +28,6 @@ const FAQ_DATA = [
     ],
   },
 ];
-
 const Faq: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
