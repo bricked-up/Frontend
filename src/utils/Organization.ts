@@ -1,42 +1,26 @@
-/**
- * Represents an organization entity with identifying information,
- * a descriptive field, and associated members and projects.
- *
- * @interface Organization
- */
-export interface Organization {
-  /**
-   * Unique identifier for the organization.
-   *
-   * @type {string}
-   */
-  id: string;
+import { Project, OrgMember, OrgRole } from './types'
 
-  /**
-   * Human-readable name of the organization.
-   *
-   * @type {string}
-   */
+/**
+ * @description Represents an organization within the application.
+ * @property {number} [id] - The unique identifier for the organization (optional, e.g., during creation).
+ * @property {string} name - The name of the organization.
+ * @property {Project[]} [projects] - Optional array of projects belonging to this organization.
+ * @property {OrgMember[]} [members] - Optional array of members in this organization.
+ * @property {OrgRole[]} [roles] - Optional array of roles defined within this organization.
+ */
+export type Organization = {
+  /** The unique identifier (may be missing when you’re creating a new org) */
+  id?: number;
+
+  /** Human-readable name */
   name: string;
 
-  /**
-   * Detailed description or overview of the organization's purpose or scope.
-   *
-   * @type {string}
-   */
-  description: string;
+  /** Populated by getOrg — all projects belonging to this org */
+  projects?: Project[];
 
-  /**
-   * List of member IDs associated with the organization.
-   *
-   * @type {string[]}
-   */
-  members: string[];
+  /** Populated by getOrg — all user memberships in this org */
+  members?: OrgMember[];
 
-  /**
-   * List of project IDs owned or managed by the organization.
-   *
-   * @type {string[]}
-   */
-  projects: string[];
-}
+  /** Any custom roles defined for this org (e.g. Admin, Editor, Viewer) */
+  roles?: OrgRole[];
+};

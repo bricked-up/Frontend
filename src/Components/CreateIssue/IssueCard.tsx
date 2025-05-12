@@ -131,7 +131,7 @@ export const IssueCard: React.FC<issueCardProps> = ({
         <Box display="flex" alignItems="center" gap={0.8} mb={0.2}>
           <TodayRoundedIcon fontSize="small" />
           <Typography variant="caption" sx={{ fontSize: "0.9rem" }}>
-            Created: {new Date(issue.created).toLocaleDateString("en-GB")}
+            Created: {issue.created ? new Date(issue.created).toLocaleDateString("en-GB") : "N/A"}
           </Typography>
         </Box>
 
