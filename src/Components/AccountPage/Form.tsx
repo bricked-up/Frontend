@@ -45,7 +45,7 @@ const Form = () => {
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUser({ ...user, displayName: e.target.value });
+    setUser({ ...user, name: e.target.value });
   };
 
   return (
@@ -56,7 +56,7 @@ const Form = () => {
             <label htmlFor="name">Username</label>
             <input
               type="text"
-              value={user.displayName || "Logged-in User"}
+              value={user.name || "Logged-in User"}
               onChange={handleChange}
             />
           </div>

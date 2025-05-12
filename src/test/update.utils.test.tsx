@@ -1,12 +1,12 @@
-import { User } from "../utils/types";
-import { updateUser } from "../utils/update.utils"
+import { Organization, User } from "../utils/types";
+import { updateOrg, updateUser } from "../utils/update.utils"
 
 
 describe("Update Utility Functions (Integration Tests)", () => {
     jest.setTimeout(30000);
 
     describe("updateUser", () => {
-        let user :User = {
+        let user: User = {
             name: "John Doe",
             email: "john.doe@example.com",
             avatar: "avatar.png",
@@ -25,4 +25,16 @@ describe("Update Utility Functions (Integration Tests)", () => {
             expect(result).toBeInstanceOf(Error);
         });
     });
+
+    describe("updateOrg", () => {
+        let org: Organization = {
+            id: 1,
+            name: "Kamraan is gay",
+        }
+
+        it("Should update existing id 1 (status 200)", async () => {
+            const result = await updateOrg(160, org);
+            expect(result).toBe(null);
+        });
+    })
 });

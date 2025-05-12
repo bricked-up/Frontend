@@ -78,11 +78,11 @@ const AboutUser: React.FC = () => {
 
     const numericUserId = parseInt(userId, 10);
     if (isNaN(numericUserId)) {
-        console.error("Invalid userId format:", userId);
-        // Optionally navigate or show an error
-        setIsLoaded(true);
-        clearTimeout(timeoutId);
-        return;
+      console.error("Invalid userId format:", userId);
+      // Optionally navigate or show an error
+      setIsLoaded(true);
+      clearTimeout(timeoutId);
+      return;
     }
 
 
@@ -130,13 +130,13 @@ const AboutUser: React.FC = () => {
             setOrganizationDetails(successfulOrgs);
             console.log("Fetched organization details:", successfulOrgs);
           } else if (isOrgMember(fetchedUser.organizations[0])) {
-             // This case implies that getUser already returned full OrgMember details.
-             // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
-             // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
-             // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
-             // The current map in the JSX expects OrgMember structure if this path is taken.
-             // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
-             // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
+            // This case implies that getUser already returned full OrgMember details.
+            // However, we typically display Organization names, etc., so we might still prefer to fetch full OrgDetailsType if OrgMember is just a linking table entry.
+            // For now, if they are OrgMember objects, we need a way to display them or map them to OrgDetailsType.
+            // This part might need adjustment based on what `OrgMember` contains vs `OrgDetailsType`.
+            // The current map in the JSX expects OrgMember structure if this path is taken.
+            // To simplify, let's assume if it's not numbers, it's OrgMember[] and the JSX is fine with it.
+            // OR, fetch full org details for each org.id from OrgMember if OrgMember has orgId
             console.warn("Organizations are already objects, type check needed for mapping or further fetching.");
             // If `WorkspaceedUser.organizations` are `OrgMember[]` and you need `OrgDetailsType[]`
             // you might need to iterate and call `getOrg(org.orgId)` for each.
@@ -162,8 +162,8 @@ const AboutUser: React.FC = () => {
             console.log("Fetched project details:", successfulProjects);
           } else if (isProjectMember(fetchedUser.projects[0])) {
             console.warn("Projects are already objects, type check needed for mapping or further fetching.");
-             // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
-             // the JSX mapping needs to handle ProjectMember[] directly.
+            // Similar to organizations, if 'viewedUser.projects' are already ProjectMember[],
+            // the JSX mapping needs to handle ProjectMember[] directly.
           }
         } else {
           setProjectDetails([]);
@@ -220,12 +220,12 @@ const AboutUser: React.FC = () => {
   if (!isLoaded && !viewedUser) return <LoadingPage />; // Show loading page until initial fetch attempt is done
   if (!viewedUser && isLoaded) { // Fetch attempt done, but no user
     return (
-        <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
-            <Paper elevation={3} sx={{p:3}}>
-                <Typography variant="h6">User profile could not be loaded or does not exist.</Typography>
-                <Button onClick={() => navigate('/')} sx={{mt: 2}}>Go to Home</Button>
-            </Paper>
-        </Box>
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="80vh">
+        <Paper elevation={3} sx={{ p: 3 }}>
+          <Typography variant="h6">User profile could not be loaded or does not exist.</Typography>
+          <Button onClick={() => navigate('/')} sx={{ mt: 2 }}>Go to Home</Button>
+        </Paper>
+      </Box>
     );
   }
   if (!viewedUser) return null; // Should be covered by above, but as a fallback
@@ -249,9 +249,9 @@ const AboutUser: React.FC = () => {
               <Typography variant="body2" sx={{ ml: 2 }}>
                 Roles: {org.roles.map((role) =>
                   typeof role === "object" && role !== null && "name" in role
-                  ? role.name
-                  : `Role ID: ${role}`
-                  ).join(", ")}
+                    ? role.name
+                    : `Role ID: ${role}`
+                ).join(", ")}
               </Typography>
             )}
           </Box>
@@ -260,7 +260,7 @@ const AboutUser: React.FC = () => {
       // Case 2: We fetched full Organization details based on IDs
       if (organizationDetails.length > 0) {
         return organizationDetails.map((orgDetail, index) => (
-          <Box key={`org-detail-${orgDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
+          <Box key={`org-detail-${orgDetail.id}-${index}`} sx={{ mb: 1, p: 1, border: '1px solid #eee', borderRadius: 1 }}>
             <Typography variant="subtitle1"><strong>{orgDetail.name}</strong> (ID: {orgDetail.id})</Typography>
             {/* Here you might want to show roles if you fetch OrgMember entries associated with this viewedUser and orgDetail.id */}
             {/* For now, just listing the organization name and ID */}
@@ -285,16 +285,16 @@ const AboutUser: React.FC = () => {
               Project ID (from member record): {proj.projectId} — Membership ID: {proj.id}
             </Typography>
             {proj.roles && proj.roles.length > 0 && (
-            <Typography variant="body2" sx={{ ml: 2 }}>
-              Roles: {
-              proj.roles.map((role) =>
-              typeof role === "object" && role !== null && "name" in role
-              ? role.name
-              : `Role ID: ${role}`
-              ).join(", ")
-              }
-            </Typography>
-)}
+              <Typography variant="body2" sx={{ ml: 2 }}>
+                Roles: {
+                  proj.roles.map((role) =>
+                    typeof role === "object" && role !== null && "name" in role
+                      ? role.name
+                      : `Role ID: ${role}`
+                  ).join(", ")
+                }
+              </Typography>
+            )}
 
           </Box>
         ));
@@ -302,7 +302,7 @@ const AboutUser: React.FC = () => {
       // Case 2: We fetched full Project details based on IDs
       if (projectDetails.length > 0) {
         return projectDetails.map((projDetail, index) => (
-           <Box key={`proj-detail-${projDetail.id}-${index}`} sx={{ mb: 1, p:1, border: '1px solid #eee', borderRadius: 1}}>
+          <Box key={`proj-detail-${projDetail.id}-${index}`} sx={{ mb: 1, p: 1, border: '1px solid #eee', borderRadius: 1 }}>
             <Typography variant="subtitle1"><strong>{projDetail.name}</strong> (ID: {projDetail.id})</Typography>
             <Typography variant="body2">Budget: ${projDetail.budget}</Typography>
             <Typography variant="caption">Charter: {projDetail.charter || "N/A"}</Typography>
@@ -360,7 +360,7 @@ const AboutUser: React.FC = () => {
           >
             <Box sx={{ textAlign: "center", mb: 3 }}>
               <img
-                src={viewedUser.avatar || `https://avatar.iran.liara.run/username?username=${encodeURIComponent(viewedUser.displayName || viewedUser.name || "default")}`}
+                src={viewedUser.avatar || `https://avatar.iran.liara.run/username?username=${encodeURIComponent(viewedUser. || viewedUser.name || "default")}`}
                 alt="Profile"
                 style={{
                   width: 120, // Larger avatar
@@ -411,7 +411,7 @@ const AboutUser: React.FC = () => {
 
             <Divider sx={{ mb: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Verification
               </Typography>
@@ -422,21 +422,21 @@ const AboutUser: React.FC = () => {
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Organizations
               </Typography>
-              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
+              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{ mb: 1 }}>{detailsError}</Alert>}
               {renderOrganizations()}
             </Box>
 
             <Divider sx={{ my: 3, borderColor: theme.palette.divider }} />
 
-            <Box sx={{mb: 2}}>
+            <Box sx={{ mb: 2 }}>
               <Typography variant="h6" fontWeight="600" gutterBottom>
                 Projects
               </Typography>
-              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{mb:1}}>{detailsError}</Alert>}
+              {detailsError && !isLoadingDetails && <Alert severity="warning" sx={{ mb: 1 }}>{detailsError}</Alert>}
               {renderProjects()}
             </Box>
 
@@ -477,14 +477,14 @@ export const getParsedUserById = async (userId: number): Promise<User | null> =>
 
 
     if (!result || result.status !== 200 || !result.data || Object.keys(result.data).length === 0) {
-        if (result && result.status === 204) { // Specifically handle 204 No Content as user not found
-             console.warn(`User with ID ${userId} not found (204 No Content).`);
-        } else if (result && result.data && Object.keys(result.data).length === 0 && result.status === 200){
-            // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
-            console.warn(`User with ID ${userId} not found (200 with empty data object).`);
-        } else {
-            console.error(`Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`);
-        }
+      if (result && result.status === 204) { // Specifically handle 204 No Content as user not found
+        console.warn(`User with ID ${userId} not found (204 No Content).`);
+      } else if (result && result.data && Object.keys(result.data).length === 0 && result.status === 200) {
+        // This is the case where getUser returns 200 with data: {} for not found (as per getter logic)
+        console.warn(`User with ID ${userId} not found (200 with empty data object).`);
+      } else {
+        console.error(`Failed to fetch user or user data is null/empty for ID ${userId}. Status: ${result?.status}`);
+      }
       return null;
     }
 
