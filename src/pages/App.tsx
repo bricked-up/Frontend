@@ -19,7 +19,7 @@ import CreateTask from "../Components/CreateIssue/CreateIssue";
 import { mockBoard } from "../Components/CreateIssue/CreateIssue";
 import EmailVerification from "./EmailVerification";
 import React from "react";
-
+import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
 function App() {
   const [theme, colorMode] = useMode();
 
@@ -91,6 +91,9 @@ function App() {
                   path="/createIssue"
                   element={<CreateTask board={mockBoard} />}
                 />
+                <Route
+                  path="/createorg"
+                  element={<CreateOrganization />}/>
               </Route>
 
               {/* routes for 404 and server errors */}
