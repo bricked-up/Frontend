@@ -8,24 +8,27 @@ interface Props {
   onDelete: (id: number) => void;
 }
 
-export default function OrganizationCard({ organization, onEdit, onDelete }: Props) {
+export default function OrganizationCard({
+  organization,
+  onEdit,
+  onDelete,
+}: Props) {
   return (
     <Card>
       <CardContent>
         <Typography variant="h6">{organization.name}</Typography>
         <Typography variant="subtitle2">Projects:</Typography>
-        {organization.projects?.length
-          ? (
-            <List dense>
-              {organization.projects.map(p => (
-                <ListItem key={p.id}>
-                  <Typography>{p.name}</Typography>
-                </ListItem>
-              ))}
-            </List>
-          )
-          : <Typography color="text.secondary">No projects</Typography>
-        }
+        {organization.projects?.length ? (
+          <List dense>
+            {organization.projects.map((p) => (
+              <ListItem key={p.id}>
+                <Typography>{p.name}</Typography>
+              </ListItem>
+            ))}
+          </List>
+        ) : (
+          <Typography color="text.secondary">No projects</Typography>
+        )}
       </CardContent>
       {/* your Edit/Delete buttons here */}
     </Card>
