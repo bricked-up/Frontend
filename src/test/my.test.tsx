@@ -88,7 +88,7 @@ describe("createProject", () => {
       }),
     });
 
-    const res: CreateProjectResult = await createProject(
+    const status: Number = await createProject(
       {
         name: "Proj",
         orgId: 1,
@@ -99,7 +99,6 @@ describe("createProject", () => {
       },
       "projects"
     );
-    expect(res.status).toBe(201);
-    expect(res.project?.name).toBe("Proj");
+    expect(status).toBe(201);
   });
 });

@@ -21,6 +21,7 @@ import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
 import React from "react";
 import EmailVerification from "./EmailVerification";
 import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
+import CreateProject from "../Components/CreateProject";
 
 
 function App() {
@@ -77,7 +78,7 @@ function App() {
                   </Route>
                 </Route>
               </Route>
-              
+
 
               {/* organization related routes */}
               <Route path="/organization">
@@ -103,9 +104,10 @@ function App() {
                 />
                 <Route
                   path="/createorg"
-                  element={<CreateOrganization />}/>
+                  element={<CreateOrganization />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
                 <Route path="/createorg" element={<CreateOrg />} />
+                <Route path="createProject" element={<CreateProject />} />
               </Route>
 
               {/* routes for 404 and server errors */}
