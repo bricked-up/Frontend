@@ -475,7 +475,12 @@ const ViewProject = () => {
 
   return (
     <Box
-      sx={{ backgroundColor: colors.primary[400], minHeight: "100vh", py: 3 }}
+      sx={{
+        backgroundColor: colors.primary[400],
+        height: "100vh",
+        overflowY: "auto",
+        py: 3,
+      }}
     >
       <Box sx={{ px: { xs: 2, sm: 4, md: 6 } }}>
         <Header
