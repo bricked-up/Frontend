@@ -17,7 +17,6 @@ import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
 import CreateNewIssue from "../Components/CreateIssue/CreateIssue";
 import { defaultBoard } from "../Components/CreateIssue/CreateIssue";
-import EmailVerification from "./EmailVerification";
 import React from "react";
 import EmailVerification from "./EmailVerification";
 import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
@@ -97,9 +96,8 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
-                <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard}/>} />
+                <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard} />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
-                <Route path="/createorg" element={<CreateOrg />} />
                 <Route path="createProject" element={<CreateProject />} />
               </Route>
 
