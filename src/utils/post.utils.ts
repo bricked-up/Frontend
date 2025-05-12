@@ -8,6 +8,7 @@ export interface IssueParams {
   cost?: number;
   projectid: number;
   tagid: number;
+  assignee: number;
 }
 
 export interface Result {

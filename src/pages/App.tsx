@@ -15,9 +15,8 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateTask from "../Components/CreateIssue/CreateIssue";
-import { mockBoard } from "../Components/CreateIssue/CreateIssue";
-import CreateOrg from "../Components/CreateOrganization/CreateOrganization";
+import CreateNewIssue from "../Components/CreateIssue/CreateIssue";
+import { defaultBoard } from "../Components/CreateIssue/CreateIssue";
 import React from "react";
 import EmailVerification from "./EmailVerification";
 import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
@@ -38,7 +37,6 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-
               {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -98,15 +96,8 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
-                <Route
-                  path="/createIssue"
-                  element={<CreateTask board={mockBoard} />}
-                />
-                <Route
-                  path="/createorg"
-                  element={<CreateOrganization />} />
+                <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard} />} />
                 <Route path="/viewOrg" element={<ViewOrg />} />
-                <Route path="/createorg" element={<CreateOrg />} />
                 <Route path="createProject" element={<CreateProject />} />
               </Route>
 
@@ -117,8 +108,6 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
-
-
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -126,4 +115,3 @@ function App() {
 }
 
 export default App;
-
