@@ -84,6 +84,7 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       cost,
       projectid,
       tagid,
+      assignee: -1,
     };
 
     const result = await createNewIssue(issueParams, "create-issue");
