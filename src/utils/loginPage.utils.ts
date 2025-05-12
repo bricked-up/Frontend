@@ -1,8 +1,6 @@
 import { Session } from "react-router-dom";
 import { API_BASE } from "../config";
 
-import { Session } from "react-router-dom";
-import { API_BASE } from "../config";
 
 /**
 * Authenticates the user by sending their credentials to the backend

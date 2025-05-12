@@ -50,32 +50,22 @@ function TabPanel(props: TabPanelProps) {
 
 /**
  * Login component provides UI for logging into an existing account or signing up for a new account.
- * Login component provides UI for logging into an existing account or signing up for a new account.
  */
 const Login = () => {
   const { user, setUser } = useUser();
   const [password, setPassword] = useState("");
   const [confirmpwd, setConfirmpwd] = useState("");
   const [tabValue, setTabValue] = useState(0);
-  const [confirmpwd, setConfirmpwd] = useState("");
-  const [tabValue, setTabValue] = useState(0);
   const [registerAttempt, setRegisterAttempt] = useState(false);
-  const [account, setAccount] = useState("");
   const [account, setAccount] = useState("");
   const [error, setError] = useState("");
   const navigate = useNavigate();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isDark = theme.palette.mode === "dark";
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isDark = theme.palette.mode === "dark";
 
   // Password validation hook (using functionality from first file)
-  // Password validation hook (using functionality from first file)
   const { isValid, errors } = usePasswordValidation({
-    password,
-    confirmpwd,
     password,
     confirmpwd,
     minLength: 8,
@@ -89,15 +79,6 @@ const Login = () => {
     setTabValue(newValue);
     setRegisterAttempt(false);
     setError("");
-  };
-
-  const handleForgotPwd = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if (!account) {
-      e.preventDefault();
-      setError("No account registered!");
-    } else {
-      setError("");
-    }
   };
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -183,10 +164,6 @@ const Login = () => {
   };
 
   return (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
     <Box
       sx={{
         display: "flex",
@@ -314,25 +291,6 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   sx={textFieldSx}
                 />
-
-                {/* Forgot Password link - functionality from first file */}
-                <Box sx={{ textAlign: "right", mt: 1 }}>
-                  <Typography
-                    component="a"
-                    variant="body2"
-                    href="/forgot_pwd"
-                    onClick={handleForgotPwd}
-                    sx={{
-                      color: isDark ? "#60a5fa" : "#2563eb",
-                      textDecoration: "none",
-                      "&:hover": {
-                        textDecoration: "underline",
-                      },
-                    }}
-                  >
-                    Forgot password?
-                  </Typography>
-                </Box>
 
                 {error && (
                   <Alert

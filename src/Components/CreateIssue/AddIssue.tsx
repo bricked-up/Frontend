@@ -20,8 +20,7 @@ import {
 import SaveIcon from "@mui/icons-material/Save";
 import { Issue } from "../../utils/types";
 import { useTheme } from "@mui/material/styles";
-import DropDown from "../DropDown"; // import dropdown for assignees
-import { IssueParams, createNewIssue } from "../../utils/post.utils";
+import { createNewIssue } from "../../utils/post.utils";
 
 export interface AddIssueProps {
   show: boolean;
@@ -73,20 +72,19 @@ export const AddIssue: React.FC<AddIssueProps> = ({
    * Constructs a Issue object and calls onAdd.
    */
   const handleSubmit = async () => {
-  const handleSubmit = async () => {
     if (!title.trim()) {
       alert("Title is missing :p");
       return;
     }
 
-    const issueParms : IssueParams = {
-      title,
-      desc: desc ?? "",              // API expects string
-      priority: priority ?? 1,       // API expects number
+    const issueParams = {
+      title: title,
+      desc: desc || null,
+      priority,
       cost,
       projectid,
-      tagid: tagid ?? 1,
-      assignee : -1, 
+      tagid,
+      assignee: -1,
     };
 
     const result = await createNewIssue(issueParams, "create-issue");

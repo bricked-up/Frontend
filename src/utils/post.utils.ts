@@ -4,8 +4,6 @@ import { API_BASE } from "../config";
 export interface IssueParams {
   title: string;
   desc?: string | null;
-  title: string;
-  desc?: string | null;
   priority: number;
   cost?: number;
   projectid: number;
