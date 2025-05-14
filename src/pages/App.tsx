@@ -111,6 +111,8 @@ function App() {
               <Route path="/500" element={<Error500Page />} />
             </Routes>
           </div>
+
+
         </Router>
       </ThemeProvider>
     </ColorModeContext.Provider>
@@ -118,3 +120,4 @@ function App() {
 }
 
 export default App;
+
