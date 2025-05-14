@@ -348,3 +348,37 @@ export const removeOrgMember = async (
     };
   }
 };
+
+/**
+ * Creates a new dependency relationship between two issues
+ * 
+ * @param issueId - The ID of the issue that depends on another
+ * @param dependencyId - The ID of the issue that issueId depends on
+ * @returns Promise with the API response
+ */
+export const createDependency = async (issueId: number, dependencyId: number): Promise<any> => {
+  try {
+    const response = await fetch(`${API_BASE}/create-dependency`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        issueId,
+        dependency: dependencyId,
+      }),
+    });
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      console.error(`Error creating dependency: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, error };
+    }
+
+    const data = await response.json();
+    return { status: response.status, data };
+  } catch (error: any) {
+    console.error("Network or parsing error in createDependency:", error.message, error);
+    return { status: 0, error: error.message || "Network or parsing error" };
+  }
+};

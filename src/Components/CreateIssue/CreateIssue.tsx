@@ -32,124 +32,6 @@ export const defaultBoard: Board = {
   createdAt: new Date(),
   issues: [],
 };
-// export const mockBoard: Board = {
-//   id: 1,
-//   name: "Project Board",
-//   createdBy: "Kejsi",
-//   createdById: "user-1",
-//   createdAt: new Date(),
-//   issues: [
-//     {
-//       id: 1,
-//       title: "Setup Project Repository",
-//       desc: "Initialize GitHub repository and push the initial commit.",
-//       tagId: 1,
-//       priority: 1,
-//       cost: 100,
-//       created: new Date("2024-04-01"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 2,
-//       title: "Create Database Schema",
-//       desc: "Design and create tables for users, projects, and issues.",
-//       tagId: 2,
-//       priority: 2,
-//       cost: 300,
-//       created: new Date("2024-04-02"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 3,
-//       title: "Implement User Authentication",
-//       desc: "Login, signup, password reset, and session management.",
-//       tagId: 3,
-//       priority: 1,
-//       cost: 250,
-//       created: new Date("2024-04-04"),
-//       completed: new Date("2024-04-06"),
-//     },
-//     {
-//       id: 4,
-//       title: "Build Issue Tracking Dashboard",
-//       desc: "Frontend UI to create, view, edit, and complete issues.",
-//       tagId: 1,
-//       priority: 3,
-//       cost: 400,
-//       created: new Date("2024-04-07"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 5,
-//       title: "Deploy Application",
-//       desc: "Deploy backend on server and frontend on Vercel.",
-//       tagId: 2,
-//       priority: 2,
-//       cost: 500,
-//       created: new Date("2024-04-10"),
-//       completed: undefined,
-//     },
-//   ],
-//};
-// export const mockBoard: Board = {
-//   id: 1,
-//   name: "Project Board",
-//   createdBy: "Kejsi",
-//   createdById: "user-1",
-//   createdAt: new Date(),
-//   issues: [
-//     {
-//       id: 1,
-//       title: "Setup Project Repository",
-//       desc: "Initialize GitHub repository and push the initial commit.",
-//       tagId: 1,
-//       priority: 1,
-//       cost: 100,
-//       created: new Date("2024-04-01"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 2,
-//       title: "Create Database Schema",
-//       desc: "Design and create tables for users, projects, and issues.",
-//       tagId: 2,
-//       priority: 2,
-//       cost: 300,
-//       created: new Date("2024-04-02"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 3,
-//       title: "Implement User Authentication",
-//       desc: "Login, signup, password reset, and session management.",
-//       tagId: 3,
-//       priority: 1,
-//       cost: 250,
-//       created: new Date("2024-04-04"),
-//       completed: new Date("2024-04-06"),
-//     },
-//     {
-//       id: 4,
-//       title: "Build Issue Tracking Dashboard",
-//       desc: "Frontend UI to create, view, edit, and complete issues.",
-//       tagId: 1,
-//       priority: 3,
-//       cost: 400,
-//       created: new Date("2024-04-07"),
-//       completed: undefined,
-//     },
-//     {
-//       id: 5,
-//       title: "Deploy Application",
-//       desc: "Deploy backend on server and frontend on Vercel.",
-//       tagId: 2,
-//       priority: 2,
-//       cost: 500,
-//       created: new Date("2024-04-10"),
-//       completed: undefined,
-//     },
-//   ],
-//};
 
 /**
  * CreateIssue Component
@@ -174,6 +56,9 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({
   const [issues, setIssues] = useState<Issue[]>([]);
   const [editingIssue, setEditingIssue] = useState<Issue | null>(null);
   const [activeTab, setActiveTab] = useState(0);
+  
+  // Get project ID from localStorage to correctly pass it to AddIssue
+  const projectId = parseInt(localStorage.getItem("projectid") || "0", 10);
 
   useEffect(() => {
     const loadIssues = async () => {
@@ -406,6 +291,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({
           onClose={() => setShowAddIssue(false)}
           boardId={board.id}
           onAdd={handleAddIssue}
+          projectId={projectId}
         />
       )}
 
@@ -416,6 +302,7 @@ const CreateIssue: React.FC<CreateIssuePageProps> = ({
           boardId={board.id}
           onAdd={handleSaveEdit}
           initialData={editingIssue}
+          projectId={projectId}
         />
       )}
     </Box>

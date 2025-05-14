@@ -18,6 +18,7 @@ import {
   GetOrgRoleResult,     // Added for new getter
   GetProjectRoleResult, // Added for new getter
   SQLNullTime,
+  Dependency,
 } from "./types";
 
 // --- Helper Function for Parsing Errors ---
@@ -431,3 +432,66 @@ export const getProjectRole = async (roleId: number): Promise<GetProjectRoleResu
     }
   };
   
+
+  export const getDependency = async (dependencyId: number): Promise<GetResult<Dependency>> => {
+  try {
+    const params = new URLSearchParams({ dependencyid: String(dependencyId) });
+    const response = await fetch(`${API_BASE}/get-dependency?${params.toString()}`, { method: "GET" });
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      console.error(`Error fetching dependency ${dependencyId}: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, data: null, error };
+    }
+    const text = await response.text();
+    const data: Dependency = text ? JSON.parse(text) : ({} as Dependency);
+    return { status: response.status, data: data, error: undefined };
+  } catch (error: any) {
+    console.error(`Network or parsing error in getDependency for ID ${dependencyId}:`, error.message, error);
+    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+  }
+};
+
+export const getDependenciesForIssue = async (issueId: number): Promise<GetResult<Dependency[]>> => {
+  try {
+    const params = new URLSearchParams({ issueid: String(issueId) });
+    const response = await fetch(`${API_BASE}/get-issue-dependencies?${params.toString()}`, { method: "GET" });
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      console.error(`Error fetching dependencies for issue ${issueId}: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, data: null, error };
+    }
+    const data: Dependency[] = await response.json();
+    return { status: response.status, data: data, error: undefined };
+  } catch (error: any) {
+    console.error(`Network or parsing error in getDependenciesForIssue for issue ID ${issueId}:`, error.message, error);
+    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+  }
+};
+
+export const getProjectIssues = async (projectId: number): Promise<GetResult<Issue[]>> => {
+  try {
+    const params = new URLSearchParams({ projectid: String(projectId) });
+    const response = await fetch(`${API_BASE}/get-project-issues?${params.toString()}`, { method: "GET" });
+
+    if (!response.ok) {
+      const error = await parseErrorResponse(response);
+      console.error(`Error fetching issues for project ${projectId}: Status ${response.status}, Message: ${error}`);
+      return { status: response.status, data: null, error };
+    }
+    
+    const rawData = await response.json();
+    const data: Issue[] = rawData.map((issue: any) => ({
+      ...issue,
+      tagId: issue.tagid !== undefined ? issue.tagid : issue.tagId,
+      created: parseRequiredSQLTime(issue.created, `Issue [${issue.id}] 'created' field`),
+      completed: parseSQLNullTime(issue.completed),
+    }));
+    
+    return { status: response.status, data: data, error: undefined };
+  } catch (error: any) {
+    console.error(`Network or parsing error in getProjectIssues for project ID ${projectId}:`, error.message, error);
+    return { status: 0, data: null, error: error.message || "Network or parsing error" };
+  }
+};

@@ -92,6 +92,7 @@ export type User = {
  * @property {Reminder[]} [reminders] - Optional array of reminders set for this issue.
  */
 export type Issue = {
+  projectId: Issue | undefined;
   id: number;
   title: string;
   desc?: string | null;
