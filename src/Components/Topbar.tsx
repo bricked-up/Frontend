@@ -5,7 +5,6 @@ import InputBase from "@mui/material/InputBase";
 import LightModeOutlinedIcon from "@mui/icons-material/LightModeOutlined";
 import DarkModeOutlinedIcon from "@mui/icons-material/DarkModeOutlined";
 import NotificationsOutlinedIcon from "@mui/icons-material/NotificationsOutlined";
-import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useNavigate } from "react-router-dom";
@@ -51,18 +50,17 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
 
   // Adjust viewProfile function to go to the logged-in user's profile
   const viewProfile = (): void => {
-  if (rawUser && rawUser.id) {
-    navigate(`/user/${rawUser.id}/aboutUser`);
-  } else {
-    console.error("User data is not available. Cannot navigate to profile.");
-  }
-};
-
+    if (rawUser && rawUser.id) {
+      navigate(`/user/${rawUser.id}/aboutUser`);
+    } else {
+      console.error("User data is not available. Cannot navigate to profile.");
+    }
+  };
 
   useEffect(() => {
     const delayDebounce = setTimeout(async () => {
       console.log("[Search effect triggered] query:", searchQuery);
-      
+
       if (searchQuery.trim() === "") {
         console.log("Query empty after trim. Clearing suggestions.");
         setUserSuggestions([]);
@@ -133,7 +131,8 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
             sx={{
               ml: 2,
               flex: 1,
-              color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
+              color:
+                theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
             }}
             placeholder="Search users..."
             value={searchQuery}
@@ -161,29 +160,31 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
               overflowY: "auto",
             }}
           >
-           {userSuggestions.map((user) => (
-  <Box
-    key={user.id}
-    sx={{
-      py: "8px",      // vertical padding
-      pl: "16px",     // left padding for text alignment
-      cursor: "pointer",
-      textAlign: "left",
-      color: theme.palette.mode === "dark" ? "#ffffff" : colors.grey[800],
-      "&:hover": {
-        backgroundColor: colors.primary[300],
-      },
-    }}
-    onClick={() => {
-      setSearchQuery("");
-      setUserSuggestions([]);
-      navigate(`/user/${user.id}/aboutUser`);
-    }}
-  >
-    {user.name}
-  </Box>
-))}
-
+            {userSuggestions.map((user) => (
+              <Box
+                key={user.id}
+                sx={{
+                  py: "8px", // vertical padding
+                  pl: "16px", // left padding for text alignment
+                  cursor: "pointer",
+                  textAlign: "left",
+                  color:
+                    theme.palette.mode === "dark"
+                      ? "#ffffff"
+                      : colors.grey[800],
+                  "&:hover": {
+                    backgroundColor: colors.primary[300],
+                  },
+                }}
+                onClick={() => {
+                  setSearchQuery("");
+                  setUserSuggestions([]);
+                  navigate(`/user/${user.id}/aboutUser`);
+                }}
+              >
+                {user.name}
+              </Box>
+            ))}
           </Box>
         )}
       </Box>
@@ -198,12 +199,12 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           )}
         </IconButton>
 
-        <IconButton onClick={ () => { navigate("/activity",  {replace: true}) } }>
+        <IconButton
+          onClick={() => {
+            navigate("/activity", { replace: true });
+          }}
+        >
           <NotificationsOutlinedIcon />
-        </IconButton>
-
-        <IconButton>
-          <SettingsOutlinedIcon />
         </IconButton>
 
         <Box
@@ -211,11 +212,14 @@ const Topbar: React.FC<TopbarProps> = ({ setIsSidebar, setIsCollapsed }) => {
           onMouseEnter={() => setShowLogout(true)}
           onMouseLeave={() => setShowLogout(false)}
         >
-          <IconButton aria-label="Profile Icon" onClick={() => {
-            const userid = localStorage.getItem("userid");
-            navigate(`/user/${userid}/aboutUser`, {replace: true});
-          }}>
-           <PersonOutlinedIcon />
+          <IconButton
+            aria-label="Profile Icon"
+            onClick={() => {
+              const userid = localStorage.getItem("userid");
+              navigate(`/user/${userid}/aboutUser`, { replace: true });
+            }}
+          >
+            <PersonOutlinedIcon />
           </IconButton>
         </Box>
       </Box>

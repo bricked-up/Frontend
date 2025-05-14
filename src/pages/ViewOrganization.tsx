@@ -9,26 +9,30 @@ import { getUser, getOrg } from "../utils/getters.utils";
 import { Organization, OrgMember, Project } from "../utils/types";
 
 const orgColumns: GridColDef[] = [
-  { field: "id",   headerName: "ID",   flex: 0.5 },
-  { field: "name", headerName: "Name", flex: 1   },
+  { field: "id", headerName: "ID", flex: 0.5 },
+  { field: "name", headerName: "Name", flex: 1 },
 ];
 const memberColumns: GridColDef[] = [
-  { field: "id",   headerName: "User ID", flex: 1 },
-  { field: "name", headerName: "Name",    flex: 2 },
+  { field: "id", headerName: "User ID", flex: 1 },
+  { field: "name", headerName: "Name", flex: 2 },
 ];
 const projectColumns: GridColDef[] = [
-  { field: "id",   headerName: "Proj ID", flex: 1 },
-  { field: "name", headerName: "Name",    flex: 2 },
+  { field: "id", headerName: "Proj ID", flex: 1 },
+  { field: "name", headerName: "Name", flex: 2 },
 ];
 
 export default function ViewOrg() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [orgs,             setOrgs]             = useState<Organization[]>([]);
+  const [orgs, setOrgs] = useState<Organization[]>([]);
   const [selectedOrgName, setSelectedOrgName] = useState("");
-  const [memberRows,       setMemberRows]       = useState<{id:number, name:string}[]>([]);
-  const [projectRows,      setProjectRows]      = useState<{id:number, name:string}[]>([]);
+  const [memberRows, setMemberRows] = useState<{ id: number; name: string }[]>(
+    []
+  );
+  const [projectRows, setProjectRows] = useState<
+    { id: number; name: string }[]
+  >([]);
 
   // 1) load user's orgs on mount
   useEffect(() => {
@@ -36,15 +40,16 @@ export default function ViewOrg() {
       const userId = Number(localStorage.getItem("userid"));
       const userRes = await getUser(userId);
       if (!userRes.data) return;
-      const orgIds = (userRes.data.organizations ?? [])
-        .filter((o): o is number => typeof o === "number");
-      const orgResults = await Promise.all(orgIds.map(id => getOrg(id)));
-      setOrgs(orgResults.filter(r => r.data).map(r => r.data!));
+      const orgIds = (userRes.data.organizations ?? []).filter(
+        (o): o is number => typeof o === "number"
+      );
+      const orgResults = await Promise.all(orgIds.map((id) => getOrg(id)));
+      setOrgs(orgResults.filter((r) => r.data).map((r) => r.data!));
     })();
   }, []);
 
   // derive selection
-  const selectedOrg = orgs.find(o => o.name === selectedOrgName);
+  const selectedOrg = orgs.find((o) => o.name === selectedOrgName);
   const selectedOrgId = selectedOrg?.id;
 
   // 2) fetch members/projects when selection changes
@@ -61,19 +66,18 @@ export default function ViewOrg() {
       // members
       const mlist: OrgMember[] = orgRes.data.members ?? [];
       const members = await Promise.all(
-        mlist.map(m =>
-          getUser(typeof m === "number" ? m : m.userId)
-            .then(r => ({
-              id: typeof m === "number" ? m : m.userId,
-              name: r.data?.name ?? "‹unknown›"
-            }))
+        mlist.map((m) =>
+          getUser(typeof m === "number" ? m : m.userId).then((r) => ({
+            id: typeof m === "number" ? m : m.userId,
+            name: r.data?.name ?? "‹unknown›",
+          }))
         )
       );
       setMemberRows(members);
 
       // projects (already full objects on getOrg)
       const plist: Project[] = orgRes.data.projects ?? [];
-      setProjectRows(plist.map(p => ({ id: p.id, name: p.name })));
+      setProjectRows(plist.map((p) => ({ id: p.id, name: p.name })));
     })();
   }, [selectedOrgId]);
 
@@ -101,9 +105,10 @@ export default function ViewOrg() {
       backgroundColor: colors.blueAccent[700],
       color: colors.grey[100],
     },
-    "& .MuiDataGrid-toolbarContainer .MuiButton-text, .MuiSvgIcon-root, .MuiTablePagination-root": {
-      color: colors.grey[100],
-    },
+    "& .MuiDataGrid-toolbarContainer .MuiButton-text, .MuiSvgIcon-root, .MuiTablePagination-root":
+      {
+        color: colors.grey[100],
+      },
   };
 
   return (
@@ -138,7 +143,7 @@ export default function ViewOrg() {
           <DropDown
             value={selectedOrgName}
             onSelect={setSelectedOrgName}
-            options={orgs.map(o => o.name)}
+            options={orgs.map((o) => o.name)}
           />
         </Box>
 
@@ -151,7 +156,7 @@ export default function ViewOrg() {
                   <DataGrid
                     rows={memberRows}
                     columns={memberColumns}
-                    getRowId={r => r.id}
+                    getRowId={(r) => r.id}
                     pageSizeOptions={[5]}
                     slots={{ toolbar: GridToolbar }}
                     sx={gridSx}
@@ -160,7 +165,6 @@ export default function ViewOrg() {
               </Box>
 
               {/* Projects panel */}
-              
             </>
           ) : (
             /* Org list */
@@ -168,7 +172,7 @@ export default function ViewOrg() {
               <DataGrid
                 rows={orgs}
                 columns={orgColumns}
-                getRowId={r => r.id!}
+                getRowId={(r) => r.id!}
                 pageSizeOptions={[5, 10]}
                 slots={{ toolbar: GridToolbar }}
                 sx={gridSx}

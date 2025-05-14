@@ -3,7 +3,13 @@
 
 import { API_BASE } from "../../../src/config";
 import { Link as RouterLink } from "react-router-dom";
-import { Project, OrgMember, OrgRole, Organization, User } from "../../../src/utils/types";
+import {
+  Project,
+  OrgMember,
+  OrgRole,
+  Organization,
+  User,
+} from "../../../src/utils/types";
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -30,12 +36,12 @@ import { useTheme } from "@mui/material/styles";
 
 import OrganizationCard from "./OrganizationCard";
 import { tokens } from "../../theme";
-import { createOrganization as CreateOrg, /*updateOrg*/ } from "../../utils/post.utils";
+import {
+  createOrganization as CreateOrg /*updateOrg*/,
+} from "../../utils/post.utils";
 import { getAllUsers, getUser, getOrg } from "../../utils/getters.utils";
 
 const sessionUserId = localStorage.getItem("userid"); // assuming you saved this at login
-
-
 
 const STORAGE_KEY = "organizations";
 
@@ -75,7 +81,6 @@ function saveOrgs(orgs: Organization[]): void {
  * @returns {Organization[]}
  */
 
-
 /**
  * Create a new organization and persist it.
  * @param {string} name
@@ -113,7 +118,7 @@ export function updateOrganization(
   updates: Partial<Omit<Organization, "id">>
 ): Organization {
   const orgs = loadOrgs();
-  const idx = orgs.findIndex(o => o.id === id);
+  const idx = orgs.findIndex((o) => o.id === id);
   if (idx === -1) throw new Error("Organization not found");
   const updatedOrg = { ...orgs[idx], ...updates };
   orgs[idx] = updatedOrg;
@@ -126,14 +131,11 @@ export function updateOrganization(
  * @param {number} id
  */
 export function deleteOrganization(id: number): void {
-  const orgs = loadOrgs().filter(o => o.id !== id);
+  const orgs = loadOrgs().filter((o) => o.id !== id);
   saveOrgs(orgs);
 }
 
-
 /* src/components/organizations/CreateOrganization.tsx */
-
-
 
 const CreateOrganization: React.FC = () => {
   const [organizations, setOrganizations] = useState<Organization[]>([]);
@@ -147,20 +149,24 @@ const CreateOrganization: React.FC = () => {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  async function fetchOrgsWithProjects(userId: number): Promise<Organization[]> {
+  async function fetchOrgsWithProjects(
+    userId: number
+  ): Promise<Organization[]> {
     // first get the org IDs
     const me = await getUser(userId);
     if (!me.data) throw new Error("No user data");
-    const ids = (me.data.organizations ?? [])
-      .filter((x): x is number => typeof x === "number");
+    const ids = (me.data.organizations ?? []).filter(
+      (x): x is number => typeof x === "number"
+    );
 
     // for each org, fetch the org itself _and_ its projects
     const arr = await Promise.all(
-      ids.map(async oid => {
+      ids.map(async (oid) => {
         const [{ data: org }, { data: projects }] = await Promise.all([
           getOrg(oid),
-          fetch(`${API_BASE}/get-org?orgid=${oid}`)
-            .then(r => r.ok ? r.json() : Promise.resolve([] as Project[]))
+          fetch(`${API_BASE}/get-org?orgid=${oid}`).then((r) =>
+            r.ok ? r.json() : Promise.resolve([] as Project[])
+          ),
         ]);
         if (!org) throw new Error(`Org ${oid} not found`);
         return { ...org, projects };
@@ -169,8 +175,6 @@ const CreateOrganization: React.FC = () => {
 
     return arr;
   }
-
-
 
   const userId = sessionUserId ? parseInt(sessionUserId, 10) : -1;
 
@@ -211,9 +215,9 @@ const CreateOrganization: React.FC = () => {
     }));
 
     const orgRoles: OrgRole[] = [];
-    const numericProjectIds = projects.map(p =>
-      parseInt(p.replace(/\D+/g, ""), 10)
-    ).filter(id => !isNaN(id));
+    const numericProjectIds = projects
+      .map((p) => parseInt(p.replace(/\D+/g, ""), 10))
+      .filter((id) => !isNaN(id));
     const result = await CreateOrg(
       {
         orgName: orgName,
@@ -222,10 +226,7 @@ const CreateOrganization: React.FC = () => {
       "create-org"
     );
     window.location.reload();
-
   };
-
-
 
   // src/components/organizations/CreateOrganization.tsx
   const openDialog = (org?: Organization) => {
@@ -236,7 +237,7 @@ const CreateOrganization: React.FC = () => {
       // Cast to any[] so TS lets us handle both numbers and objects
       const rawMembers = (org.members ?? []) as any[];
       setMembers(
-        rawMembers.map(m =>
+        rawMembers.map((m) =>
           // if it's a number, use it directly; otherwise read userId
           typeof m === "number" ? `User ${m}` : `User ${m.userId}`
         )
@@ -244,7 +245,7 @@ const CreateOrganization: React.FC = () => {
 
       const rawProjects = (org.projects ?? []) as any[];
       setProjects(
-        rawProjects.map(p =>
+        rawProjects.map((p) =>
           typeof p === "number" ? `Project ${p}` : `Project ${p.id}`
         )
       );
@@ -265,27 +266,26 @@ const CreateOrganization: React.FC = () => {
   const handleAddMember = () => {
     const name = newMember.trim();
     if (!name) return alert("Please enter a member name");
-    setMembers(prev => [...prev, name]);
+    setMembers((prev) => [...prev, name]);
     setNewMember("");
   };
 
   const handleRemoveMember = (idx: number) =>
-    setMembers(prev => prev.filter((_, i) => i !== idx));
+    setMembers((prev) => prev.filter((_, i) => i !== idx));
 
   const handleAddProject = () => {
     const title = newProject.trim();
     if (!title) return alert("Please enter a project name");
-    setProjects(prev => [...prev, title]);
+    setProjects((prev) => [...prev, title]);
     setNewProject("");
   };
 
   const handleRemoveProject = (idx: number) =>
-    setProjects(prev => prev.filter((_, i) => i !== idx));
-
+    setProjects((prev) => prev.filter((_, i) => i !== idx));
 
   const handleDelete = (id: number) => {
     deleteOrganization(id);
-    setOrganizations(prev => prev.filter(o => o.id !== id));
+    setOrganizations((prev) => prev.filter((o) => o.id !== id));
   };
 
   return (
@@ -304,7 +304,7 @@ const CreateOrganization: React.FC = () => {
         />
 
         <Grid container spacing={4}>
-          {organizations.map(org => (
+          {organizations.map((org) => (
             <Grid item xs={12} sm={6} md={4} key={org.id}>
               <OrganizationCard
                 organization={org}
@@ -328,7 +328,9 @@ const CreateOrganization: React.FC = () => {
       </Box>
 
       <Dialog open={dialogOpen} onClose={closeDialog} fullWidth maxWidth="sm">
-        <DialogTitle sx={{ color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}>
+        <DialogTitle
+          sx={{ color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}
+        >
           {editingOrg ? "Edit Organization" : "New Organization"}
         </DialogTitle>
         <DialogContent dividers>
@@ -337,19 +339,37 @@ const CreateOrganization: React.FC = () => {
             margin="normal"
             label="Name"
             value={orgName}
-            onChange={e => setOrgName(e.target.value)}
-            sx={{ input: { color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" } }}
+            onChange={(e) => setOrgName(e.target.value)}
+            sx={{
+              input: {
+                color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414",
+              },
+            }}
           />
 
-          <Typography variant="h6" sx={{ mt: 2, color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}>Team Members</Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 2,
+              color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414",
+            }}
+          >
+            Team Members
+          </Typography>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: 1 }}>
             <TextField
               label="Add member"
               value={newMember}
-              onChange={e => setNewMember(e.target.value)}
-              sx={{ input: { color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" } }}
+              onChange={(e) => setNewMember(e.target.value)}
+              sx={{
+                input: {
+                  color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414",
+                },
+              }}
             />
-            <IconButton onClick={handleAddMember}><AddIcon /></IconButton>
+            <IconButton onClick={handleAddMember}>
+              <AddIcon />
+            </IconButton>
           </Box>
           <List>
             {members.map((m, i) => {
@@ -363,7 +383,6 @@ const CreateOrganization: React.FC = () => {
                       <RemoveIcon />
                     </IconButton>
                   }
-
                 >
                   <Button
                     variant="contained"
@@ -389,16 +408,29 @@ const CreateOrganization: React.FC = () => {
             })}
           </List>
 
-
-          <Typography variant="h6" sx={{ mt: 2, color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" }}>Projects</Typography>
+          <Typography
+            variant="h6"
+            sx={{
+              mt: 2,
+              color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414",
+            }}
+          >
+            Projects
+          </Typography>
           <Box sx={{ display: "flex", gap: 1, alignItems: "center", mt: 1 }}>
             <TextField
               label="Add project"
               value={newProject}
-              onChange={e => setNewProject(e.target.value)}
-              sx={{ input: { color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414" } }}
+              onChange={(e) => setNewProject(e.target.value)}
+              sx={{
+                input: {
+                  color: theme.palette.mode === "dark" ? "#E0E0E0" : "#141414",
+                },
+              }}
             />
-            <IconButton onClick={handleAddProject}><AddIcon /></IconButton>
+            <IconButton onClick={handleAddProject}>
+              <AddIcon />
+            </IconButton>
           </Box>
           <List>
             {projects.map((p, i) => {
@@ -445,7 +477,7 @@ const CreateOrganization: React.FC = () => {
         <DialogActions>
           <Button onClick={closeDialog}>Cancel</Button>
           <Button onClick={handleSubmit} variant="contained" color="secondary">
-            {editingOrg ? 'Update' : 'Create'}
+            {editingOrg ? "Update" : "Create"}
           </Button>
         </DialogActions>
       </Dialog>
