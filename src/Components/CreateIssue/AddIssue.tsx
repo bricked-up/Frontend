@@ -84,11 +84,13 @@ export const AddIssue: React.FC<AddIssueProps> = ({
       cost,
       projectid,
       tagid,
+      assignee: -1,
     };
 
     const result = await createNewIssue(issueParams, "create-issue");
     if (result.status === 200 || result.status === 201) {
       onClose(); // Close the dialog
+      window.location.reload();
     } else {
       alert(`Error creating issue: ${result.error || "Unknown error"}`);
       console.error("Create issue failed:", result.error);

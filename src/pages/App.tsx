@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "../theme";
 import Login from "./Login";
-import ForgotPwd from "./forgot_pwd";
 import Page404 from "./PageNotFound";
 import ProtectedRoute from "../Components/ProtectedRoute";
 import LandingPage from "./LandingPage";
@@ -16,10 +15,13 @@ import Error500Page from "./Error500Page";
 import Activity from "../pages/Activity";
 import CalendarPage from "../pages/Calendar";
 import ViewOrg from "./ViewOrganization";
-import CreateTask from "../Components/CreateIssue/CreateIssue";
-import { mockBoard } from "../Components/CreateIssue/CreateIssue";
-import EmailVerification from "./EmailVerification";
+import CreateNewIssue from "../Components/CreateIssue/CreateIssue";
+import { defaultBoard } from "../Components/CreateIssue/CreateIssue";
 import React from "react";
+import EmailVerification from "./EmailVerification";
+import CreateOrganization from "../Components/CreateOrganization/CreateOrganization";
+import CreateProject from "../Components/CreateProject";
+
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -35,7 +37,6 @@ function App() {
           <div className="App">
             {/* set up Routes */}
             <Routes>
-
               {!(loggedIn === null || loggedIn === undefined) ? (
                 <Route element={<Layout />}>
                   <Route path="/" element={<Dashboard />} />
@@ -46,7 +47,6 @@ function App() {
 
               {/* route for login and signup */}
               <Route path="/login" element={<Login />} />
-              <Route path="/forgot_pwd" element={<ForgotPwd />} />
               <Route path="/testt" element={<LandingPage />} />
               <Route path="/testt" element={<LandingPage />} />
               <Route path="/verification" element={<EmailVerification />} />
@@ -64,12 +64,19 @@ function App() {
               </Route>
 
               {/* project related routes */}
-              <Route path="/project">
-                <Route path=":projectId">
-                  <Route path="users" />
-                  <Route path="issues" />
+              <Route element={<Layout />}>
+                {/* /project/:projectId */}
+                <Route path="project">
+                  <Route path=":projectName" element={<ViewProject />}>
+
+                    {/* /project/:projectId/users */}
+                    <Route path="users" element={<Layout />} />
+                    {/* /project/:projectId/issues */}
+                    <Route path="issues" element={<Layout />} />
+                  </Route>
                 </Route>
               </Route>
+
 
               {/* organization related routes */}
               <Route path="/organization">
@@ -89,10 +96,9 @@ function App() {
                 <Route path="/activity" element={<Activity />} />
                 <Route path="/calendar" element={<CalendarPage />} />
                 <Route path="/vieworg" element={<ViewOrg />} />
-                <Route
-                  path="/createIssue"
-                  element={<CreateTask board={mockBoard} />}
-                />
+                <Route path="/createIssue" element={<CreateNewIssue board={defaultBoard} />} />
+                <Route path="/viewOrg" element={<ViewOrg />} />
+                <Route path="createProject" element={<CreateProject />} />
               </Route>
 
               {/* routes for 404 and server errors */}

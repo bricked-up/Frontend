@@ -1,5 +1,5 @@
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import AddTaskIcon from "@mui/icons-material/AddTask";
 import MenuOutlinedIcon from "@mui/icons-material/MenuOutlined";
 import PeopleOutlinedIcon from "@mui/icons-material/PeopleOutlined";
@@ -9,6 +9,7 @@ import ReceiptOutlinedIcon from "@mui/icons-material/ReceiptOutlined";
 import CalendarTodayOutlinedIcon from "@mui/icons-material/CalendarTodayOutlined";
 import HelpOutlineOutlinedIcon from "@mui/icons-material/HelpOutlineOutlined";
 import CorporateFareIcon from "@mui/icons-material/CorporateFare";
+import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { tokens } from "../theme";
 import { useState } from "react";
 import React from "react";
@@ -25,7 +26,7 @@ interface SidebarProps {
   isSidebar: boolean;
   setIsSidebar: React.Dispatch<React.SetStateAction<boolean>>;
 }
-
+const userid = localStorage.getItem("userid");
 const Item: React.FC<ItemProps> = ({
   title,
   to,
@@ -35,7 +36,7 @@ const Item: React.FC<ItemProps> = ({
 }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+ 
   return (
     <Link
       to={to}
@@ -70,6 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [selected, setSelected] = useState<string>("Dashboard");
+  const navigate = useNavigate();
 
   return (
     <>
@@ -123,6 +125,13 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
         {isSidebar && (
           <Box>
             <Item
+              title="Create Organization"
+              to="/createorg"
+              icon={<AddCircleIcon/>}
+              selected={selected}
+              setSelected={setSelected}
+              />
+            <Item
               title="View Organizations"
               to="/viewOrg"
               icon={<CorporateFareIcon />}
@@ -153,7 +162,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
             />
             <Item
               title="View Your Profile"
-              to="/user/:userId/aboutUser"
+              to={`/user/${userid}/aboutUser`}
               icon={<PersonOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -176,6 +185,15 @@ const Sidebar: React.FC<SidebarProps> = ({ isSidebar, setIsSidebar }) => {
               title="FAQ Page"
               to="/faq"
               icon={<HelpOutlineOutlinedIcon />}
+              selected={selected}
+              setSelected={setSelected}
+            />
+            <Item 
+              title="create organization"
+              to="/createOrg"
+              icon={<CorporateFareIcon />}
+              
+              
               selected={selected}
               setSelected={setSelected}
             />

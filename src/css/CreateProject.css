@@ -1,0 +1,81 @@
+/* CreateProject.css - Full Synchronization with Theme Colors */
+
+.create-project-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+}
+
+.create-project-paper {
+    width: 600px;
+    padding: 2rem;
+    border-radius: 12px;
+    background-color: var(--background-color, #ffffff);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease-in-out;
+}
+
+body[data-theme='dark'] .create-project-paper {
+    background-color: var(--background-paper-gradient-end-dark, #1e1e2f);
+    box-shadow: var(--shadow-paper-dark);
+}
+
+body[data-theme='light'] .create-project-paper {
+    background-color: #f8f9fa !important;
+    box-shadow: var(--shadow-paper-light);
+}
+
+/* Form Styling */
+.create-project-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* Input Field Styling */
+.create-project-form .MuiOutlinedInput-root {
+    border: none !important;
+    box-shadow: none !important;
+    background-color: var(--current-background-form-element) !important;
+    border-radius: 6px;
+}
+
+body[data-theme='dark'] .MuiOutlinedInput-root {
+    --current-background-form-element: var(--background-form-element-dark) !important;
+}
+
+body[data-theme='light'] .MuiOutlinedInput-root {
+    --current-background-form-element: #ffffff !important;
+}
+
+/* Button Styling */
+.create-project-buttons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 16px;
+}
+
+.create-project-buttons .MuiButton-root {
+    color: white !important;
+    border-radius: 8px;
+    text-transform: none;
+}
+
+.create-project-buttons .MuiButton-contained {
+    background-color: #20c997 !important;
+}
+
+.create-project-buttons .MuiButton-contained:hover {
+    background-color: #17a2b8 !important;
+}
+
+.create-project-buttons .MuiButton-outlined {
+    border-color: #20c997 !important;
+    color: #20c997 !important;
+}
+
+.create-project-buttons .MuiButton-outlined:hover {
+    background-color: rgba(32, 201, 151, 0.1) !important;
+}

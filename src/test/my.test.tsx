@@ -20,8 +20,8 @@ describe("createNewIssue", () => {
       status: 201,
       json: async () => ({
         id: 5,
-        title: "Test Issue",
-        desc: null,
+        name: "Test Issue",
+        description: null,
         priority: 1,
         cost: 0,
         created: "2025-04-26T00:00:00Z",
@@ -30,7 +30,7 @@ describe("createNewIssue", () => {
     });
 
     const res: Result = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2, assignee: -1},
       "issues"
     );
     expect(res.status).toBe(201);
@@ -45,7 +45,7 @@ describe("createNewIssue", () => {
     });
 
     const res = await createNewIssue(
-      { title: "x", priority: 1, projectid: 2, tagid: 2 },
+      { title: "x", priority: 1, projectid: 2, tagid: 2 , assignee: -1},
       "issues"
     );
     expect(res.status).toBe(400);
@@ -62,7 +62,7 @@ describe("createOrganization", () => {
     });
 
     const res: CreateOrganizationResult = await createOrganization(
-      { name: "Org", projects: ["p1"] },
+      { orgName: "Org", projects: [1] },
       "orgs"
     );
     expect(res.status).toBe(201);
@@ -88,7 +88,7 @@ describe("createProject", () => {
       }),
     });
 
-    const res: CreateProjectResult = await createProject(
+    const status: Number = await createProject(
       {
         name: "Proj",
         orgId: 1,
@@ -99,7 +99,6 @@ describe("createProject", () => {
       },
       "projects"
     );
-    expect(res.status).toBe(201);
-    expect(res.project?.name).toBe("Proj");
+    expect(status).toBe(201);
   });
 });

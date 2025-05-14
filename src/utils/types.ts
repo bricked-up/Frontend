@@ -24,7 +24,7 @@ export type Project = {
   budget: number;
   charter: string;
   archived: boolean;
-  members?: ProjectMember[];
+  members?: number[];
   issues?: Issue[];
   tags?: Tag[];
   roles?: ProjectRole[]; // Roles defined at the project level
@@ -65,7 +65,6 @@ export type Organization = {
  * @property {Session[]} [sessions] - Optional array of active user sessions.
  */
 export type User = {
-  displayName: string;
   id: number;
   email: string;
   name: string;
